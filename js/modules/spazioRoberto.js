@@ -195,7 +195,11 @@ function renderizzaArchivio(contenitore, posts) {
 
 export function initArchivioRoberto() {
   const menu = document.getElementById('menuAggiornamenti');
-  const apriBtn = document.querySelector('[data-apri-menu-aggiornamenti]');
+  // querySelectorAll, non querySelector: la pagina ne contiene due, uno per
+  // lingua (solo uno visibile alla volta via [data-lc]) — servono entrambi
+  // agganciati, non solo il primo che querySelector troverebbe
+  const apriBtns = document.querySelectorAll('[data-apri-menu-aggiornamenti]');
+  const apriBtn = apriBtns[0];
   const chiudiBtn = document.querySelector('[data-chiudi-menu-aggiornamenti]');
   const contenitore = document.querySelector('[data-archivio-roberto]');
   const campoCerca = document.getElementById('archivioRobertoCerca');
@@ -266,7 +270,7 @@ export function initArchivioRoberto() {
     filtraArchivio();
   }
 
-  apriBtn.addEventListener('click', apri);
+  apriBtns.forEach((btn) => btn.addEventListener('click', apri));
   chiudiBtn?.addEventListener('click', chiudi);
 
   menu.addEventListener('click', (event) => {

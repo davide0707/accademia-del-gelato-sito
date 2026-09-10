@@ -28,6 +28,20 @@ html {
   scroll-behavior: auto; /* lo smooth scroll reale è gestito da Lenis */
 }
 
+/* ------------------------------ LINGUA (IT/EN) ---------------------------- */
+/* Ogni contenuto tradotto vive come coppia di elementi gemelli
+   [data-lc="it"] / [data-lc="en"]; js/modules/i18n.js sceglie quale
+   mostrare impostando body[data-lang]. Niente attributo HTML "hidden" nel
+   markup: qui in CSS nascondiamo l'inglese di default (l'italiano è la
+   lingua di partenza) e lo "revert" fa tornare ogni elemento al proprio
+   display naturale (block per h1/p/div, inline per span, list-item per
+   li...) senza doverlo indovinare caso per caso. !important perché la
+   correttezza del cambio lingua non deve dipendere da chi vince la
+   cascata altrove nel foglio di stile. */
+[data-lc="en"] { display: none !important; }
+body[data-lang="en"] [data-lc="en"] { display: revert !important; }
+body[data-lang="en"] [data-lc="it"] { display: none !important; }
+
 body {
   min-height: 100svh;
   -webkit-font-smoothing: antialiased;
@@ -514,6 +528,27 @@ section {
   background: var(--rosso-accademia);
   color: var(--crema);
   transform: translateY(-2px);
+}
+
+.nav__lingua {
+  flex: none;
+  height: 38px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--beige-caldo);
+  background: transparent;
+  color: var(--rosso-scuro);
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-soft), color var(--dur-fast) var(--ease-soft);
+}
+
+.nav__lingua:hover {
+  border-color: var(--rosso-accademia);
+  color: var(--rosso-accademia);
 }
 
 .nav__toggle {
@@ -1692,6 +1727,25 @@ body.menu-aperto .nav__toggle-linea {
 .menu-mobile__whatsapp svg { width: 18px; height: 18px; }
 
 .menu-mobile__whatsapp:hover {
+  border-color: var(--crema);
+}
+
+.menu-mobile__lingua {
+  align-self: flex-start;
+  height: 38px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-pill);
+  border: 1.5px solid rgb(248 241 228 / 35%);
+  background: transparent;
+  color: var(--crema);
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.menu-mobile__lingua:hover {
   border-color: var(--crema);
 }
 

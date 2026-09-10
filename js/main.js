@@ -1,4 +1,5 @@
 import { initAccessibility } from './modules/accessibility.js';
+import { initI18n } from './modules/i18n.js';
 import { initPreloader } from './modules/preloader.js';
 import { initSmoothScroll } from './modules/smoothScroll.js';
 import { initNav } from './modules/nav.js';
@@ -26,8 +27,10 @@ function initFooterYear() {
   if (el) el.textContent = String(new Date().getFullYear());
 }
 
-// Ordine: accessibilità e preloader prima di tutto, poi lo smooth scroll
-// (da cui dipende nav per lo scrollTo), poi il resto del motion system.
+// Ordine: la lingua per prima di tutto (sincrona, evita un flash IT→EN a
+// chi ha già scelto inglese), poi accessibilità e preloader, poi lo smooth
+// scroll (da cui dipende nav per lo scrollTo), poi il resto del motion system.
+initI18n();
 initAccessibility();
 initPreloader();
 initSmoothScroll();

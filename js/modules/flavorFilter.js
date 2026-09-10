@@ -17,7 +17,10 @@ export function initFlavorFilter() {
 
   function updateCount(visible) {
     if (!countEl) return;
-    countEl.textContent = `${visible} gust${visible === 1 ? 'o' : 'i'}`;
+    const inglese = document.body.dataset.lang === 'en';
+    countEl.textContent = inglese
+      ? `${visible} flavor${visible === 1 ? '' : 's'}`
+      : `${visible} gust${visible === 1 ? 'o' : 'i'}`;
   }
 
   function applyFilter(filtro) {
