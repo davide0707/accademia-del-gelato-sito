@@ -32,15 +32,14 @@
 
 <link rel="stylesheet" href="css/main.css">
 
-<!-- Plausible: tracciamento senza cookie, nessun banner di consenso
-     necessario. data-domain deve combaciare col sito registrato su
-     plausible.io/sites — se in futuro si passa a un dominio proprio,
-     aggiornarlo qui E nel pannello Plausible (altrimenti i dati smettono
-     di arrivare). Lo stub sotto mette in coda gli eventi custom (vedi
-     data-evento più sotto nella pagina) chiamati prima che lo script
-     vero e proprio finisca di caricare, così nessun clic va perso. -->
-<script defer data-domain="accademia-del-gelato-sito.vercel.app" src="https://plausible.io/js/script.js"></script>
-<script>window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments); };</script>
+<!-- GoatCounter: tracciamento senza cookie, nessun banner di consenso
+     necessario, gratuito per sempre. Il codice sito (qui "gelateria") è
+     legato all'account su goatcounter.com — se cambia, aggiornarlo anche
+     qui. Gli eventi custom (data-evento più sotto nella pagina) passano
+     da js/modules/analytics.js, che controlla al momento del click se lo
+     script è disponibile: se bloccato da un adblock il clic funziona lo
+     stesso, semplicemente non viene registrato. -->
+<script data-goatcounter="https://gelateria.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 
 <!-- GSAP + plugin (Flip, ScrollTrigger, SplitText — tutti gratuiti dal 2025) + Lenis smooth scroll -->
 <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>

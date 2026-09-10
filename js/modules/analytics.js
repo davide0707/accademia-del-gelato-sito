@@ -1,14 +1,15 @@
 /**
- * Eventi custom per Plausible (script + stub caricati in index.html):
- * ogni elemento con data-evento="Nome" manda quel nome a Plausible al
- * click, indipendentemente da quale delle sue copie (lingua IT/EN,
- * posizione in pagina) l'utente abbia effettivamente toccato — il nome
- * dell'evento conta, non l'elemento specifico.
+ * Un solo punto che sa come parlare con GoatCounter: sia i click con
+ * data-evento qui sotto, sia il cambio lingua lanciato da i18n.js,
+ * passano da inviaEvento — se un giorno cambia ancora provider basta
+ * toccare questa funzione.
  */
-export function initAnalytics() {
-  if (typeof window.plausible !== 'function') return;
+export function inviaEvento(nome) {
+  window.goatcounter?.count?.({ path: nome, title: nome, event: true });
+}
 
+export function initAnalytics() {
   document.querySelectorAll('[data-evento]').forEach((el) => {
-    el.addEventListener('click', () => window.plausible(el.dataset.evento));
+    el.addEventListener('click', () => inviaEvento(el.dataset.evento));
   });
 }

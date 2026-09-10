@@ -1,3 +1,5 @@
+import { inviaEvento } from './analytics.js';
+
 const STORAGE_KEY = 'ag_lingua';
 
 // Etichette brevi e semplici (nav, pulsanti senza markup annidato):
@@ -168,7 +170,7 @@ export function initI18n() {
       // salvata al caricamento — altrimenti ogni visita di ritorno in
       // inglese conterebbe come un "cambio lingua" anche senza che
       // l'utente abbia toccato nulla
-      window.plausible?.(nuovaLingua === 'en' ? 'Cambia lingua: EN' : 'Cambia lingua: IT');
+      inviaEvento(nuovaLingua === 'en' ? 'Cambia lingua: EN' : 'Cambia lingua: IT');
     });
   });
 }
