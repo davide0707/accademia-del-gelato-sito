@@ -648,7 +648,7 @@ section {
 
 .riconoscimenti__badge img {
   display: block;
-  width: 152px;
+  width: 192px;
   height: auto;
   /* sfumatura ai bordi: attenua eventuali residui del ritaglio dallo sfondo
      a scacchi delle foto originali delle targhe, invece di un taglio netto */
@@ -658,16 +658,8 @@ section {
 
 @media (min-width: 560px) {
   .riconoscimenti__badge img {
-    width: 188px;
-  }
-}
-
-.riconoscimenti__badge--grande img {
-  width: 192px;
-}
-
-@media (min-width: 560px) {
-  .riconoscimenti__badge--grande img {
+    /* stessa larghezza per entrambe le targhe: cosi' i bordi combaciano
+       invece di dipendere solo dalla centratura */
     width: 250px;
   }
 }
