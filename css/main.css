@@ -1814,11 +1814,38 @@ body.menu-aperto .nav__toggle-linea {
   max-width: none;
   flex-direction: row;
   margin-top: 0;
+  cursor: pointer;
+  transition: box-shadow var(--dur-fast) var(--ease-soft), transform var(--dur-fast) var(--ease-soft);
+}
+
+.archivio-roberto .spazio-roberto:hover,
+.archivio-roberto .spazio-roberto:focus-visible {
+  box-shadow: var(--shadow-lg);
 }
 
 .archivio-roberto .spazio-roberto__foto-wrap {
   width: 108px;
   aspect-ratio: 1 / 1;
+  transition: width var(--dur-base) var(--ease-premium), aspect-ratio var(--dur-base) var(--ease-premium);
+}
+
+/* card espansa: foto grande sopra, testo a piena larghezza sotto.
+   Selettore concatenato con .archivio-roberto .spazio-roberto per pareggiarne
+   la specificita' (0,2,0): un singolo .archivio-roberto__card--espansa non
+   basterebbe a vincere quella regola nel breakpoint desktop. */
+.archivio-roberto .spazio-roberto.archivio-roberto__card--espansa {
+  flex-direction: column;
+  align-items: stretch;
+  cursor: default;
+}
+
+.archivio-roberto .spazio-roberto.archivio-roberto__card--espansa .spazio-roberto__foto-wrap {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+}
+
+.archivio-roberto__card--espansa .spazio-roberto__estratto {
+  opacity: 0.9;
 }
 
 .archivio-roberto__vuoto {

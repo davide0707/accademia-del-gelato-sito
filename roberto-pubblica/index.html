@@ -148,9 +148,8 @@
   .messaggio.visibile { display: block; }
   .messaggio.errore { background: rgb(165 52 42 / 10%); color: var(--rosso-errore); }
 
-  .esito {
+  .schermata.esito {
     flex: 1;
-    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -182,6 +181,76 @@
     margin-right: 8px;
   }
   @keyframes girare { to { transform: rotate(360deg); } }
+
+  .link-indietro {
+    align-self: flex-start;
+    background: none;
+    border: none;
+    padding: 4px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--rosso);
+    cursor: pointer;
+  }
+
+  .gestione__titolo { margin: 0; font-size: 16px; font-weight: 700; }
+  .gestione__sottotitolo { margin: 4px 0 0; font-size: 13px; opacity: 0.65; }
+
+  .gestione__lista {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+  }
+
+  .gestione__caricamento,
+  .gestione__vuoto {
+    text-align: center;
+    font-size: 13px;
+    opacity: 0.55;
+    padding: 24px 0;
+  }
+
+  .gestione__voce {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    background: var(--avorio);
+    border: 1px solid var(--beige);
+    border-radius: 12px;
+  }
+
+  .gestione__voce-foto {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: var(--beige);
+    flex-shrink: 0;
+  }
+
+  .gestione__voce-testo { flex: 1; min-width: 0; }
+  .gestione__voce-titolo {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .gestione__voce-data { font-size: 12px; opacity: 0.55; margin-top: 2px; }
+
+  .gestione__voce-cancella {
+    flex-shrink: 0;
+    background: none;
+    border: 1.5px solid var(--rosso-errore);
+    color: var(--rosso-errore);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 12px;
+    border-radius: 999px;
+  }
+  .gestione__voce-cancella:disabled { opacity: 0.5; }
 </style>
 </head>
 <body>
@@ -234,6 +303,7 @@
     <p class="messaggio errore" id="errore-modulo"></p>
 
     <button class="btn-primario" id="btn-pubblica">Pubblica</button>
+    <button class="btn-secondario" id="btn-gestisci">Gestisci aggiornamenti pubblicati</button>
     <button class="btn-secondario" id="btn-cambia-pin">Cambia PIN</button>
   </section>
 
@@ -243,6 +313,20 @@
     <h2 id="esito-titolo">Pubblicato</h2>
     <p id="esito-testo">Sarà visibile sul sito tra pochi secondi.</p>
     <button class="btn-primario" id="btn-nuovo">Scrivi un altro aggiornamento</button>
+    <button class="btn-secondario" id="btn-gestisci-da-esito">Gestisci aggiornamenti pubblicati</button>
+  </section>
+
+  <!-- SCHERMATA GESTIONE (cancellazione) -->
+  <section class="schermata" id="schermata-gestione">
+    <button class="link-indietro" id="btn-indietro-gestione" type="button">← Torna a pubblica</button>
+    <div>
+      <p class="gestione__titolo">I tuoi aggiornamenti</p>
+      <p class="gestione__sottotitolo">Tocca "Cancella" per rimuovere un aggiornamento dal sito.</p>
+    </div>
+    <p class="messaggio errore" id="errore-gestione"></p>
+    <div class="gestione__lista" id="gestione-lista">
+      <p class="gestione__caricamento">Carico…</p>
+    </div>
   </section>
 
 </main>
@@ -254,12 +338,15 @@
   const TESTO_MAX = 240;
   const LATO_MAX_PX = 1600;
   const QUALITA_JPEG = 0.82;
+  const SANITY_PROJECT_ID = 'jskwy1n7';
+  const SANITY_DATASET = 'production';
 
   const $ = (id) => document.getElementById(id);
   const schermate = {
     pin: $('schermata-pin'),
     modulo: $('schermata-modulo'),
     esito: $('schermata-esito'),
+    gestione: $('schermata-gestione'),
   };
   function mostra(nome) {
     Object.values(schermate).forEach((el) => el.classList.remove('attiva'));
@@ -420,6 +507,119 @@
   });
 
   $('btn-nuovo').addEventListener('click', () => mostra('modulo'));
+
+  // ---- Schermata gestione (cancellazione) ----
+  const listaGestione = $('gestione-lista');
+  const erroreGestione = $('errore-gestione');
+
+  function formattaDataBreve(iso) {
+    if (!iso) return '';
+    return new Date(iso).toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  async function caricaGestione() {
+    erroreGestione.classList.remove('visibile');
+    listaGestione.innerHTML = '<p class="gestione__caricamento">Carico…</p>';
+    try {
+      const query = encodeURIComponent(
+        `*[_type == "aggiornamento"] | order(pubblicatoIl desc){_id, titolo, pubblicatoIl, "fotoUrl": foto.asset->url}`
+      );
+      const url = `https://${SANITY_PROJECT_ID}.apicdn.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
+      const risposta = await fetch(url);
+      if (!risposta.ok) throw new Error('risposta non ok');
+      const { result } = await risposta.json();
+      renderizzaGestione(result || []);
+    } catch (e) {
+      listaGestione.innerHTML = '';
+      erroreGestione.textContent = 'Non riesco a caricare gli aggiornamenti. Riprova.';
+      erroreGestione.classList.add('visibile');
+    }
+  }
+
+  function renderizzaGestione(posts) {
+    listaGestione.innerHTML = '';
+    if (posts.length === 0) {
+      listaGestione.innerHTML = '<p class="gestione__vuoto">Non hai ancora pubblicato nessun aggiornamento.</p>';
+      return;
+    }
+    posts.forEach((post) => listaGestione.appendChild(creaVoceGestione(post)));
+  }
+
+  function creaVoceGestione(post) {
+    const voce = document.createElement('div');
+    voce.className = 'gestione__voce';
+
+    const foto = document.createElement('img');
+    foto.className = 'gestione__voce-foto';
+    if (post.fotoUrl) foto.src = `${post.fotoUrl}?w=96&auto=format&fit=max`;
+    voce.appendChild(foto);
+
+    const testo = document.createElement('div');
+    testo.className = 'gestione__voce-testo';
+    const titolo = document.createElement('div');
+    titolo.className = 'gestione__voce-titolo';
+    titolo.textContent = post.titolo;
+    const data = document.createElement('div');
+    data.className = 'gestione__voce-data';
+    data.textContent = formattaDataBreve(post.pubblicatoIl);
+    testo.append(titolo, data);
+    voce.appendChild(testo);
+
+    const btnCancella = document.createElement('button');
+    btnCancella.type = 'button';
+    btnCancella.className = 'gestione__voce-cancella';
+    btnCancella.textContent = 'Cancella';
+    btnCancella.addEventListener('click', () => cancellaAggiornamento(post._id, post.titolo, voce, btnCancella));
+    voce.appendChild(btnCancella);
+
+    return voce;
+  }
+
+  async function cancellaAggiornamento(id, titolo, voceEl, btnEl) {
+    if (!confirm(`Cancellare "${titolo}"? Non si può annullare.`)) return;
+
+    btnEl.disabled = true;
+    btnEl.textContent = '…';
+    erroreGestione.classList.remove('visibile');
+
+    try {
+      const risposta = await fetch('/api/cancella', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin: pinSalvato(), id }),
+      });
+
+      if (risposta.status === 401) {
+        localStorage.removeItem(PIN_KEY);
+        mostra('pin');
+        erroreePin.textContent = 'PIN errato — inseriscilo di nuovo.';
+        erroreePin.classList.add('visibile');
+        return;
+      }
+
+      const dati = await risposta.json().catch(() => ({}));
+      if (!risposta.ok) throw new Error(dati.errore || 'Errore sconosciuto');
+
+      voceEl.remove();
+      if (!listaGestione.querySelector('.gestione__voce')) {
+        listaGestione.innerHTML = '<p class="gestione__vuoto">Non hai ancora pubblicato nessun aggiornamento.</p>';
+      }
+    } catch (e) {
+      btnEl.disabled = false;
+      btnEl.textContent = 'Cancella';
+      erroreGestione.textContent = e.message || 'Non sono riuscito a cancellarlo. Riprova.';
+      erroreGestione.classList.add('visibile');
+    }
+  }
+
+  function apriGestione() {
+    mostra('gestione');
+    caricaGestione();
+  }
+
+  $('btn-gestisci').addEventListener('click', apriGestione);
+  $('btn-gestisci-da-esito').addEventListener('click', apriGestione);
+  $('btn-indietro-gestione').addEventListener('click', () => mostra('modulo'));
 })();
 </script>
 

@@ -117,7 +117,13 @@ function formattaDataAssoluta(data) {
 
 function creaCardArchivio(post) {
   const card = document.createElement('article');
-  card.className = 'spazio-roberto';
+  card.className = 'spazio-roberto archivio-roberto__card';
+  // cliccabile/attivabile da tastiera: si espande in pagina invece di
+  // aprire un'altra schermata, per restare semplice e restare nel contesto
+  // dell'elenco
+  card.tabIndex = 0;
+  card.setAttribute('role', 'button');
+  card.setAttribute('aria-expanded', 'false');
 
   const fotoWrap = document.createElement('div');
   fotoWrap.className = 'spazio-roberto__foto-wrap';
@@ -150,6 +156,19 @@ function creaCardArchivio(post) {
     data.textContent = formattaDataAssoluta(new Date(post.pubblicatoIl));
     testoWrap.appendChild(data);
   }
+
+  function alterna() {
+    const espansa = card.classList.toggle('archivio-roberto__card--espansa');
+    card.setAttribute('aria-expanded', String(espansa));
+    if (espansa && post.fotoUrl) foto.src = `${post.fotoUrl}?w=1000&auto=format&fit=max`;
+  }
+  card.addEventListener('click', alterna);
+  card.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      alterna();
+    }
+  });
 
   card.append(fotoWrap, testoWrap);
   return card;
