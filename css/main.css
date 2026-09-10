@@ -1737,6 +1737,9 @@ body.menu-aperto .nav__toggle-linea {
 
 .spazio-roberto__testo {
   min-width: 0;
+  /* una stringa lunga senza spazi (o comunque piu' larga della card)
+     altrimenti sfonda il bordo invece di andare a capo */
+  overflow-wrap: break-word;
 }
 
 .spazio-roberto__eyebrow {
