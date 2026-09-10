@@ -459,7 +459,11 @@ section {
   left: 0;
   right: 0;
   z-index: var(--z-nav);
-  padding-block: var(--space-4);
+  /* senza compensare env(safe-area-inset-top), su iPhone con notch (e
+     viewport-fit=cover nel meta viewport) logo e menu potrebbero finire
+     troppo vicini alla status bar invece che sotto */
+  padding-top: max(var(--space-4), calc(var(--space-4) + env(safe-area-inset-top)));
+  padding-bottom: var(--space-4);
 }
 
 .nav__inner {
@@ -574,7 +578,15 @@ section {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: var(--space-24) var(--container-pad) var(--space-12);
+  /* position:fixed + inset:0 copre tutto lo schermo, area del notch e
+     dell'home indicator comprese (per via di viewport-fit=cover nel
+     meta viewport): senza compensare con env(safe-area-inset-*), su
+     iPhone con notch/home indicator il contenuto in cima o in fondo al
+     menu può finire troppo vicino o parzialmente coperto */
+  padding-top: max(var(--space-24), calc(var(--space-24) + env(safe-area-inset-top)));
+  padding-right: max(var(--container-pad), calc(var(--container-pad) + env(safe-area-inset-right)));
+  padding-bottom: max(var(--space-12), calc(var(--space-12) + env(safe-area-inset-bottom)));
+  padding-left: max(var(--container-pad), calc(var(--container-pad) + env(safe-area-inset-left)));
   visibility: hidden;
   /* senza overflow, su schermi bassi (telefoni piccoli, o dopo aver
      aggiunto la voce "Da Roberto" + WhatsApp + selettore lingua) il
@@ -1332,8 +1344,8 @@ section {
 
 .floating-cta-group {
   position: fixed;
-  right: var(--space-6);
-  bottom: var(--space-6);
+  right: max(var(--space-6), calc(var(--space-6) + env(safe-area-inset-right)));
+  bottom: max(var(--space-6), calc(var(--space-6) + env(safe-area-inset-bottom)));
   z-index: var(--z-floating-cta);
   display: flex;
   flex-direction: column;
@@ -1493,13 +1505,21 @@ section {
 .prezzi-ticket__dettaglio {
   font-size: var(--fs-caption);
   opacity: 0.65;
-  flex: 1;
+  /* prima era "flex: 1": nella riga più stretta (es. "Vaschetta piccola")
+     lo spazio residuo bastava per iniziare il testo ma non per contenerlo,
+     e flex-wrap lo spezzava parola per parola in una colonna stretta e
+     illeggibile invece di mandarlo per intero a capo. flex-basis:100%
+     lo forza sempre su una riga propria a piena larghezza, uguale per
+     tutte e tre le voci invece che diverso caso per caso. */
+  flex: 1 1 100%;
+  order: 3;
 }
 
 .prezzi-ticket__prezzo {
   font-family: var(--font-display);
   font-size: var(--fs-h6);
   color: var(--rosso-accent);
+  margin-left: auto;
 }
 
 /* --------------------------------- CIFRE BRAND ---------------------------------- */
@@ -2577,7 +2597,7 @@ body.menu-aperto .nav__toggle-linea {
   background: var(--rosso-accademia);
   color: var(--crema);
   font-family: var(--font-body);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: var(--fw-semibold);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -2637,7 +2657,7 @@ body.menu-aperto .nav__toggle-linea {
 
 .mappa-stilizzata__monumento {
   font-family: var(--font-body);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
   fill: var(--rosso-accent);
@@ -2668,6 +2688,16 @@ body.menu-aperto .nav__toggle-linea {
 .footer__colonna h3 { color: var(--crema); font-size: var(--fs-body-sm); text-transform: uppercase; letter-spacing: var(--tracking-eyebrow); font-family: var(--font-body); font-weight: var(--fw-semibold); opacity: 0.7; }
 .footer__colonna a:hover { color: var(--oro-tenue); }
 .footer__colonna li { font-size: var(--fs-body-sm); opacity: 0.85; }
+/* i link del footer (telefono, WhatsApp, Deliveroo, social) erano alti
+   solo quanto il testo (~17px): sotto ai 24px minimi raccomandati per un
+   tocco preciso (WCAG 2.5.8). display:inline-block + padding verticale
+   allargano l'area toccabile reale senza spostare il testo dal suo posto
+   (il margine negativo compensa lo spazio extra introdotto dal padding). */
+.footer__colonna a {
+  display: inline-block;
+  padding-block: var(--space-2);
+  margin-block: calc(var(--space-2) * -1);
+}
 
 .footer__social {
   flex-direction: row !important;
