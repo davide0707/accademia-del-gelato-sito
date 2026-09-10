@@ -17,6 +17,15 @@
 <link rel="stylesheet" href="css/main.css">
 
 <style>
+  /* main.css nasconde il cursore di sistema e lo sostituisce con quello
+     disegnato via JS da cursor.js — questa pagina è volutamente senza il
+     motore GSAP/motion, quindi va ripristinato il cursore normale o
+     resterebbe invisibile su desktop */
+  @media (hover: hover) and (pointer: fine) {
+    body, a, button { cursor: auto; }
+    a, button { cursor: pointer; }
+  }
+
   .privacy-pagina {
     max-width: var(--container-narrow);
     margin-inline: auto;
