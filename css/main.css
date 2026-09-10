@@ -576,6 +576,13 @@ section {
   justify-content: space-between;
   padding: var(--space-24) var(--container-pad) var(--space-12);
   visibility: hidden;
+  /* senza overflow, su schermi bassi (telefoni piccoli, o dopo aver
+     aggiunto la voce "Da Roberto" + WhatsApp + selettore lingua) il
+     contenuto in coda al menu finiva sotto al bordo dello schermo,
+     irraggiungibile: niente scroll di pagina qui dentro (il menu è
+     position:fixed a schermo intero), quindi serve il proprio */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .menu-mobile ul {
@@ -1205,7 +1212,9 @@ section {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-3) var(--space-5);
+  /* stesso bug di .spazio-roberto sopra: var(--space-5) non esiste,
+     azzerava l'intero shorthand (anche il var(--space-3) valido) */
+  padding: var(--space-3) var(--space-4);
   background: var(--avorio);
   color: var(--rosso-scuro);
   border-radius: var(--radius-pill);
@@ -1649,9 +1658,17 @@ section {
 }
 
 /* A menu aperto il logo e la X restano sopra l'overlay (vedi --z-nav in
-   tokens.css): qui adattiamo i loro colori allo sfondo scuro del menu. */
+   tokens.css): qui adattiamo i loro colori allo sfondo scuro del menu.
+   Sfondo pieno (non trasparente) indipendentemente da .is-scrolled: il
+   menu adesso può scorrere al suo interno (overflow-y su .menu-mobile,
+   necessario sugli schermi bassi), e senza uno sfondo opaco qui il testo
+   che scorre sotto diventerebbe visibile attraverso la nav, sovrapposto
+   al logo invece di restarne nascosto dietro. */
+body.menu-aperto .nav {
+  background: var(--rosso-scuro);
+}
+
 body.menu-aperto .nav.is-scrolled {
-  background: transparent;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   box-shadow: none;
@@ -1840,7 +1857,11 @@ body.menu-aperto .nav__toggle-linea {
   border: 1px solid var(--beige-caldo);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
-  padding: var(--space-5);
+  /* era var(--space-5), un token che non esiste nella scala (1,2,3,4,6,8...):
+     var() senza fallback su una proprietà non definita rende l'intera
+     dichiarazione non valida, quindi il padding risultava 0 — il testo
+     sfondava quasi contro il bordo della card invece di starne staccato. */
+  padding: var(--space-6);
   transition: transform var(--dur-fast) var(--ease-soft), box-shadow var(--dur-fast) var(--ease-soft);
 }
 
