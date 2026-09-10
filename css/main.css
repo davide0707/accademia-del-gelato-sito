@@ -482,6 +482,40 @@ section {
   .nav .nav__cta { display: inline-flex; }
 }
 
+/* stesso motivo del commento sopra: il gruppo telefono+WhatsApp resta
+   nascosto sotto i 1024px, dove il contatto passa dal menu mobile a
+   schermo intero (che ha già i propri pulsanti) invece che dalla nav */
+.nav__contatti {
+  display: none;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+@media (min-width: 1024px) {
+  .nav__contatti { display: flex; }
+}
+
+.nav__whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border-radius: 50%;
+  border: 1.5px solid var(--rosso-accademia);
+  color: var(--rosso-accademia);
+  transition: background var(--dur-fast) var(--ease-soft), color var(--dur-fast) var(--ease-soft), transform var(--dur-fast) var(--ease-soft);
+}
+
+.nav__whatsapp svg { width: 18px; height: 18px; }
+
+.nav__whatsapp:hover {
+  background: var(--rosso-accademia);
+  color: var(--crema);
+  transform: translateY(-2px);
+}
+
 .nav__toggle {
   display: flex;
   flex-direction: column;
@@ -667,6 +701,18 @@ section {
 @media (hover: hover) and (pointer: fine) {
   .riconoscimenti__badge:hover {
     transform: translateY(-4px);
+  }
+}
+
+/* Sposta leggermente a destra solo il badge 2025, per avvicinarlo un po'
+   di più al badge 2027 quando sono affiancati. Va applicato SOLO da quando
+   condividono la stessa riga (da ~600px in su): sotto quella soglia
+   .riconoscimenti__loghi li impila su due righe separate, ciascuna
+   centrata per conto proprio — un margin-left qui li farebbe scentrare
+   dalla propria riga invece di avvicinarli a un vicino che non c'è. */
+@media (min-width: 600px) {
+  .badge-2025 {
+    margin-left: 20px;
   }
 }
 
@@ -1172,6 +1218,27 @@ section {
 
 .cta-finale h2 { color: var(--crema); }
 
+.cta-finale__azioni {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.cta-finale__whatsapp {
+  background: transparent;
+  color: var(--crema);
+  border: 1.5px solid rgb(248 241 228 / 35%);
+}
+
+.cta-finale__whatsapp svg { width: 18px; height: 18px; }
+
+.cta-finale__whatsapp:hover {
+  border-color: var(--crema);
+  transform: translateY(-2px);
+}
+
 /* ---------------------------------- FOOTER -------------------------------------- */
 
 .footer {
@@ -1219,11 +1286,18 @@ section {
 
 /* ------------------------------- FLOATING CTA ------------------------------------ */
 
-.floating-cta {
+.floating-cta-group {
   position: fixed;
   right: var(--space-6);
   bottom: var(--space-6);
   z-index: var(--z-floating-cta);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-3);
+}
+
+.floating-cta {
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -1604,6 +1678,22 @@ body.menu-aperto .nav__toggle-linea {
 .menu-mobile.is-open li:nth-child(7) { transition-delay: 360ms; }
 
 .menu-mobile__footer p { opacity: 0.6; font-size: var(--fs-caption); }
+
+/* stile proprio invece di .btn--secondario: quella variante usa testo/bordo
+   rosso-scuro a riposo, praticamente invisibile sullo sfondo rosso-scuro
+   di questo menu — qui serve chiaro sul fondo scuro fin da subito, non
+   solo al passaggio del mouse (che su un menu mobile touch non arriva mai) */
+.menu-mobile__whatsapp {
+  background: transparent;
+  color: var(--crema);
+  border: 1.5px solid rgb(248 241 228 / 35%);
+}
+
+.menu-mobile__whatsapp svg { width: 18px; height: 18px; }
+
+.menu-mobile__whatsapp:hover {
+  border-color: var(--crema);
+}
 
 /* -------------------------------- MENU GUSTI ------------------------------------ */
 
@@ -2438,6 +2528,21 @@ body.menu-aperto .nav__toggle-linea {
 
 .contatti__telefono svg { width: 22px; height: 22px; }
 
+.contatti__whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-medium);
+  color: var(--antracite);
+  opacity: 0.75;
+  margin-top: var(--space-2);
+}
+
+.contatti__whatsapp svg { width: 19px; height: 19px; }
+
+.contatti__whatsapp:hover { opacity: 1; color: var(--rosso-accademia); }
+
 /* ------------------------------------- MAPPA STILIZZATA ---------------------------------- */
 
 .mappa-stilizzata__label {
@@ -2510,13 +2615,20 @@ body.menu-aperto .nav__toggle-linea {
   box-shadow: var(--shadow-xl);
   font-weight: var(--fw-semibold);
   font-size: var(--fs-caption);
+  transition: transform var(--dur-fast) var(--ease-soft), box-shadow var(--dur-fast) var(--ease-soft);
+}
+
+/* la visibilità allo scroll si anima sul gruppo intero, cosi' le due
+   pillole (telefono + WhatsApp) compaiono e spariscono insieme invece di
+   sfasarsi */
+.floating-cta-group {
   opacity: 0;
   transform: translateY(24px) scale(0.9);
   pointer-events: none;
-  transition: transform var(--dur-base) var(--ease-premium), opacity var(--dur-base) var(--ease-soft), box-shadow var(--dur-fast) var(--ease-soft);
+  transition: transform var(--dur-base) var(--ease-premium), opacity var(--dur-base) var(--ease-soft);
 }
 
-.floating-cta.is-visible {
+.floating-cta-group.is-visible {
   opacity: 1;
   transform: translateY(0) scale(1);
   pointer-events: auto;
@@ -2527,6 +2639,16 @@ body.menu-aperto .nav__toggle-linea {
 }
 
 .floating-cta svg { width: 18px; height: 18px; }
+
+/* variante WhatsApp: invertita (fondo crema, testo bordeaux) cosi' resta
+   nella stessa palette del sito invece del verde WhatsApp, che stonerebbe
+   con bordeaux/crema/oro usato ovunque — leggibile come "secondaria"
+   accanto al pulsante telefono, pieno e quindi "primario" */
+.floating-cta--whatsapp {
+  background: var(--crema);
+  color: var(--rosso-accademia);
+  border: 1.5px solid var(--rosso-accademia);
+}
 
 @media (max-width: 480px) {
   .floating-cta span { display: none; }
