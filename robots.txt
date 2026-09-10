@@ -1,0 +1,5 @@
+# Sostituire il dominio nella riga Sitemap non appena registrato/attivato.
+User-agent: *
+Allow: /
+
+Sitemap: https://IL-TUO-DOMINIO.it/sitemap.xml

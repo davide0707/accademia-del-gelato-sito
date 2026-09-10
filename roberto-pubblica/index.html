@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Pubblica — Accademia del Gelato</title>
+<link rel="apple-touch-icon" href="../assets/logo/logo-gelato.png">
+<link rel="icon" href="../assets/logo/logo-gelato.png">
+<meta name="theme-color" content="#6E1E2A">
+<style>
+  :root {
+    --rosso: #6E1E2A;
+    --rosso-scuro: #4A131C;
+    --crema: #F8F1E4;
+    --avorio: #FBF8F3;
+    --beige: #E7DAC3;
+    --antracite: #2A2521;
+    --verde-ok: #2F6B3F;
+    --rosso-errore: #A5342A;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--crema);
+    color: var(--antracite);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: max(20px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
+  }
+  header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  header img { width: 40px; height: auto; }
+  header h1 {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.25;
+  }
+  header p {
+    margin: 2px 0 0;
+    font-size: 13px;
+    color: var(--rosso);
+    opacity: 0.8;
+  }
+
+  main { flex: 1; display: flex; flex-direction: column; }
+
+  .schermata { display: none; flex-direction: column; gap: 18px; }
+  .schermata.attiva { display: flex; }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--rosso-scuro);
+    margin-bottom: 6px;
+  }
+
+  input[type="text"],
+  input[type="password"],
+  textarea {
+    width: 100%;
+    font-size: 16px;
+    font-family: inherit;
+    padding: 13px 14px;
+    border: 1.5px solid var(--beige);
+    border-radius: 12px;
+    background: var(--avorio);
+    color: var(--antracite);
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+  input[type="text"]:focus,
+  input[type="password"]:focus,
+  textarea:focus { border-color: var(--rosso); }
+
+  textarea { resize: none; min-height: 96px; line-height: 1.45; }
+
+  .contatore {
+    text-align: right;
+    font-size: 12px;
+    color: var(--antracite);
+    opacity: 0.55;
+    margin-top: 4px;
+  }
+  .contatore.limite { color: var(--rosso-errore); opacity: 1; }
+
+  .foto-picker {
+    display: block;
+    border: 1.5px dashed var(--beige);
+    border-radius: 14px;
+    background: var(--avorio);
+    padding: 18px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    min-height: 120px;
+  }
+  .foto-picker input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .foto-picker__testo { font-size: 14px; color: var(--rosso); font-weight: 600; }
+  .foto-picker__anteprima {
+    display: none;
+    width: 100%;
+    max-height: 260px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+  .foto-picker.ha-foto .foto-picker__testo { display: none; }
+  .foto-picker.ha-foto .foto-picker__anteprima { display: block; }
+
+  .pin-wrap { display: flex; gap: 8px; }
+  .pin-wrap input { letter-spacing: 4px; font-size: 20px; text-align: center; }
+
+  button {
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 999px;
+    padding: 16px;
+    cursor: pointer;
+    transition: transform 0.12s ease, opacity 0.15s ease;
+  }
+  button:active { transform: scale(0.97); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-primario { background: var(--rosso); color: var(--crema); }
+  .btn-secondario { background: transparent; color: var(--rosso); font-size: 13px; padding: 8px; }
+
+  .messaggio {
+    font-size: 13px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    display: none;
+  }
+  .messaggio.visibile { display: block; }
+  .messaggio.errore { background: rgb(165 52 42 / 10%); color: var(--rosso-errore); }
+
+  .schermata.esito {
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 14px;
+  }
+  .esito__cerchio {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--verde-ok);
+    color: var(--crema);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+  }
+  .esito h2 { margin: 0; font-size: 18px; }
+  .esito p { margin: 0; font-size: 14px; opacity: 0.7; max-width: 26ch; }
+
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2.5px solid rgb(248 241 228 / 40%);
+    border-top-color: var(--crema);
+    border-radius: 50%;
+    animation: girare 0.7s linear infinite;
+    display: inline-block;
+    vertical-align: -3px;
+    margin-right: 8px;
+  }
+  @keyframes girare { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="../assets/logo/logo-gelato.png" alt="">
+  <div>
+    <h1>Accademia del Gelato</h1>
+    <p>Pubblica un aggiornamento</p>
+  </div>
+</header>
+
+<main>
+
+  <!-- SCHERMATA PIN -->
+  <section class="schermata attiva" id="schermata-pin">
+    <div>
+      <label for="campo-pin">PIN</label>
+      <div class="pin-wrap">
+        <input type="password" id="campo-pin" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="••••" maxlength="8">
+      </div>
+    </div>
+    <p class="messaggio errore" id="errore-pin"></p>
+    <button class="btn-primario" id="btn-sblocca">Sblocca</button>
+  </section>
+
+  <!-- SCHERMATA MODULO -->
+  <section class="schermata" id="schermata-modulo">
+    <div>
+      <label for="campo-titolo">Titolo</label>
+      <input type="text" id="campo-titolo" maxlength="60" placeholder="Es. Il pistacchio di questa settimana">
+      <div class="contatore" id="contatore-titolo">0 / 60</div>
+    </div>
+
+    <div>
+      <label>Foto</label>
+      <label class="foto-picker" id="foto-picker">
+        <span class="foto-picker__testo">Tocca per scattare o scegliere una foto</span>
+        <img class="foto-picker__anteprima" id="foto-anteprima" alt="">
+        <input type="file" accept="image/*" capture id="campo-foto">
+      </label>
+    </div>
+
+    <div>
+      <label for="campo-testo">Testo</label>
+      <textarea id="campo-testo" maxlength="240" placeholder="Due o tre righe, come le diresti al bancone."></textarea>
+      <div class="contatore" id="contatore-testo">0 / 240</div>
+    </div>
+
+    <p class="messaggio errore" id="errore-modulo"></p>
+
+    <button class="btn-primario" id="btn-pubblica">Pubblica</button>
+    <button class="btn-secondario" id="btn-cambia-pin">Cambia PIN</button>
+  </section>
+
+  <!-- SCHERMATA ESITO -->
+  <section class="schermata esito" id="schermata-esito">
+    <div class="esito__cerchio" id="esito-icona">✓</div>
+    <h2 id="esito-titolo">Pubblicato</h2>
+    <p id="esito-testo">Sarà visibile sul sito tra pochi secondi.</p>
+    <button class="btn-primario" id="btn-nuovo">Scrivi un altro aggiornamento</button>
+  </section>
+
+</main>
+
+<script>
+(() => {
+  const PIN_KEY = 'ag_roberto_pin';
+  const TITOLO_MAX = 60;
+  const TESTO_MAX = 240;
+  const LATO_MAX_PX = 1600;
+  const QUALITA_JPEG = 0.82;
+
+  const $ = (id) => document.getElementById(id);
+  const schermate = {
+    pin: $('schermata-pin'),
+    modulo: $('schermata-modulo'),
+    esito: $('schermata-esito'),
+  };
+  function mostra(nome) {
+    Object.values(schermate).forEach((el) => el.classList.remove('attiva'));
+    schermate[nome].classList.add('attiva');
+  }
+
+  // ---- Schermata PIN ----
+  const campoPin = $('campo-pin');
+  const erroreePin = $('errore-pin');
+
+  function pinSalvato() {
+    return localStorage.getItem(PIN_KEY);
+  }
+
+  $('btn-sblocca').addEventListener('click', () => {
+    const valore = campoPin.value.trim();
+    if (!valore) {
+      erroreePin.textContent = 'Inserisci il PIN.';
+      erroreePin.classList.add('visibile');
+      return;
+    }
+    localStorage.setItem(PIN_KEY, valore);
+    erroreePin.classList.remove('visibile');
+    mostra('modulo');
+  });
+
+  $('btn-cambia-pin').addEventListener('click', () => {
+    localStorage.removeItem(PIN_KEY);
+    campoPin.value = '';
+    mostra('pin');
+  });
+
+  // se il PIN è già salvato da una visita precedente, salta la schermata
+  if (pinSalvato()) mostra('modulo');
+
+  // ---- Schermata modulo ----
+  const campoTitolo = $('campo-titolo');
+  const campoTesto = $('campo-testo');
+  const campoFoto = $('campo-foto');
+  const fotoPicker = $('foto-picker');
+  const fotoAnteprima = $('foto-anteprima');
+  const contatoreTitolo = $('contatore-titolo');
+  const contatoreTesto = $('contatore-testo');
+  const erroreModulo = $('errore-modulo');
+  const btnPubblica = $('btn-pubblica');
+
+  let fotoCompressaDataUrl = null;
+
+  campoTitolo.addEventListener('input', () => {
+    contatoreTitolo.textContent = `${campoTitolo.value.length} / ${TITOLO_MAX}`;
+    contatoreTitolo.classList.toggle('limite', campoTitolo.value.length >= TITOLO_MAX);
+  });
+
+  campoTesto.addEventListener('input', () => {
+    contatoreTesto.textContent = `${campoTesto.value.length} / ${TESTO_MAX}`;
+    contatoreTesto.classList.toggle('limite', campoTesto.value.length >= TESTO_MAX);
+  });
+
+  function comprimiFoto(file) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const reader = new FileReader();
+      reader.onload = (e) => { img.src = e.target.result; };
+      reader.onerror = reject;
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > height && width > LATO_MAX_PX) {
+          height = Math.round((height * LATO_MAX_PX) / width);
+          width = LATO_MAX_PX;
+        } else if (height > LATO_MAX_PX) {
+          width = Math.round((width * LATO_MAX_PX) / height);
+          height = LATO_MAX_PX;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', QUALITA_JPEG));
+      };
+      img.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  campoFoto.addEventListener('change', async () => {
+    const file = campoFoto.files[0];
+    if (!file) return;
+    erroreModulo.classList.remove('visibile');
+    try {
+      fotoCompressaDataUrl = await comprimiFoto(file);
+      fotoAnteprima.src = fotoCompressaDataUrl;
+      fotoPicker.classList.add('ha-foto');
+    } catch (e) {
+      erroreModulo.textContent = 'Non sono riuscito a leggere questa foto. Riprova.';
+      erroreModulo.classList.add('visibile');
+    }
+  });
+
+  function mostraErroreModulo(testo) {
+    erroreModulo.textContent = testo;
+    erroreModulo.classList.add('visibile');
+  }
+
+  btnPubblica.addEventListener('click', async () => {
+    erroreModulo.classList.remove('visibile');
+
+    const titolo = campoTitolo.value.trim();
+    const testo = campoTesto.value.trim();
+
+    if (!titolo) return mostraErroreModulo('Manca il titolo.');
+    if (!fotoCompressaDataUrl) return mostraErroreModulo('Manca la foto.');
+    if (!testo) return mostraErroreModulo('Manca il testo.');
+
+    btnPubblica.disabled = true;
+    btnPubblica.innerHTML = '<span class="spinner"></span>Pubblico…';
+
+    try {
+      const risposta = await fetch('/api/pubblica', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pin: pinSalvato(),
+          titolo,
+          testo,
+          fotoBase64: fotoCompressaDataUrl,
+        }),
+      });
+
+      const dati = await risposta.json().catch(() => ({}));
+
+      if (risposta.status === 401) {
+        localStorage.removeItem(PIN_KEY);
+        mostra('pin');
+        erroreePin.textContent = 'PIN errato — inseriscilo di nuovo.';
+        erroreePin.classList.add('visibile');
+        return;
+      }
+
+      if (!risposta.ok) {
+        throw new Error(dati.errore || 'Errore sconosciuto');
+      }
+
+      // reset del modulo per il prossimo post
+      campoTitolo.value = '';
+      campoTesto.value = '';
+      fotoCompressaDataUrl = null;
+      fotoPicker.classList.remove('ha-foto');
+      contatoreTitolo.textContent = `0 / ${TITOLO_MAX}`;
+      contatoreTesto.textContent = `0 / ${TESTO_MAX}`;
+
+      mostra('esito');
+    } catch (err) {
+      mostraErroreModulo(err.message || 'Qualcosa è andato storto. Riprova.');
+    } finally {
+      btnPubblica.disabled = false;
+      btnPubblica.textContent = 'Pubblica';
+    }
+  });
+
+  $('btn-nuovo').addEventListener('click', () => mostra('modulo'));
+})();
+</script>
+
+</body>
+</html>

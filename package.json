@@ -1,0 +1,9 @@
+{
+  "name": "accademia-del-gelato-sito",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Dipendenze della sola funzione serverless in api/pubblica.js. Il sito resta puro HTML/CSS/JS statico, nessuna build step.",
+  "dependencies": {
+    "@sanity/client": "^6"
+  }
+}

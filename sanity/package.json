@@ -1,0 +1,17 @@
+{
+  "name": "spazio-roberto-studio",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Studio Sanity per lo Spazio di Roberto — Accademia del Gelato. Strumento da desktop per l'admin, non usato da Roberto (che pubblica dalla pagina mobile in roberto-pubblica/).",
+  "scripts": {
+    "dev": "sanity dev",
+    "build": "sanity build",
+    "deploy": "sanity deploy"
+  },
+  "dependencies": {
+    "sanity": "^3",
+    "@sanity/vision": "^3",
+    "react": "^18",
+    "react-dom": "^18"
+  }
+}
