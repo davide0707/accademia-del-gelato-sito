@@ -53,6 +53,16 @@
     color: var(--rosso);
     opacity: 0.8;
   }
+  .btn-esci {
+    margin-left: auto;
+    flex-shrink: 0;
+    background: none;
+    border: 1.5px solid var(--beige);
+    color: var(--rosso);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 9px 14px;
+  }
 
   main { flex: 1; display: flex; flex-direction: column; }
 
@@ -278,6 +288,7 @@
     <h1>Accademia del Gelato</h1>
     <p>Pubblica un aggiornamento</p>
   </div>
+  <button type="button" class="btn-esci" id="btn-esci" hidden>Esci</button>
 </header>
 
 <main>
@@ -367,9 +378,13 @@
     esito: $('schermata-esito'),
     gestione: $('schermata-gestione'),
   };
+  const btnEsci = $('btn-esci');
   function mostra(nome) {
     Object.values(schermate).forEach((el) => el.classList.remove('attiva'));
     schermate[nome].classList.add('attiva');
+    // visibile su ogni schermata tranne quella del PIN: è lì che serve
+    // per poter uscire, non lì dove si è già fuori
+    btnEsci.hidden = nome === 'pin';
   }
 
   // ---- Schermata PIN ----
@@ -782,6 +797,18 @@
   $('btn-indietro-gestione').addEventListener('click', () => {
     resetModuloANuovo();
     mostra('modulo');
+  });
+
+  // ---- Esci ----
+  // dimentica il PIN salvato e torna alla schermata iniziale: serve per
+  // rimettere il PIN da capo (es. dispositivo condiviso, o dopo che il
+  // PIN è stato cambiato) senza dover cancellare i dati del sito a mano
+  btnEsci.addEventListener('click', () => {
+    localStorage.removeItem(PIN_KEY);
+    campoPin.value = '';
+    erroreePin.classList.remove('visibile');
+    resetModuloANuovo();
+    mostra('pin');
   });
 })();
 </script>
