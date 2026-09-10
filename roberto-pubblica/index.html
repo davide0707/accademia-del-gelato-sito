@@ -66,6 +66,7 @@
     color: var(--rosso-scuro);
     margin-bottom: 6px;
   }
+  .label-facoltativo { font-weight: 400; opacity: 0.6; }
 
   input[type="text"],
   input[type="password"],
@@ -220,6 +221,7 @@
     border: 1px solid var(--beige);
     border-radius: 12px;
   }
+  .gestione__voce[hidden] { display: none; }
 
   .gestione__voce-foto {
     width: 48px;
@@ -286,7 +288,7 @@
     </div>
 
     <div>
-      <label>Foto</label>
+      <label>Foto <span class="label-facoltativo">(facoltativa)</span></label>
       <label class="foto-picker" id="foto-picker">
         <span class="foto-picker__testo">Tocca per scattare o scegliere una foto</span>
         <img class="foto-picker__anteprima" id="foto-anteprima" alt="">
@@ -304,7 +306,6 @@
 
     <button class="btn-primario" id="btn-pubblica">Pubblica</button>
     <button class="btn-secondario" id="btn-gestisci">Gestisci aggiornamenti pubblicati</button>
-    <button class="btn-secondario" id="btn-cambia-pin">Cambia PIN</button>
   </section>
 
   <!-- SCHERMATA ESITO -->
@@ -323,6 +324,7 @@
       <p class="gestione__titolo">I tuoi aggiornamenti</p>
       <p class="gestione__sottotitolo">Tocca "Cancella" per rimuovere un aggiornamento dal sito.</p>
     </div>
+    <input type="text" id="gestione-cerca" placeholder="Cerca per titolo o testo…" autocomplete="off">
     <p class="messaggio errore" id="errore-gestione"></p>
     <div class="gestione__lista" id="gestione-lista">
       <p class="gestione__caricamento">Carico…</p>
@@ -356,31 +358,63 @@
   // ---- Schermata PIN ----
   const campoPin = $('campo-pin');
   const erroreePin = $('errore-pin');
+  const btnSblocca = $('btn-sblocca');
 
   function pinSalvato() {
     return localStorage.getItem(PIN_KEY);
   }
 
-  $('btn-sblocca').addEventListener('click', () => {
+  // Il PIN viene sempre verificato lato server prima di mostrare il modulo:
+  // uno sbagliato non deve mai far vedere la pagina di pubblicazione, nè ora
+  // nè su una visita successiva con un PIN salvato che nel frattempo è
+  // cambiato (es. ruotato dal proprietario del sito).
+  async function verificaEProsegui(valore, { silenzioso = false } = {}) {
+    if (!silenzioso) {
+      btnSblocca.disabled = true;
+      btnSblocca.innerHTML = '<span class="spinner"></span>Verifico…';
+    }
+    try {
+      const risposta = await fetch('/api/verifica-pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin: valore }),
+      });
+      if (risposta.ok) {
+        localStorage.setItem(PIN_KEY, valore);
+        erroreePin.classList.remove('visibile');
+        mostra('modulo');
+        return;
+      }
+      localStorage.removeItem(PIN_KEY);
+      if (!silenzioso) {
+        erroreePin.textContent = 'PIN errato.';
+        erroreePin.classList.add('visibile');
+      }
+    } catch (e) {
+      if (!silenzioso) {
+        erroreePin.textContent = 'Non riesco a verificare il PIN — controlla la connessione.';
+        erroreePin.classList.add('visibile');
+      }
+    } finally {
+      btnSblocca.disabled = false;
+      btnSblocca.textContent = 'Sblocca';
+    }
+  }
+
+  btnSblocca.addEventListener('click', () => {
     const valore = campoPin.value.trim();
     if (!valore) {
       erroreePin.textContent = 'Inserisci il PIN.';
       erroreePin.classList.add('visibile');
       return;
     }
-    localStorage.setItem(PIN_KEY, valore);
-    erroreePin.classList.remove('visibile');
-    mostra('modulo');
+    verificaEProsegui(valore);
   });
 
-  $('btn-cambia-pin').addEventListener('click', () => {
-    localStorage.removeItem(PIN_KEY);
-    campoPin.value = '';
-    mostra('pin');
-  });
-
-  // se il PIN è già salvato da una visita precedente, salta la schermata
-  if (pinSalvato()) mostra('modulo');
+  // se il PIN è già salvato da una visita precedente, lo riverifica in
+  // silenzio: se è ancora corretto salta la schermata, altrimenti resta
+  // sulla schermata PIN pronta per un nuovo tentativo
+  if (pinSalvato()) verificaEProsegui(pinSalvato(), { silenzioso: true });
 
   // ---- Schermata modulo ----
   const campoTitolo = $('campo-titolo');
@@ -457,8 +491,12 @@
     const testo = campoTesto.value.trim();
 
     if (!titolo) return mostraErroreModulo('Manca il titolo.');
-    if (!fotoCompressaDataUrl) return mostraErroreModulo('Manca la foto.');
     if (!testo) return mostraErroreModulo('Manca il testo.');
+
+    if (!fotoCompressaDataUrl) {
+      const confermato = confirm('Vuoi pubblicare senza foto?');
+      if (!confermato) return;
+    }
 
     btnPubblica.disabled = true;
     btnPubblica.innerHTML = '<span class="spinner"></span>Pubblico…';
@@ -508,9 +546,10 @@
 
   $('btn-nuovo').addEventListener('click', () => mostra('modulo'));
 
-  // ---- Schermata gestione (cancellazione) ----
+  // ---- Schermata gestione (cancellazione + ricerca) ----
   const listaGestione = $('gestione-lista');
   const erroreGestione = $('errore-gestione');
+  const campoCercaGestione = $('gestione-cerca');
 
   function formattaDataBreve(iso) {
     if (!iso) return '';
@@ -522,7 +561,7 @@
     listaGestione.innerHTML = '<p class="gestione__caricamento">Carico…</p>';
     try {
       const query = encodeURIComponent(
-        `*[_type == "aggiornamento"] | order(pubblicatoIl desc){_id, titolo, pubblicatoIl, "fotoUrl": foto.asset->url}`
+        `*[_type == "aggiornamento"] | order(pubblicatoIl desc){_id, titolo, testo, pubblicatoIl, "fotoUrl": foto.asset->url}`
       );
       const url = `https://${SANITY_PROJECT_ID}.apicdn.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
       const risposta = await fetch(url);
@@ -538,6 +577,7 @@
 
   function renderizzaGestione(posts) {
     listaGestione.innerHTML = '';
+    campoCercaGestione.value = '';
     if (posts.length === 0) {
       listaGestione.innerHTML = '<p class="gestione__vuoto">Non hai ancora pubblicato nessun aggiornamento.</p>';
       return;
@@ -545,9 +585,32 @@
     posts.forEach((post) => listaGestione.appendChild(creaVoceGestione(post)));
   }
 
+  campoCercaGestione.addEventListener('input', () => {
+    const query = campoCercaGestione.value.trim().toLowerCase();
+    const voci = listaGestione.querySelectorAll('.gestione__voce');
+    let visibili = 0;
+    voci.forEach((voce) => {
+      const corrisponde = !query || voce.dataset.ricerca.includes(query);
+      voce.hidden = !corrisponde;
+      if (corrisponde) visibili += 1;
+    });
+    let nessunRisultato = listaGestione.querySelector('.gestione__vuoto');
+    if (voci.length > 0 && visibili === 0) {
+      if (!nessunRisultato) {
+        nessunRisultato = document.createElement('p');
+        nessunRisultato.className = 'gestione__vuoto';
+        nessunRisultato.textContent = 'Nessun aggiornamento corrisponde alla ricerca.';
+        listaGestione.appendChild(nessunRisultato);
+      }
+    } else if (nessunRisultato) {
+      nessunRisultato.remove();
+    }
+  });
+
   function creaVoceGestione(post) {
     const voce = document.createElement('div');
     voce.className = 'gestione__voce';
+    voce.dataset.ricerca = `${post.titolo || ''} ${post.testo || ''}`.toLowerCase();
 
     const foto = document.createElement('img');
     foto.className = 'gestione__voce-foto';

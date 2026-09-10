@@ -5,6 +5,9 @@ import { defineField, defineType } from 'sanity';
  * ancora da scegliere — vedi la pagina di progetto su Notion).
  * Volutamente minimo: titolo, foto, testo breve. Niente che Roberto non
  * abbia esplicitamente chiesto.
+ *
+ * La foto non è obbligatoria: la pagina di pubblicazione chiede conferma
+ * prima di pubblicare senza, ma un aggiornamento senza foto resta valido.
  */
 export default defineType({
   name: 'aggiornamento',
@@ -22,7 +25,6 @@ export default defineType({
       title: 'Foto',
       type: 'image',
       options: { hotspot: true },
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'testo',

@@ -32,8 +32,10 @@ export default async function handler(req, res) {
     return res.status(401).json({ errore: 'PIN errato' });
   }
 
-  if (!titolo || !testo || !fotoBase64) {
-    return res.status(400).json({ errore: 'Titolo, foto e testo sono tutti obbligatori' });
+  // la foto è facoltativa: la pagina chiede conferma prima di pubblicare
+  // senza, qui basta accettare che manchi
+  if (!titolo || !testo) {
+    return res.status(400).json({ errore: 'Titolo e testo sono obbligatori' });
   }
   if (titolo.trim().length === 0 || titolo.length > TITOLO_MAX) {
     return res.status(400).json({ errore: `Il titolo deve avere tra 1 e ${TITOLO_MAX} caratteri` });
@@ -42,31 +44,36 @@ export default async function handler(req, res) {
     return res.status(400).json({ errore: `Il testo deve avere tra 1 e ${TESTO_MAX} caratteri` });
   }
 
-  const match = /^data:(image\/(?:jpeg|png|webp));base64,(.+)$/.exec(fotoBase64);
-  if (!match) {
-    return res.status(400).json({ errore: 'Formato foto non valido (serve JPEG, PNG o WebP)' });
-  }
-  const [, mimeType, base64Data] = match;
-  const buffer = Buffer.from(base64Data, 'base64');
-  if (buffer.length > FOTO_MAX_BYTES) {
-    return res.status(400).json({ errore: 'Foto troppo pesante' });
+  let fotoAssetRef = null;
+  if (fotoBase64) {
+    const match = /^data:(image\/(?:jpeg|png|webp));base64,(.+)$/.exec(fotoBase64);
+    if (!match) {
+      return res.status(400).json({ errore: 'Formato foto non valido (serve JPEG, PNG o WebP)' });
+    }
+    const [, mimeType, base64Data] = match;
+    const buffer = Buffer.from(base64Data, 'base64');
+    if (buffer.length > FOTO_MAX_BYTES) {
+      return res.status(400).json({ errore: 'Foto troppo pesante' });
+    }
+    fotoAssetRef = { buffer, mimeType };
   }
 
   try {
-    const asset = await client.assets.upload('image', buffer, { contentType: mimeType });
-
-    const doc = await client.create({
+    const doc = {
       _type: 'aggiornamento',
       titolo: titolo.trim(),
       testo: testo.trim(),
       pubblicatoIl: new Date().toISOString(),
-      foto: {
-        _type: 'image',
-        asset: { _type: 'reference', _ref: asset._id },
-      },
-    });
+    };
 
-    return res.status(200).json({ ok: true, id: doc._id });
+    if (fotoAssetRef) {
+      const asset = await client.assets.upload('image', fotoAssetRef.buffer, { contentType: fotoAssetRef.mimeType });
+      doc.foto = { _type: 'image', asset: { _type: 'reference', _ref: asset._id } };
+    }
+
+    const creato = await client.create(doc);
+
+    return res.status(200).json({ ok: true, id: creato._id });
   } catch (err) {
     console.error('Errore pubblicazione Sanity:', err);
     return res.status(500).json({ errore: 'Errore durante la pubblicazione, riprova' });
