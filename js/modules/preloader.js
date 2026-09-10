@@ -16,7 +16,7 @@ export function initPreloader() {
     document.body.classList.remove('is-loading');
   };
 
-  const minDisplay = prefersReducedMotion ? 200 : 1300;
+  const minDisplay = prefersReducedMotion ? 200 : 1100;
 
   // pronto = DOM interattivo + font caricati (stesso segnale che usa
   // l'hero per lo split-text, cosi' il preloader sparisce esattamente

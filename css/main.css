@@ -760,6 +760,13 @@ section {
   gap: var(--space-3);
 }
 
+.gusti-cta__azioni {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
 .gusti-cta__nota {
   font-size: var(--fs-caption);
   opacity: 0.65;
@@ -1670,6 +1677,10 @@ body.menu-aperto .nav__toggle-linea {
   letter-spacing: 1px;
 }
 
+.hero__badge-rating--riconoscimento {
+  border-color: var(--oro-tenue);
+}
+
 /* ---------------------------- SPAZIO DI ROBERTO ------------------------------ */
 /* Nome definitivo ancora da scegliere (lo sceglie Roberto) — l'eyebrow nel
    markup ("Dal laboratorio di Roberto") è un segnaposto pensato per restare
@@ -2574,7 +2585,7 @@ body.menu-aperto .nav__toggle-linea {
 }
 
 /* Durata/delay dedicati (non i token condivisi --dur-*) così la comparsa
-   del logo finisce ben dentro il minDisplay di preloader.js (1300ms),
+   del logo finisce ben dentro il minDisplay di preloader.js (1100ms),
    lasciando un momento di sosta prima della dissolvenza in uscita. */
 .preloader__logo {
   opacity: 0;

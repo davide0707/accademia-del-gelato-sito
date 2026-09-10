@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Accademia del Gelato — Il gelato naturale italiano | Udine</title>
-<meta name="description" content="Accademia del Gelato di Sorrentino Roberto — gelato artigianale naturale a Udine, preparato ogni mattina in laboratorio, senza conservanti né additivi. Via Savorgnana 16, Udine.">
+<meta name="description" content="Gelateria artigianale a Udine: gelato naturale preparato ogni mattina, senza conservanti. Due Coni Gambero Rosso 2025 e 2027. Via Savorgnana 16.">
 <meta name="theme-color" content="#6E1E2A">
 <link rel="icon" type="image/png" href="assets/logo/logo-gelato.png">
 <link rel="canonical" href="https://accademia-del-gelato-sito.vercel.app/">
@@ -106,6 +106,7 @@
 
     <nav class="nav__links" aria-label="Navigazione principale">
       <ul>
+        <li><a href="#spazioRoberto" data-nav-link>Da Roberto</a></li>
         <li><a href="#brand" data-nav-link>Il Brand</a></li>
         <li><a href="#filosofia" data-nav-link>Filosofia</a></li>
         <li><a href="#gusti" data-nav-link>I Gusti</a></li>
@@ -129,6 +130,7 @@
 <div class="menu-mobile" id="menuMobile" role="dialog" aria-modal="true" aria-label="Menu di navigazione">
   <nav aria-label="Navigazione mobile">
     <ul>
+      <li><a href="#spazioRoberto" data-menu-link data-nav-link>Da Roberto</a></li>
       <li><a href="#brand" data-menu-link data-nav-link>Il Brand</a></li>
       <li><a href="#filosofia" data-menu-link data-nav-link>Filosofia</a></li>
       <li><a href="#gusti" data-menu-link data-nav-link>I Gusti</a></li>
@@ -169,15 +171,18 @@
         <span class="hero__badge-rating-stelle" aria-hidden="true">★★★★★</span>
         <span><strong>4,7/5</strong> su Google · oltre 970 recensioni</span>
       </div>
+      <div class="hero__badge-rating hero__badge-rating--riconoscimento" data-reveal>
+        <span>Due Coni <strong>Gambero Rosso</strong> — Gelaterie d'Italia 2025 e 2027</span>
+      </div>
 
       <!-- "Spazio di Roberto": nome definitivo da scegliere (lo sceglie
            lui) — sostituire il testo qui sotto quando lo decide. -->
-      <article class="spazio-roberto" data-spazio-roberto data-reveal>
+      <article class="spazio-roberto" id="spazioRoberto" data-spazio-roberto data-reveal>
         <div class="spazio-roberto__foto-wrap" data-sr-foto-wrap hidden>
           <img class="spazio-roberto__foto" data-sr-foto src="" alt="" loading="eager">
         </div>
         <div class="spazio-roberto__testo">
-          <p class="spazio-roberto__eyebrow">Dal laboratorio di Roberto</p>
+          <h2 class="spazio-roberto__eyebrow">Dal laboratorio di Roberto</h2>
           <h3 class="spazio-roberto__titolo" data-sr-titolo></h3>
           <p class="spazio-roberto__estratto" data-sr-testo></p>
           <span class="spazio-roberto__data" data-sr-data hidden></span>
@@ -417,7 +422,10 @@
       </div>
 
       <div class="gusti-cta" data-reveal>
-        <button type="button" class="btn btn--primario" data-apri-menu-gusti>Scopri tutti i gusti</button>
+        <div class="gusti-cta__azioni">
+          <button type="button" class="btn btn--primario" data-apri-menu-gusti>Scopri tutti i gusti</button>
+          <a href="https://deliveroo.it/it/menu/udine/udine-centro/accademia-del-gelato/?utm_medium=affiliate&amp;utm_source=google_maps_link&amp;fulfillment_type=COLLECTION" target="_blank" rel="noopener" class="btn btn--secondario">Ordina su Deliveroo</a>
+        </div>
         <p class="gusti-cta__nota">42 gusti in rotazione — creme, frutta, vegani, senza zucchero e granite</p>
       </div>
     </div>
