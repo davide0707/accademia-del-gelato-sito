@@ -1,5 +1,7 @@
-# Sostituire il dominio nella riga Sitemap non appena registrato/attivato.
+# Se in futuro si aggiunge un dominio personalizzato al posto di quello
+# vercel.app, aggiornare l'indirizzo qui sotto e in sitemap.xml.
 User-agent: *
 Allow: /
+Disallow: /roberto-pubblica/
 
-Sitemap: https://IL-TUO-DOMINIO.it/sitemap.xml
+Sitemap: https://accademia-del-gelato-sito.vercel.app/sitemap.xml

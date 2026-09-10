@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  IMPORTANTE: sostituire "https://IL-TUO-DOMINIO.it/" con il dominio
-  definitivo del sito non appena registrato/attivato (qui e nel file
-  robots.txt), altrimenti Google Search Console non potra' verificarlo.
+  Se in futuro si aggiunge un dominio personalizzato (es. accademiadelgelato.it)
+  al posto di quello vercel.app, aggiornare l'indirizzo qui sotto e in robots.txt.
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://IL-TUO-DOMINIO.it/</loc>
-    <lastmod>2026-09-07</lastmod>
+    <loc>https://accademia-del-gelato-sito.vercel.app/</loc>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
