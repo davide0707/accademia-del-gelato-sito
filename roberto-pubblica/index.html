@@ -232,7 +232,7 @@
     flex-shrink: 0;
   }
 
-  .gestione__voce-testo { flex: 1; min-width: 0; }
+  .gestione__voce-testo { flex: 1; min-width: 0; cursor: pointer; }
   .gestione__voce-titolo {
     font-size: 14px;
     font-weight: 600;
@@ -241,6 +241,21 @@
     text-overflow: ellipsis;
   }
   .gestione__voce-data { font-size: 12px; opacity: 0.55; margin-top: 2px; }
+  .gestione__voce-modifica-hint { font-size: 11px; opacity: 0.45; margin-top: 1px; }
+
+  .modulo__titolo { margin: 0 0 -6px; font-size: 16px; font-weight: 700; }
+
+  .link-rimuovi-foto {
+    display: none;
+    background: none;
+    border: none;
+    padding: 6px 0 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--rosso-errore);
+    cursor: pointer;
+  }
+  .link-rimuovi-foto.visibile { display: inline-block; }
 
   .gestione__voce-cancella {
     flex-shrink: 0;
@@ -281,6 +296,7 @@
 
   <!-- SCHERMATA MODULO -->
   <section class="schermata" id="schermata-modulo">
+    <p class="modulo__titolo" id="modulo-titolo">Nuovo aggiornamento</p>
     <div>
       <label for="campo-titolo">Titolo</label>
       <input type="text" id="campo-titolo" maxlength="60" placeholder="Es. Il pistacchio di questa settimana">
@@ -294,6 +310,7 @@
         <img class="foto-picker__anteprima" id="foto-anteprima" alt="">
         <input type="file" accept="image/*" capture id="campo-foto">
       </label>
+      <button type="button" class="link-rimuovi-foto" id="btn-rimuovi-foto">Rimuovi la foto attuale</button>
     </div>
 
     <div>
@@ -322,7 +339,7 @@
     <button class="link-indietro" id="btn-indietro-gestione" type="button">← Torna a pubblica</button>
     <div>
       <p class="gestione__titolo">I tuoi aggiornamenti</p>
-      <p class="gestione__sottotitolo">Tocca "Cancella" per rimuovere un aggiornamento dal sito.</p>
+      <p class="gestione__sottotitolo">Tocca un aggiornamento per modificarlo, o "Cancella" per rimuoverlo dal sito.</p>
     </div>
     <input type="text" id="gestione-cerca" placeholder="Cerca per titolo o testo…" autocomplete="off">
     <p class="messaggio errore" id="errore-gestione"></p>
@@ -417,17 +434,80 @@
   if (pinSalvato()) verificaEProsegui(pinSalvato(), { silenzioso: true });
 
   // ---- Schermata modulo ----
+  const moduloTitolo = $('modulo-titolo');
   const campoTitolo = $('campo-titolo');
   const campoTesto = $('campo-testo');
   const campoFoto = $('campo-foto');
   const fotoPicker = $('foto-picker');
   const fotoAnteprima = $('foto-anteprima');
+  const btnRimuoviFoto = $('btn-rimuovi-foto');
   const contatoreTitolo = $('contatore-titolo');
   const contatoreTesto = $('contatore-testo');
   const erroreModulo = $('errore-modulo');
   const btnPubblica = $('btn-pubblica');
 
   let fotoCompressaDataUrl = null;
+  // null = nuovo aggiornamento; altrimenti { id, fotoUrlEsistente }
+  let postInModifica = null;
+  let rimuoviFotoRichiesto = false;
+
+  function aggiornaContatori() {
+    contatoreTitolo.textContent = `${campoTitolo.value.length} / ${TITOLO_MAX}`;
+    contatoreTitolo.classList.toggle('limite', campoTitolo.value.length >= TITOLO_MAX);
+    contatoreTesto.textContent = `${campoTesto.value.length} / ${TESTO_MAX}`;
+    contatoreTesto.classList.toggle('limite', campoTesto.value.length >= TESTO_MAX);
+  }
+
+  function resetModuloANuovo() {
+    postInModifica = null;
+    rimuoviFotoRichiesto = false;
+    campoTitolo.value = '';
+    campoTesto.value = '';
+    fotoCompressaDataUrl = null;
+    campoFoto.value = '';
+    fotoPicker.classList.remove('ha-foto');
+    fotoAnteprima.src = '';
+    btnRimuoviFoto.classList.remove('visibile');
+    aggiornaContatori();
+    moduloTitolo.textContent = 'Nuovo aggiornamento';
+    btnPubblica.textContent = 'Pubblica';
+    erroreModulo.classList.remove('visibile');
+  }
+
+  function apriModifica(post) {
+    postInModifica = { id: post._id, fotoUrlEsistente: post.fotoUrl || null };
+    rimuoviFotoRichiesto = false;
+    fotoCompressaDataUrl = null;
+    campoFoto.value = '';
+
+    campoTitolo.value = post.titolo || '';
+    campoTesto.value = post.testo || '';
+    aggiornaContatori();
+
+    if (post.fotoUrl) {
+      fotoAnteprima.src = `${post.fotoUrl}?w=800&auto=format&fit=max`;
+      fotoPicker.classList.add('ha-foto');
+      btnRimuoviFoto.classList.add('visibile');
+    } else {
+      fotoAnteprima.src = '';
+      fotoPicker.classList.remove('ha-foto');
+      btnRimuoviFoto.classList.remove('visibile');
+    }
+
+    moduloTitolo.textContent = 'Modifica aggiornamento';
+    btnPubblica.textContent = 'Salva modifiche';
+    erroreModulo.classList.remove('visibile');
+    mostra('modulo');
+  }
+
+  btnRimuoviFoto.addEventListener('click', () => {
+    rimuoviFotoRichiesto = true;
+    fotoCompressaDataUrl = null;
+    campoFoto.value = '';
+    fotoAnteprima.src = '';
+    fotoPicker.classList.remove('ha-foto');
+    btnRimuoviFoto.classList.remove('visibile');
+  });
 
   campoTitolo.addEventListener('input', () => {
     contatoreTitolo.textContent = `${campoTitolo.value.length} / ${TITOLO_MAX}`;
@@ -471,8 +551,10 @@
     erroreModulo.classList.remove('visibile');
     try {
       fotoCompressaDataUrl = await comprimiFoto(file);
+      rimuoviFotoRichiesto = false;
       fotoAnteprima.src = fotoCompressaDataUrl;
       fotoPicker.classList.add('ha-foto');
+      btnRimuoviFoto.classList.remove('visibile');
     } catch (e) {
       erroreModulo.textContent = 'Non sono riuscito a leggere questa foto. Riprova.';
       erroreModulo.classList.add('visibile');
@@ -493,24 +575,31 @@
     if (!titolo) return mostraErroreModulo('Manca il titolo.');
     if (!testo) return mostraErroreModulo('Manca il testo.');
 
-    if (!fotoCompressaDataUrl) {
-      const confermato = confirm('Vuoi pubblicare senza foto?');
-      if (!confermato) return;
+    // conferma solo se sta succedendo qualcosa di nuovo senza foto: un post
+    // nuovo senza foto, o una foto esistente che sta rimuovendo apposta —
+    // non quando sta solo correggendo testo di un post che gia' non aveva foto
+    const restaSenzaFoto = !fotoCompressaDataUrl && (postInModifica ? rimuoviFotoRichiesto : true);
+    if (restaSenzaFoto) {
+      const messaggio = postInModifica ? 'Vuoi salvare senza foto?' : 'Vuoi pubblicare senza foto?';
+      if (!confirm(messaggio)) return;
     }
 
+    const inModifica = !!postInModifica;
     btnPubblica.disabled = true;
-    btnPubblica.innerHTML = '<span class="spinner"></span>Pubblico…';
+    btnPubblica.innerHTML = inModifica ? '<span class="spinner"></span>Salvo…' : '<span class="spinner"></span>Pubblico…';
 
     try {
-      const risposta = await fetch('/api/pubblica', {
+      const corpo = { pin: pinSalvato(), titolo, testo, fotoBase64: fotoCompressaDataUrl };
+      const url = inModifica ? '/api/modifica' : '/api/pubblica';
+      if (inModifica) {
+        corpo.id = postInModifica.id;
+        corpo.rimuoviFoto = rimuoviFotoRichiesto;
+      }
+
+      const risposta = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          pin: pinSalvato(),
-          titolo,
-          testo,
-          fotoBase64: fotoCompressaDataUrl,
-        }),
+        body: JSON.stringify(corpo),
       });
 
       const dati = await risposta.json().catch(() => ({}));
@@ -527,24 +616,28 @@
         throw new Error(dati.errore || 'Errore sconosciuto');
       }
 
-      // reset del modulo per il prossimo post
-      campoTitolo.value = '';
-      campoTesto.value = '';
-      fotoCompressaDataUrl = null;
-      fotoPicker.classList.remove('ha-foto');
-      contatoreTitolo.textContent = `0 / ${TITOLO_MAX}`;
-      contatoreTesto.textContent = `0 / ${TESTO_MAX}`;
+      $('esito-titolo').textContent = inModifica ? 'Modificato' : 'Pubblicato';
+      $('esito-testo').textContent = inModifica
+        ? 'Le modifiche saranno visibili sul sito tra pochi secondi.'
+        : 'Sarà visibile sul sito tra pochi secondi.';
 
+      resetModuloANuovo();
       mostra('esito');
     } catch (err) {
       mostraErroreModulo(err.message || 'Qualcosa è andato storto. Riprova.');
     } finally {
+      // ricontrolla lo stato corrente (non quello catturato a inizio funzione):
+      // dopo un salvataggio riuscito resetModuloANuovo() ha gia' azzerato
+      // postInModifica, e qui non va riscritto "Salva modifiche" per sbaglio
       btnPubblica.disabled = false;
-      btnPubblica.textContent = 'Pubblica';
+      btnPubblica.textContent = postInModifica ? 'Salva modifiche' : 'Pubblica';
     }
   });
 
-  $('btn-nuovo').addEventListener('click', () => mostra('modulo'));
+  $('btn-nuovo').addEventListener('click', () => {
+    resetModuloANuovo();
+    mostra('modulo');
+  });
 
   // ---- Schermata gestione (cancellazione + ricerca) ----
   const listaGestione = $('gestione-lista');
@@ -619,13 +712,17 @@
 
     const testo = document.createElement('div');
     testo.className = 'gestione__voce-testo';
+    testo.addEventListener('click', () => apriModifica(post));
     const titolo = document.createElement('div');
     titolo.className = 'gestione__voce-titolo';
     titolo.textContent = post.titolo;
     const data = document.createElement('div');
     data.className = 'gestione__voce-data';
     data.textContent = formattaDataBreve(post.pubblicatoIl);
-    testo.append(titolo, data);
+    const hint = document.createElement('div');
+    hint.className = 'gestione__voce-modifica-hint';
+    hint.textContent = 'Tocca per modificare';
+    testo.append(titolo, data, hint);
     voce.appendChild(testo);
 
     const btnCancella = document.createElement('button');
@@ -682,7 +779,10 @@
 
   $('btn-gestisci').addEventListener('click', apriGestione);
   $('btn-gestisci-da-esito').addEventListener('click', apriGestione);
-  $('btn-indietro-gestione').addEventListener('click', () => mostra('modulo'));
+  $('btn-indietro-gestione').addEventListener('click', () => {
+    resetModuloANuovo();
+    mostra('modulo');
+  });
 })();
 </script>
 
