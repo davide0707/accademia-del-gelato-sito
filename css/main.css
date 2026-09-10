@@ -2278,10 +2278,14 @@ body.menu-aperto .nav__toggle-linea {
   border-collapse: separate;
   border-spacing: 0;
   background: var(--avorio);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   /* niente overflow:hidden qui: taglierebbe anche <caption>, che è dentro
-     la tabella — gli angoli arrotondati si applicano invece alle singole
-     celle d'angolo qui sotto */
+     la tabella — il border-radius da solo (senza overflow) non taglia
+     nulla, ma basta perché anche l'ombra segua l'angolo arrotondato invece
+     di restare un rettangolo netto dietro alle celle arrotondate. Gli
+     angoli delle singole celle sotto restano comunque necessari perché lo
+     sfondo delle celle stesse segua la stessa curva. */
 }
 
 .orari-tabella thead tr:first-child th:first-child { border-top-left-radius: var(--radius-lg); }
