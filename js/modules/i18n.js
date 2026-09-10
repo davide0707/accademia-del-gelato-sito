@@ -162,7 +162,13 @@ export function initI18n() {
 
   document.querySelectorAll('[data-lang-toggle]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      applicaLingua(document.body.dataset.lang === 'it' ? 'en' : 'it');
+      const nuovaLingua = document.body.dataset.lang === 'it' ? 'en' : 'it';
+      applicaLingua(nuovaLingua);
+      // solo sul click vero, non sull'applicazione automatica della lingua
+      // salvata al caricamento — altrimenti ogni visita di ritorno in
+      // inglese conterebbe come un "cambio lingua" anche senza che
+      // l'utente abbia toccato nulla
+      window.plausible?.(nuovaLingua === 'en' ? 'Cambia lingua: EN' : 'Cambia lingua: IT');
     });
   });
 }

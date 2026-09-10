@@ -13,6 +13,7 @@ import { initReviewsMarquee } from './modules/reviewsMarquee.js';
 import { initCounters } from './modules/counters.js';
 import { initHoursTable } from './modules/hoursTable.js';
 import { initSpazioRoberto, initArchivioRoberto } from './modules/spazioRoberto.js';
+import { initAnalytics } from './modules/analytics.js';
 
 function initFloatingCta() {
   const cta = document.getElementById('floatingCta');
@@ -48,3 +49,4 @@ initSpazioRoberto();
 initArchivioRoberto();
 initFloatingCta();
 initFooterYear();
+initAnalytics();

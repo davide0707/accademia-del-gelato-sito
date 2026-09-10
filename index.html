@@ -32,6 +32,16 @@
 
 <link rel="stylesheet" href="css/main.css">
 
+<!-- Plausible: tracciamento senza cookie, nessun banner di consenso
+     necessario. data-domain deve combaciare col sito registrato su
+     plausible.io/sites — se in futuro si passa a un dominio proprio,
+     aggiornarlo qui E nel pannello Plausible (altrimenti i dati smettono
+     di arrivare). Lo stub sotto mette in coda gli eventi custom (vedi
+     data-evento più sotto nella pagina) chiamati prima che lo script
+     vero e proprio finisca di caricare, così nessun clic va perso. -->
+<script defer data-domain="accademia-del-gelato-sito.vercel.app" src="https://plausible.io/js/script.js"></script>
+<script>window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments); };</script>
+
 <!-- GSAP + plugin (Flip, ScrollTrigger, SplitText — tutti gratuiti dal 2025) + Lenis smooth scroll -->
 <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
@@ -118,8 +128,8 @@
     </nav>
 
     <div class="nav__contatti">
-      <a href="tel:+390401014316" class="btn btn--ghost nav__cta">340 101 4316</a>
-      <a href="https://wa.me/393401014316?text=Ciao!%20Vorrei%20avere%20informazioni%20su%20Accademia%20del%20Gelato" target="_blank" rel="noopener" class="nav__whatsapp" aria-label="Scrivici su WhatsApp">
+      <a href="tel:+390401014316" class="btn btn--ghost nav__cta" data-evento="Chiama">340 101 4316</a>
+      <a href="https://wa.me/393401014316?text=Ciao!%20Vorrei%20avere%20informazioni%20su%20Accademia%20del%20Gelato" target="_blank" rel="noopener" class="nav__whatsapp" aria-label="Scrivici su WhatsApp" data-evento="WhatsApp">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4c-4.4 0-8 3.1-8 7 0 1.8.8 3.4 2.1 4.6L5 20l4.7-1.3c.7.2 1.5.3 2.3.3 4.4 0 8-3.1 8-7s-3.6-7-8-7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>
       </a>
       <button type="button" class="nav__lingua" data-lang-toggle aria-label="Switch to English">EN</button>
@@ -147,8 +157,8 @@
     </ul>
   </nav>
   <div class="menu-mobile__footer">
-    <a href="tel:+390401014316" class="btn btn--primario" data-i18n="menu-chiama">Chiama 340 101 4316</a>
-    <a href="https://wa.me/393401014316?text=Ciao!%20Vorrei%20avere%20informazioni%20su%20Accademia%20del%20Gelato" target="_blank" rel="noopener" class="btn menu-mobile__whatsapp">
+    <a href="tel:+390401014316" class="btn btn--primario" data-i18n="menu-chiama" data-evento="Chiama">Chiama 340 101 4316</a>
+    <a href="https://wa.me/393401014316?text=Ciao!%20Vorrei%20avere%20informazioni%20su%20Accademia%20del%20Gelato" target="_blank" rel="noopener" class="btn menu-mobile__whatsapp" data-evento="WhatsApp">
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4c-4.4 0-8 3.1-8 7 0 1.8.8 3.4 2.1 4.6L5 20l4.7-1.3c.7.2 1.5.3 2.3.3 4.4 0 8-3.1 8-7s-3.6-7-8-7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>
       <span data-i18n="menu-whatsapp">Scrivici su WhatsApp</span>
     </a>
@@ -561,7 +571,7 @@
       <div class="gusti-cta" data-reveal>
         <div class="gusti-cta__azioni">
           <button type="button" class="btn btn--primario" data-apri-menu-gusti data-i18n="gusti-scopri-tutti">Scopri tutti i gusti</button>
-          <a href="https://deliveroo.it/it/menu/udine/udine-centro/accademia-del-gelato/?utm_medium=affiliate&amp;utm_source=google_maps_link&amp;fulfillment_type=COLLECTION" target="_blank" rel="noopener" class="btn btn--secondario" data-i18n="cta-deliveroo">Ordina su Deliveroo</a>
+          <a href="https://deliveroo.it/it/menu/udine/udine-centro/accademia-del-gelato/?utm_medium=affiliate&amp;utm_source=google_maps_link&amp;fulfillment_type=COLLECTION" target="_blank" rel="noopener" class="btn btn--secondario" data-i18n="cta-deliveroo" data-evento="Deliveroo">Ordina su Deliveroo</a>
         </div>
         <p class="gusti-cta__nota" data-i18n="gusti-cta-nota">42 gusti in rotazione — creme, frutta, vegani, senza zucchero e granite</p>
       </div>
@@ -1367,11 +1377,11 @@
         <h2 class="contatti__titolo">Via Savorgnana, 16</h2>
         <p class="contatti__sottotitolo">Piazza Girolamo Venerio · 33100 Udine (UD) · Friuli-Venezia Giulia</p>
 
-        <a href="tel:+390401014316" class="contatti__telefono">
+        <a href="tel:+390401014316" class="contatti__telefono" data-evento="Chiama">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 3h3l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v3a2 2 0 0 1-2 2C10.5 19 5 13.5 5 6a2 2 0 0 1 1-3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
           340 101 4316
         </a>
-        <a href="https://wa.me/393401014316?text=Ciao!%20Vorrei%20avere%20informazioni%20su%20Accademia%20del%20Gelato" target="_blank" rel="noopener" class="contatti__whatsapp">
+        <a href="https://wa.me/393401014316?text=Ciao!%20Vorrei%20avere%20informazioni%20su%20Accademia%20del%20Gelato" target="_blank" rel="noopener" class="contatti__whatsapp" data-evento="WhatsApp">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4c-4.4 0-8 3.1-8 7 0 1.8.8 3.4 2.1 4.6L5 20l4.7-1.3c.7.2 1.5.3 2.3.3 4.4 0 8-3.1 8-7s-3.6-7-8-7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>
           <span data-i18n="menu-whatsapp">Scrivici su WhatsApp</span>
         </a>
@@ -1393,7 +1403,7 @@
         </table>
         <p class="orari-nota" data-i18n="orari-nota">Orari indicativi — verifica telefonica consigliata.</p>
 
-        <a href="https://deliveroo.it/it/menu/udine/udine-centro/accademia-del-gelato/?utm_medium=affiliate&amp;utm_source=google_maps_link&amp;fulfillment_type=COLLECTION" target="_blank" rel="noopener" class="btn btn--primario contatti__ordina" data-i18n="cta-deliveroo">Ordina su Deliveroo</a>
+        <a href="https://deliveroo.it/it/menu/udine/udine-centro/accademia-del-gelato/?utm_medium=affiliate&amp;utm_source=google_maps_link&amp;fulfillment_type=COLLECTION" target="_blank" rel="noopener" class="btn btn--primario contatti__ordina" data-i18n="cta-deliveroo" data-evento="Deliveroo">Ordina su Deliveroo</a>
       </div>
     </div>
 
@@ -1402,10 +1412,10 @@
         <h2 data-reveal>Il gelato di una volta ti aspetta a Udine</h2>
         <p data-reveal>Via Savorgnana 16, a due passi da Piazza Girolamo Venerio.</p>
         <div class="cta-finale__azioni" data-reveal>
-          <a href="tel:+390401014316" class="btn btn--magnetico" data-magnetic>
+          <a href="tel:+390401014316" class="btn btn--magnetico" data-magnetic data-evento="Chiama">
             <span>Chiama ora · 340 101 4316</span>
           </a>
-          <a href="https://wa.me/393401014316?text=Ciao!%20Vorrei%20avere%20informazioni%20su%20Accademia%20del%20Gelato" target="_blank" rel="noopener" class="btn cta-finale__whatsapp">
+          <a href="https://wa.me/393401014316?text=Ciao!%20Vorrei%20avere%20informazioni%20su%20Accademia%20del%20Gelato" target="_blank" rel="noopener" class="btn cta-finale__whatsapp" data-evento="WhatsApp">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4c-4.4 0-8 3.1-8 7 0 1.8.8 3.4 2.1 4.6L5 20l4.7-1.3c.7.2 1.5.3 2.3.3 4.4 0 8-3.1 8-7s-3.6-7-8-7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>
             WhatsApp
           </a>
@@ -1415,10 +1425,10 @@
         <h2 data-reveal>The gelato of days gone by awaits you in Udine</h2>
         <p data-reveal>Via Savorgnana 16, steps from Piazza Girolamo Venerio.</p>
         <div class="cta-finale__azioni" data-reveal>
-          <a href="tel:+390401014316" class="btn btn--magnetico" data-magnetic>
+          <a href="tel:+390401014316" class="btn btn--magnetico" data-magnetic data-evento="Chiama">
             <span>Call now · 340 101 4316</span>
           </a>
-          <a href="https://wa.me/393401014316?text=Hi!%20I%27d%20like%20some%20information%20about%20Accademia%20del%20Gelato" target="_blank" rel="noopener" class="btn cta-finale__whatsapp">
+          <a href="https://wa.me/393401014316?text=Hi!%20I%27d%20like%20some%20information%20about%20Accademia%20del%20Gelato" target="_blank" rel="noopener" class="btn cta-finale__whatsapp" data-evento="WhatsApp">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4c-4.4 0-8 3.1-8 7 0 1.8.8 3.4 2.1 4.6L5 20l4.7-1.3c.7.2 1.5.3 2.3.3 4.4 0 8-3.1 8-7s-3.6-7-8-7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>
             WhatsApp
           </a>
@@ -1440,11 +1450,11 @@
     <div class="footer__colonna">
       <h3 data-i18n="footer-contatti">Contatti</h3>
       <ul>
-        <li><a href="tel:+390401014316">340 101 4316</a></li>
-        <li><a href="https://wa.me/393401014316?text=Ciao!%20Vorrei%20avere%20informazioni%20su%20Accademia%20del%20Gelato" target="_blank" rel="noopener">WhatsApp</a></li>
+        <li><a href="tel:+390401014316" data-evento="Chiama">340 101 4316</a></li>
+        <li><a href="https://wa.me/393401014316?text=Ciao!%20Vorrei%20avere%20informazioni%20su%20Accademia%20del%20Gelato" target="_blank" rel="noopener" data-evento="WhatsApp">WhatsApp</a></li>
         <li>Via Savorgnana, 16 — 33100 Udine (UD)</li>
         <li>Piazza Girolamo Venerio</li>
-        <li><a href="https://deliveroo.it/it/menu/udine/udine-centro/accademia-del-gelato/?utm_medium=affiliate&amp;utm_source=google_maps_link&amp;fulfillment_type=COLLECTION" target="_blank" rel="noopener" data-i18n="cta-deliveroo">Ordina su Deliveroo</a></li>
+        <li><a href="https://deliveroo.it/it/menu/udine/udine-centro/accademia-del-gelato/?utm_medium=affiliate&amp;utm_source=google_maps_link&amp;fulfillment_type=COLLECTION" target="_blank" rel="noopener" data-i18n="cta-deliveroo" data-evento="Deliveroo">Ordina su Deliveroo</a></li>
       </ul>
     </div>
 
@@ -1478,11 +1488,11 @@
 
 <!-- ========================= PULSANTI FLOTTANTI ============================ -->
 <div class="floating-cta-group" id="floatingCta">
-  <a href="https://wa.me/393401014316?text=Ciao!%20Vorrei%20avere%20informazioni%20su%20Accademia%20del%20Gelato" target="_blank" rel="noopener" class="floating-cta floating-cta--whatsapp" aria-label="Scrivici su WhatsApp">
+  <a href="https://wa.me/393401014316?text=Ciao!%20Vorrei%20avere%20informazioni%20su%20Accademia%20del%20Gelato" target="_blank" rel="noopener" class="floating-cta floating-cta--whatsapp" aria-label="Scrivici su WhatsApp" data-evento="WhatsApp">
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4c-4.4 0-8 3.1-8 7 0 1.8.8 3.4 2.1 4.6L5 20l4.7-1.3c.7.2 1.5.3 2.3.3 4.4 0 8-3.1 8-7s-3.6-7-8-7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>
     <span>WhatsApp</span>
   </a>
-  <a href="tel:+390401014316" class="floating-cta" aria-label="Chiama ora Accademia del Gelato">
+  <a href="tel:+390401014316" class="floating-cta" aria-label="Chiama ora Accademia del Gelato" data-evento="Chiama">
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 3h3l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v3a2 2 0 0 1-2 2C10.5 19 5 13.5 5 6a2 2 0 0 1 1-3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
     <span data-i18n="floating-chiama">Chiama ora</span>
   </a>
