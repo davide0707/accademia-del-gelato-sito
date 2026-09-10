@@ -1797,6 +1797,41 @@ body.menu-aperto .nav__toggle-linea {
 
 /* ----- Archivio (dentro il modale a schermo intero .menu-gusti) ----- */
 
+.archivio-roberto__cerca-wrap {
+  position: relative;
+  margin-top: var(--space-4);
+  max-width: 320px;
+}
+
+.archivio-roberto__cerca-icona {
+  position: absolute;
+  top: 50%;
+  left: var(--space-3);
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--antracite);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.archivio-roberto__cerca {
+  width: 100%;
+  font: inherit;
+  font-size: var(--fs-caption);
+  padding: var(--space-3) var(--space-3) var(--space-3) calc(16px + var(--space-3) * 2);
+  border: 1.5px solid var(--beige-caldo);
+  border-radius: var(--radius-pill);
+  background: var(--crema);
+  color: var(--antracite);
+  outline: none;
+  transition: border-color var(--dur-fast) var(--ease-soft);
+}
+
+.archivio-roberto__cerca::placeholder { color: var(--antracite); opacity: 0.45; }
+.archivio-roberto__cerca:focus { border-color: var(--rosso-accademia); }
+.archivio-roberto__cerca::-webkit-search-cancel-button { -webkit-appearance: none; }
+
 .archivio-roberto {
   display: flex;
   flex-direction: column;
@@ -1811,6 +1846,15 @@ body.menu-aperto .nav__toggle-linea {
   margin-top: 0;
   cursor: pointer;
   transition: box-shadow var(--dur-fast) var(--ease-soft), transform var(--dur-fast) var(--ease-soft);
+}
+
+/* .spazio-roberto ha "display: flex" nel proprio selettore d'origine (0,1,0):
+   senza questa regola esplicita, [hidden] da solo (stessa specificità, ma
+   nella cascata dello user-agent) verrebbe sempre battuto e le card filtrate
+   dalla ricerca resterebbero visibili — stesso bug già visto per .gestione__voce
+   nella pagina di pubblicazione di Roberto. */
+.archivio-roberto .spazio-roberto[hidden] {
+  display: none;
 }
 
 .archivio-roberto .spazio-roberto:hover,

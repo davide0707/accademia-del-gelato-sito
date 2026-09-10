@@ -97,6 +97,12 @@ export async function initSpazioRoberto() {
     if (result && result.titolo) {
       renderizza(result);
       localStorage.setItem(CACHE_KEY, JSON.stringify(result));
+    } else {
+      // nessun aggiornamento pubblicato in questo momento (es. l'unico
+      // esistente è stato appena cancellato): non lasciare in mostra la
+      // cache vecchia all'infinito, torna al contenuto di lancio
+      renderizza(CONTENUTO_LANCIO);
+      localStorage.removeItem(CACHE_KEY);
     }
   } catch (e) {
     /* rete assente o lenta: resta quello già mostrato */
@@ -118,6 +124,7 @@ function formattaDataAssoluta(data) {
 function creaCardArchivio(post) {
   const card = document.createElement('article');
   card.className = 'spazio-roberto archivio-roberto__card';
+  card.dataset.ricerca = `${post.titolo || ''} ${post.testo || ''}`.toLowerCase();
   // cliccabile/attivabile da tastiera: si espande in pagina invece di
   // aprire un'altra schermata, per restare semplice e restare nel contesto
   // dell'elenco
@@ -191,6 +198,7 @@ export function initArchivioRoberto() {
   const apriBtn = document.querySelector('[data-apri-menu-aggiornamenti]');
   const chiudiBtn = document.querySelector('[data-chiudi-menu-aggiornamenti]');
   const contenitore = document.querySelector('[data-archivio-roberto]');
+  const campoCerca = document.getElementById('archivioRobertoCerca');
   if (!menu || !apriBtn || !contenitore) return;
 
   let releaseFocusTrap = null;
@@ -212,6 +220,32 @@ export function initArchivioRoberto() {
     }
   }
 
+  // filtra le card già in pagina invece di rifare la query: la ricerca è
+  // istantanea e funziona anche a rete lenta
+  function filtraArchivio() {
+    const query = (campoCerca?.value || '').trim().toLowerCase();
+    const schede = contenitore.querySelectorAll('.archivio-roberto__card');
+    let visibili = 0;
+    schede.forEach((scheda) => {
+      const corrisponde = !query || scheda.dataset.ricerca.includes(query);
+      scheda.hidden = !corrisponde;
+      if (corrisponde) visibili += 1;
+    });
+    let nessunRisultato = contenitore.querySelector('.archivio-roberto__nessun-risultato');
+    if (schede.length > 0 && visibili === 0) {
+      if (!nessunRisultato) {
+        nessunRisultato = document.createElement('p');
+        nessunRisultato.className = 'archivio-roberto__vuoto archivio-roberto__nessun-risultato';
+        nessunRisultato.textContent = 'Nessun aggiornamento corrisponde alla ricerca.';
+        contenitore.appendChild(nessunRisultato);
+      }
+    } else if (nessunRisultato) {
+      nessunRisultato.remove();
+    }
+  }
+
+  campoCerca?.addEventListener('input', filtraArchivio);
+
   function apri() {
     elementoAttivante = document.activeElement;
     menu.classList.add('is-open');
@@ -226,6 +260,10 @@ export function initArchivioRoberto() {
     document.body.classList.remove('no-scroll');
     releaseFocusTrap?.();
     (elementoAttivante || apriBtn).focus();
+    // ogni riapertura riparte da un elenco pulito, senza dover ricaricare
+    // tutto da capo (i post restano già in pagina, giaCaricato resta true)
+    if (campoCerca) campoCerca.value = '';
+    filtraArchivio();
   }
 
   apriBtn.addEventListener('click', apri);
