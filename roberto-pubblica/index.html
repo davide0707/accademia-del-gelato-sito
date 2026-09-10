@@ -148,8 +148,9 @@
   .messaggio.visibile { display: block; }
   .messaggio.errore { background: rgb(165 52 42 / 10%); color: var(--rosso-errore); }
 
-  .schermata.esito {
+  .esito {
     flex: 1;
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -200,7 +201,7 @@
     <div>
       <label for="campo-pin">PIN</label>
       <div class="pin-wrap">
-        <input type="password" id="campo-pin" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="••••" maxlength="8">
+        <input type="password" id="campo-pin" autocomplete="off" placeholder="Il tuo PIN" maxlength="40">
       </div>
     </div>
     <p class="messaggio errore" id="errore-pin"></p>
