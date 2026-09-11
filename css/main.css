@@ -453,7 +453,8 @@ section {
   background-image: url('../assets/img/varie/maiolica-siciliana.webp');
   background-repeat: repeat;
   background-size: 220px 293px;
-  opacity: 0.08;
+  /* opacity: 0.08; */
+  opacity: 1; /* leggermente più visibile per compensare il mix-blend-mode */
   mix-blend-mode: multiply;
 }
 
@@ -1326,31 +1327,6 @@ section {
   padding-top: var(--space-16);
   position: relative;
   overflow: hidden;
-}
-
-/* Fascia decorativa in stile maiolica siciliana, richiesta da Roberto: usata
-   come bordo/trim (la tradizione ceramica mediterranea la usa così, come
-   fascia, non come sfondo pieno dietro al testo) per non compromettere la
-   leggibilità del footer né stonare con la palette bordeaux/crema del resto
-   del sito. */
-.footer__fascia-maiolica {
-  height: 72px;
-  /* immagine 3:4 (450x600) — il rapporto va mantenuto o il motivo si
-     deforma visibilmente */
-  background-image: url('../assets/img/varie/maiolica-siciliana.webp');
-  background-repeat: repeat;
-  background-size: 120px 160px;
-  background-position: center top;
-  border-top: 3px solid var(--oro-tenue);
-  border-bottom: 3px solid var(--oro-tenue);
-  box-shadow: inset 0 6px 10px -6px rgb(0 0 0 / 35%), inset 0 -6px 10px -6px rgb(0 0 0 / 35%);
-}
-
-@media (min-width: 768px) {
-  .footer__fascia-maiolica {
-    height: 96px;
-    background-size: 150px 200px;
-  }
 }
 
 .footer__grid {
