@@ -809,23 +809,38 @@ section {
   margin: 0 0 var(--space-3);
 }
 
-.riconoscimenti__altri-pills {
+.riconoscimenti__certificati {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: var(--space-3);
+  gap: var(--space-6);
 }
 
-.riconoscimenti__pill {
-  display: inline-flex;
-  align-items: center;
-  background: var(--avorio);
-  border: 1px solid var(--oro-tenue);
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-pill);
+.riconoscimenti__certificato {
+  margin: 0;
+  width: 108px;
+}
+
+.riconoscimenti__certificato img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--beige-caldo);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--dur-fast) var(--ease-soft);
+}
+
+.riconoscimenti__certificato figcaption {
+  margin-top: var(--space-2);
   font-size: var(--fs-caption);
   color: var(--antracite);
-  box-shadow: var(--shadow-sm);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .riconoscimenti__certificato:hover img {
+    transform: translateY(-4px);
+  }
 }
 
 .riconoscimenti__link svg {
