@@ -32,6 +32,14 @@
     padding: var(--space-16) var(--container-pad) var(--space-24);
   }
 
+  .privacy-intestazione {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-12);
+  }
+
   .privacy-torna {
     display: inline-flex;
     align-items: center;
@@ -41,7 +49,6 @@
     font-weight: var(--fw-medium);
     color: var(--rosso-accademia);
     text-decoration: none;
-    margin-bottom: var(--space-12);
   }
 
   .privacy-torna:hover { color: var(--rosso-accent); }
@@ -101,54 +108,147 @@
 <body>
 
 <main class="privacy-pagina">
-  <a class="privacy-torna" href="index.html">&larr; Torna al sito</a>
+  <div class="privacy-intestazione">
+    <a class="privacy-torna" href="index.html">&larr; <span data-lc="it">Torna al sito</span><span data-lc="en">Back to the site</span></a>
+    <button type="button" class="nav__lingua" data-lang-toggle aria-label="Switch to English">EN</button>
+  </div>
 
-  <span class="eyebrow">Informativa</span>
-  <h1>Privacy e dati raccolti</h1>
-  <p class="privacy-aggiornato">Ultimo aggiornamento: settembre 2026</p>
+  <div data-lc="it">
+    <span class="eyebrow">Informativa</span>
+    <h1>Privacy e dati raccolti</h1>
+    <p class="privacy-aggiornato">Ultimo aggiornamento: settembre 2026</p>
 
-  <section>
-    <h2>Titolare del trattamento</h2>
-    <p>
-      Accademia del Gelato di Sorrentino Roberto — Via Savorgnana, 16, 33100 Udine (UD).
-      Per qualsiasi domanda su questa informativa puoi scriverci su
-      <a href="https://wa.me/393401014316" target="_blank" rel="noopener">WhatsApp</a>
-      o chiamare il <a href="tel:+390401014316">340 101 4316</a>.
-    </p>
-  </section>
+    <section>
+      <h2>Titolare del trattamento</h2>
+      <p>
+        Accademia del Gelato di Sorrentino Roberto — Via Savorgnana, 16, 33100 Udine (UD).
+        Per qualsiasi domanda su questa informativa puoi scriverci su
+        <a href="https://wa.me/393401014316" target="_blank" rel="noopener">WhatsApp</a>
+        o chiamare il <a href="tel:+390401014316">340 101 4316</a>.
+      </p>
+    </section>
 
-  <section>
-    <h2>Cosa raccogliamo</h2>
-    <p>Questo sito raccoglie solo statistiche di visita anonime e aggregate, tramite <strong>GoatCounter</strong>, un servizio di analisi del traffico pensato per il rispetto della privacy:</p>
-    <ul>
-      <li>non usa cookie;</li>
-      <li>non registra l'indirizzo IP completo dei visitatori;</li>
-      <li>non crea profili individuali e non permette di riconoscere chi ha visitato il sito;</li>
-      <li>registra solo numeri aggregati: quante persone visitano il sito, da quali pagine arrivano, quali pulsanti vengono cliccati più spesso (ad esempio "Chiama" o "WhatsApp").</li>
-    </ul>
-    <p>Proprio perché non si tratta di dati personali né di cookie di profilazione, la normativa non richiede un banner di consenso per questo tipo di tracciamento.</p>
-  </section>
+    <section>
+      <h2>Cosa raccogliamo</h2>
+      <p>Questo sito raccoglie solo statistiche di visita anonime e aggregate, tramite <strong>GoatCounter</strong>, un servizio di analisi del traffico pensato per il rispetto della privacy:</p>
+      <ul>
+        <li>non usa cookie;</li>
+        <li>non registra l'indirizzo IP completo dei visitatori;</li>
+        <li>non crea profili individuali e non permette di riconoscere chi ha visitato il sito;</li>
+        <li>registra solo numeri aggregati: quante persone visitano il sito, da quali pagine arrivano, quali pulsanti vengono cliccati più spesso (ad esempio "Chiama" o "WhatsApp").</li>
+      </ul>
+      <p>Proprio perché non si tratta di dati personali né di cookie di profilazione, la normativa non richiede un banner di consenso per questo tipo di tracciamento.</p>
+    </section>
 
-  <section>
-    <h2>Cosa NON raccogliamo</h2>
-    <p>Il sito non ha moduli di contatto: non ti chiediamo mai nome, email o numero di telefono. Se ci contatti su WhatsApp o per telefono, quella conversazione avviene sull'app che usi tu (WhatsApp/Meta, o il tuo gestore telefonico) e segue le loro regole sulla privacy, non le nostre — noi non riceviamo né conserviamo nulla di quella chat sul sito.</p>
-  </section>
+    <section>
+      <h2>Cosa NON raccogliamo</h2>
+      <p>Il sito non ha moduli di contatto: non ti chiediamo mai nome, email o numero di telefono. Se ci contatti su WhatsApp o per telefono, quella conversazione avviene sull'app che usi tu (WhatsApp/Meta, o il tuo gestore telefonico) e segue le loro regole sulla privacy, non le nostre — noi non riceviamo né conserviamo nulla di quella chat sul sito.</p>
+    </section>
 
-  <section>
-    <h2>Perché li raccogliamo</h2>
-    <p>Usiamo questi numeri solo per capire se il sito è utile a chi lo visita: quali pagine funzionano, se le persone trovano facilmente orari e contatti, se vale la pena aggiungere o migliorare qualcosa.</p>
-  </section>
+    <section>
+      <h2>Perché li raccogliamo</h2>
+      <p>Usiamo questi numeri solo per capire se il sito è utile a chi lo visita: quali pagine funzionano, se le persone trovano facilmente orari e contatti, se vale la pena aggiungere o migliorare qualcosa.</p>
+    </section>
 
-  <section>
-    <h2>I tuoi diritti</h2>
-    <p>Dato che non raccogliamo dati personali identificabili, non abbiamo modo di associare una visita a una persona specifica, quindi non c'è un "tuo profilo" da consultare, correggere o cancellare. Per qualunque dubbio su questo, o sulla gestione del sito in generale, puoi comunque contattarci ai recapiti sopra.</p>
-  </section>
+    <section>
+      <h2>I tuoi diritti</h2>
+      <p>Dato che non raccogliamo dati personali identificabili, non abbiamo modo di associare una visita a una persona specifica, quindi non c'è un "tuo profilo" da consultare, correggere o cancellare. Per qualunque dubbio su questo, o sulla gestione del sito in generale, puoi comunque contattarci ai recapiti sopra.</p>
+    </section>
 
-  <section>
-    <h2>Modifiche a questa informativa</h2>
-    <p>Se cambierà il modo in cui raccogliamo dati sul sito, aggiorneremo questa pagina indicando la nuova data in alto.</p>
-  </section>
+    <section>
+      <h2>Modifiche a questa informativa</h2>
+      <p>Se cambierà il modo in cui raccogliamo dati sul sito, aggiorneremo questa pagina indicando la nuova data in alto.</p>
+    </section>
+  </div>
+
+  <div data-lc="en">
+    <span class="eyebrow">Privacy Notice</span>
+    <h1>Privacy &amp; data collection</h1>
+    <p class="privacy-aggiornato">Last updated: September 2026</p>
+
+    <section>
+      <h2>Data controller</h2>
+      <p>
+        Accademia del Gelato di Sorrentino Roberto — Via Savorgnana, 16, 33100 Udine (UD), Italy.
+        For any question about this notice you can message us on
+        <a href="https://wa.me/393401014316" target="_blank" rel="noopener">WhatsApp</a>
+        or call <a href="tel:+390401014316">+39 340 101 4316</a>.
+      </p>
+    </section>
+
+    <section>
+      <h2>What we collect</h2>
+      <p>This site only collects anonymous, aggregated visit statistics through <strong>GoatCounter</strong>, a privacy-focused traffic analytics service:</p>
+      <ul>
+        <li>it doesn't use cookies;</li>
+        <li>it doesn't log visitors' full IP address;</li>
+        <li>it doesn't build individual profiles and doesn't allow identifying who visited the site;</li>
+        <li>it only records aggregate numbers: how many people visit the site, which pages they arrive from, which buttons get clicked most often (for example "Call" or "WhatsApp").</li>
+      </ul>
+      <p>Because this isn't personal data or profiling cookies, the law doesn't require a consent banner for this kind of tracking.</p>
+    </section>
+
+    <section>
+      <h2>What we DON'T collect</h2>
+      <p>The site has no contact forms: we never ask for your name, email, or phone number. If you contact us on WhatsApp or by phone, that conversation happens on the app you use (WhatsApp/Meta, or your phone carrier) and follows their privacy rules, not ours — we don't receive or store anything from that chat on the site.</p>
+    </section>
+
+    <section>
+      <h2>Why we collect it</h2>
+      <p>We use these numbers only to understand whether the site is useful to visitors: which pages work, whether people easily find our hours and contact details, whether it's worth adding or improving something.</p>
+    </section>
+
+    <section>
+      <h2>Your rights</h2>
+      <p>Since we don't collect identifiable personal data, we have no way to link a visit to a specific person, so there's no "your profile" to review, correct, or delete. For any question about this, or about how the site is run in general, you can still reach us at the contacts above.</p>
+    </section>
+
+    <section>
+      <h2>Changes to this notice</h2>
+      <p>If how we collect data on the site changes, we'll update this page and show the new date at the top.</p>
+    </section>
+  </div>
 </main>
+
+<script>
+  // Pagina indipendente dal resto del sito (niente GSAP/motion), ma condivide
+  // la stessa chiave di localStorage del toggle lingua principale: chi ha già
+  // scelto l'inglese sul sito lo ritrova anche qui, senza dover ricliccare.
+  // Non riusa js/modules/i18n.js perché quel modulo aggiorna anche titolo e
+  // meta description con i testi della HOMEPAGE — qui servono quelli propri
+  // di questa pagina.
+  (function () {
+    var STORAGE_KEY = 'ag_lingua';
+    var META = {
+      it: { title: 'Privacy — Accademia del Gelato', description: 'Informativa privacy di Accademia del Gelato: quali dati raccogliamo tramite il sito e come li usiamo.' },
+      en: { title: 'Privacy — Accademia del Gelato', description: 'Accademia del Gelato privacy notice: what data we collect through the site and how we use it.' },
+    };
+
+    function applicaLingua(lingua) {
+      document.documentElement.lang = lingua;
+      document.body.dataset.lang = lingua;
+      document.title = META[lingua].title;
+      var meta = document.querySelector('meta[name="description"]');
+      if (meta) meta.setAttribute('content', META[lingua].description);
+      try { localStorage.setItem(STORAGE_KEY, lingua); } catch (e) { /* storage non disponibile */ }
+
+      document.querySelectorAll('[data-lang-toggle]').forEach(function (btn) {
+        btn.textContent = lingua === 'it' ? 'EN' : 'IT';
+        btn.setAttribute('aria-label', lingua === 'it' ? 'Switch to English' : "Passa all'italiano");
+      });
+    }
+
+    var salvata = null;
+    try { salvata = localStorage.getItem(STORAGE_KEY); } catch (e) { /* ignorato */ }
+    applicaLingua(salvata === 'en' ? 'en' : 'it');
+
+    document.querySelectorAll('[data-lang-toggle]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        applicaLingua(document.body.dataset.lang === 'it' ? 'en' : 'it');
+      });
+    });
+  })();
+</script>
 
 </body>
 </html>
