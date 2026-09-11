@@ -254,6 +254,7 @@ p {
   --z-mobile-menu: 850;
   --z-nav: 900; /* sopra il menu mobile: logo + toggle devono restare visibili/cliccabili a menu aperto */
   --z-floating-cta: 700;
+  --z-sfondo-decorativo: 5;
   --z-content: 1;
 }
 
@@ -432,6 +433,28 @@ section {
   width: min(38vw, 150px);
   height: auto;
   filter: drop-shadow(0 12px 32px rgb(0 0 0 / 25%));
+}
+
+/* --------------------------- SFONDO DECORATIVO ---------------------------- */
+
+/* Motivo maiolica siciliana richiesto da Roberto, esteso a tutto il sito
+   com'era stato chiesto ("sfondo intero"). Per restare leggibile ovunque —
+   anche sulle sezioni bordeaux piene, non solo su quelle crema — è un layer
+   fisso sopra al contenuto (non dietro: la maggior parte delle sezioni ha
+   uno sfondo pieno proprio, un layer dietro sarebbe stato invisibile quasi
+   ovunque) con mix-blend-mode:multiply: il bianco del motivo diventa
+   trasparente, resta visibile solo la trama blu/oro, e a bassa opacità non
+   compromette il contrasto del testo sopra. */
+.sfondo-maiolica-decorativo {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-sfondo-decorativo);
+  pointer-events: none;
+  background-image: url('../assets/img/varie/maiolica-siciliana.webp');
+  background-repeat: repeat;
+  background-size: 220px 293px;
+  opacity: 0.08;
+  mix-blend-mode: multiply;
 }
 
 /* ------------------------------- CURSORE --------------------------------- */
