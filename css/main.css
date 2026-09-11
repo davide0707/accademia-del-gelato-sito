@@ -453,8 +453,7 @@ section {
   background-image: url('../assets/img/varie/maiolica-siciliana.webp');
   background-repeat: repeat;
   background-size: 220px 293px;
-  /* opacity: 0.08; */
-  opacity: 1; /* leggermente più visibile per compensare il mix-blend-mode */
+  opacity: 0.08;
   mix-blend-mode: multiply;
 }
 
@@ -796,6 +795,37 @@ section {
 
 .riconoscimenti__link {
   margin-top: var(--space-16);
+}
+
+.riconoscimenti__altri {
+  margin-top: var(--space-12);
+}
+
+.riconoscimenti__altri-eyebrow {
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-medium);
+  color: var(--rosso-accademia);
+  margin: 0 0 var(--space-3);
+}
+
+.riconoscimenti__altri-pills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.riconoscimenti__pill {
+  display: inline-flex;
+  align-items: center;
+  background: var(--avorio);
+  border: 1px solid var(--oro-tenue);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-caption);
+  color: var(--antracite);
+  box-shadow: var(--shadow-sm);
 }
 
 .riconoscimenti__link svg {
