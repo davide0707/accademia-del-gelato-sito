@@ -14,6 +14,7 @@ import { initCounters } from './modules/counters.js';
 import { initHoursTable } from './modules/hoursTable.js';
 import { initSpazioRoberto, initArchivioRoberto } from './modules/spazioRoberto.js';
 import { initFalsiMiti, initArchivioFalsiMiti } from './modules/falsiMiti.js';
+import { initGustiCatalogo, initPrezzi } from './modules/gustiCatalogo.js';
 import { initAnalytics } from './modules/analytics.js';
 
 function initFloatingCta() {
@@ -38,6 +39,11 @@ initPreloader();
 initSmoothScroll();
 initNav();
 initMenuGusti();
+// Le card gusti vanno create prima che scrollReveal/flavorFilter le
+// interroghino: la parte sincrona di initGustiCatalogo() (cache/fallback)
+// gira subito, prima del primo await, quindi il DOM è già pronto qui.
+initGustiCatalogo();
+initPrezzi();
 initScrollReveal();
 initFlavorFilter();
 initHeroCanvas();

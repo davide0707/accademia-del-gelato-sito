@@ -201,3 +201,19 @@ function tiltGustoCards(gsap) {
     });
   });
 }
+
+/**
+ * Riaggancia il tilt hover sulle card gusto. initScrollReveal() lo fa già
+ * una volta all'avvio, ma quelle card sono lette dal DOM in modo sincrono
+ * in quel momento — le card caricate da Sanity dopo (vedi
+ * js/modules/gustiCatalogo.js) arrivano più tardi, in modo asincrono, e
+ * vanno agganciate di nuovo qui una volta inserite. Sicura da richiamare
+ * più volte: opera solo su elementi appena creati (mai sugli stessi nodi
+ * due volte), quindi non accumula mai ascoltatori duplicati.
+ */
+export function ribindaTiltGustoCards() {
+  if (prefersReducedMotion || !hasFineHover) return;
+  const gsap = window.gsap;
+  if (!gsap) return;
+  tiltGustoCards(gsap);
+}

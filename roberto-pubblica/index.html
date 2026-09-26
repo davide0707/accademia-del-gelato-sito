@@ -90,6 +90,65 @@
     text-align: center;
   }
   .orario-riga__separatore { opacity: 0.4; flex-shrink: 0; }
+  #orari-righe, #prezzi-righe { display: flex; flex-direction: column; gap: 10px; }
+
+  select {
+    width: 100%;
+    font-size: 16px;
+    font-family: inherit;
+    padding: 13px 14px;
+    border: 1.5px solid var(--beige);
+    border-radius: 12px;
+    background: var(--avorio);
+    color: var(--antracite);
+    outline: none;
+  }
+  select:focus { border-color: var(--rosso); }
+
+  .scelte-multiple { display: flex; flex-wrap: wrap; gap: 8px; }
+  .scelta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 9px 12px;
+    border: 1.5px solid var(--beige);
+    border-radius: 999px;
+    background: var(--avorio);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--antracite);
+    cursor: pointer;
+  }
+  .scelta-pill input { margin: 0; accent-color: var(--rosso); }
+  .scelta-pill:has(input:checked) {
+    background: var(--rosso);
+    border-color: var(--rosso);
+    color: var(--crema);
+  }
+
+  .checkbox-riga {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--antracite);
+    cursor: pointer;
+  }
+  .checkbox-riga input { width: 20px; height: 20px; flex-shrink: 0; accent-color: var(--rosso); margin: 0; }
+
+  .prezzo-blocco {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+    background: var(--avorio);
+    border: 1px solid var(--beige);
+    border-radius: 12px;
+  }
+  .prezzo-blocco__titolo { margin: 0; font-size: 14px; font-weight: 700; color: var(--rosso-scuro); }
   .btn-esci {
     margin-left: auto;
     flex-shrink: 0;
@@ -352,6 +411,8 @@
     <button class="btn-primario hub__bottone" id="btn-blog-racconto" type="button">Ti racconto il mio gelato</button>
     <button class="btn-primario hub__bottone" id="btn-blog-miti" type="button">Falsi miti del gelato</button>
     <button class="btn-primario hub__bottone" id="btn-orari" type="button">Orari di apertura</button>
+    <button class="btn-primario hub__bottone" id="btn-gusti" type="button">Gusti del catalogo</button>
+    <button class="btn-primario hub__bottone" id="btn-prezzi" type="button">Prezzi</button>
   </section>
 
   <!-- SCHERMATA ORARI -->
@@ -368,6 +429,93 @@
     <p class="messaggio errore" id="errore-orari"></p>
     <p class="messaggio successo" id="successo-orari">Salvato — sarà visibile sul sito tra pochi secondi.</p>
     <button class="btn-primario" id="btn-salva-orari">Salva orari</button>
+  </section>
+
+  <!-- SCHERMATA GUSTI: elenco -->
+  <section class="schermata" id="schermata-gusti-lista">
+    <div class="modulo__header">
+      <button class="link-indietro" id="btn-gusti-indietro" type="button">← Cambia sezione</button>
+    </div>
+    <div>
+      <p class="gestione__titolo">Gusti del catalogo</p>
+      <p class="gestione__sottotitolo">Tocca un gusto per modificarlo, o "Cancella" per rimuoverlo dal sito.</p>
+    </div>
+    <button class="btn-primario" id="btn-nuovo-gusto" type="button">+ Nuovo gusto</button>
+    <input type="text" id="gusti-cerca" placeholder="Cerca per nome…" autocomplete="off">
+    <p class="messaggio errore" id="errore-gusti-lista"></p>
+    <div class="gestione__lista" id="gusti-lista">
+      <p class="gestione__caricamento">Carico…</p>
+    </div>
+  </section>
+
+  <!-- SCHERMATA GUSTO: modulo aggiungi/modifica -->
+  <section class="schermata" id="schermata-gusto-modulo">
+    <div class="modulo__header">
+      <button class="link-indietro" id="btn-gusto-modulo-indietro" type="button">← Torna all'elenco</button>
+    </div>
+    <p class="modulo__titolo" id="gusto-modulo-titolo">Nuovo gusto</p>
+
+    <div>
+      <label for="gusto-nome">Nome</label>
+      <input type="text" id="gusto-nome" maxlength="60" placeholder="Es. Pistacchio di Bronte">
+      <div class="contatore" id="gusto-contatore-nome">0 / 60</div>
+    </div>
+
+    <div>
+      <label for="gusto-descrizione">Descrizione</label>
+      <textarea id="gusto-descrizione" maxlength="160" placeholder="Una o due righe che raccontano il gusto."></textarea>
+      <div class="contatore" id="gusto-contatore-descrizione">0 / 160</div>
+    </div>
+
+    <div>
+      <label>Foto <span class="label-facoltativo">(facoltativa)</span></label>
+      <label class="foto-picker" id="gusto-foto-picker">
+        <span class="foto-picker__testo">Tocca per scattare o scegliere una foto</span>
+        <img class="foto-picker__anteprima" id="gusto-foto-anteprima" alt="">
+        <input type="file" accept="image/*" id="gusto-campo-foto">
+      </label>
+      <button type="button" class="link-rimuovi-foto" id="gusto-btn-rimuovi-foto">Rimuovi la foto attuale</button>
+    </div>
+
+    <div>
+      <label for="gusto-linea">Linea</label>
+      <select id="gusto-linea"></select>
+    </div>
+
+    <div>
+      <label for="gusto-ingrediente">Ingrediente principale</label>
+      <select id="gusto-ingrediente"></select>
+    </div>
+
+    <div>
+      <label>Categorie (filtro) <span class="label-facoltativo">— una o più</span></label>
+      <div class="scelte-multiple" id="gusto-categorie"></div>
+    </div>
+
+    <div>
+      <label>Badge <span class="label-facoltativo">(facoltativo)</span></label>
+      <div class="scelte-multiple" id="gusto-badge"></div>
+    </div>
+
+    <label class="checkbox-riga"><input type="checkbox" id="gusto-solocoppetta"> Solo coppetta (non in vaschetta)</label>
+    <label class="checkbox-riga"><input type="checkbox" id="gusto-esaurito"> Esaurito</label>
+    <label class="checkbox-riga"><input type="checkbox" id="gusto-vetrina"> In vetrina (anteprima homepage)</label>
+
+    <p class="messaggio errore" id="errore-gusto-modulo"></p>
+
+    <button class="btn-primario" id="btn-salva-gusto">Pubblica</button>
+  </section>
+
+  <!-- SCHERMATA PREZZI -->
+  <section class="schermata" id="schermata-prezzi">
+    <div class="modulo__header">
+      <button class="link-indietro" id="btn-prezzi-indietro" type="button">← Cambia sezione</button>
+    </div>
+    <p class="modulo__titolo">Prezzi</p>
+    <div id="prezzi-righe"><!-- 3 blocchi generati via JS --></div>
+    <p class="messaggio errore" id="errore-prezzi"></p>
+    <p class="messaggio successo" id="successo-prezzi">Salvato — sarà visibile sul sito tra pochi secondi.</p>
+    <button class="btn-primario" id="btn-salva-prezzi">Salva prezzi</button>
   </section>
 
   <!-- SCHERMATA MODULO -->
@@ -471,6 +619,9 @@
     esito: $('schermata-esito'),
     gestione: $('schermata-gestione'),
     orari: $('schermata-orari'),
+    gustiLista: $('schermata-gusti-lista'),
+    gustoModulo: $('schermata-gusto-modulo'),
+    prezzi: $('schermata-prezzi'),
   };
   const btnEsci = $('btn-esci');
   function mostra(nome) {
@@ -661,6 +812,515 @@
     } finally {
       btnSalvaOrari.disabled = false;
       btnSalvaOrari.textContent = 'Salva orari';
+    }
+  });
+
+  // ---- Schermata gusti e prezzi ----
+  // Stesse liste a scelta fissa usate dallo schema Sanity (sanity/schemaTypes/gusto.js)
+  // e dalla validazione server (api/pubblica-gusto.js, api/modifica-gusto.js): i valori
+  // devono restare identici, altrimenti il sito non saprebbe come disegnare la card.
+  const LINEE_GUSTO = [
+    { valore: 'creme', etichetta: 'Creme' },
+    { valore: 'frutta', etichetta: 'Frutta' },
+    { valore: 'vegani', etichetta: 'Vegani (Linea Puro)' },
+    { valore: 'naturalmente-senza', etichetta: 'Naturalmente Senza' },
+    { valore: 'puro-zero', etichetta: 'Puro Zero' },
+    { valore: 'granite', etichetta: 'Granite' },
+  ];
+  const INGREDIENTI_GUSTO = [
+    { valore: 'cioccolato', etichetta: 'Cioccolato' },
+    { valore: 'pistacchio', etichetta: 'Pistacchio' },
+    { valore: 'nocciola', etichetta: 'Nocciola' },
+    { valore: 'vaniglia-crema', etichetta: 'Vaniglia/Crema' },
+    { valore: 'frutti-rossi', etichetta: 'Frutti Rossi' },
+    { valore: 'agrumi', etichetta: 'Agrumi' },
+    { valore: 'tropicale', etichetta: 'Tropicale' },
+    { valore: 'caffe-caramello', etichetta: 'Caffè/Caramello' },
+    { valore: 'liquirizia', etichetta: 'Liquirizia' },
+    { valore: 'cocco', etichetta: 'Cocco' },
+    { valore: 'neutro', etichetta: 'Neutro' },
+  ];
+  const BADGE_GUSTO = [
+    { valore: 'vegano', etichetta: 'Vegano' },
+    { valore: 'novita', etichetta: 'Novità' },
+    { valore: 'senzaglutine', etichetta: 'Senza Glutine' },
+    { valore: 'senzazucchero', etichetta: 'Senza Zucchero' },
+    { valore: 'cheto', etichetta: 'Chetogenico' },
+  ];
+
+  function etichettaLinea(valore) {
+    const trovata = LINEE_GUSTO.find((l) => l.valore === valore);
+    return trovata ? trovata.etichetta : valore;
+  }
+
+  (function costruisciCampiGusto() {
+    const selLinea = $('gusto-linea');
+    LINEE_GUSTO.forEach((l) => {
+      const opt = document.createElement('option');
+      opt.value = l.valore;
+      opt.textContent = l.etichetta;
+      selLinea.appendChild(opt);
+    });
+    const selIngrediente = $('gusto-ingrediente');
+    INGREDIENTI_GUSTO.forEach((i) => {
+      const opt = document.createElement('option');
+      opt.value = i.valore;
+      opt.textContent = i.etichetta;
+      selIngrediente.appendChild(opt);
+    });
+    const contCategorie = $('gusto-categorie');
+    LINEE_GUSTO.forEach((l) => {
+      const pill = document.createElement('label');
+      pill.className = 'scelta-pill';
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.value = l.valore;
+      pill.append(input, document.createTextNode(l.etichetta));
+      contCategorie.appendChild(pill);
+    });
+    const contBadge = $('gusto-badge');
+    BADGE_GUSTO.forEach((b) => {
+      const pill = document.createElement('label');
+      pill.className = 'scelta-pill';
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.value = b.valore;
+      pill.append(input, document.createTextNode(b.etichetta));
+      contBadge.appendChild(pill);
+    });
+  })();
+
+  // ---- Gusti: elenco ----
+  const listaGustiEl = $('gusti-lista');
+  const erroreGustiLista = $('errore-gusti-lista');
+  const campoCercaGusti = $('gusti-cerca');
+
+  async function caricaGustiLista() {
+    erroreGustiLista.classList.remove('visibile');
+    listaGustiEl.innerHTML = '<p class="gestione__caricamento">Carico…</p>';
+    try {
+      const query = encodeURIComponent(
+        '*[_type == "gusto"] | order(ordine asc){_id, nome, descrizione, linea, ingrediente, categorie, badge, soloCoppetta, esaurito, vetrina, "fotoUrl": foto.asset->url}'
+      );
+      const url = `https://${SANITY_PROJECT_ID}.apicdn.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
+      const risposta = await fetch(url);
+      if (!risposta.ok) throw new Error('risposta non ok');
+      const { result } = await risposta.json();
+      renderizzaGustiLista(result || []);
+    } catch (e) {
+      listaGustiEl.innerHTML = '';
+      erroreGustiLista.textContent = 'Non riesco a caricare i gusti. Riprova.';
+      erroreGustiLista.classList.add('visibile');
+    }
+  }
+
+  function renderizzaGustiLista(gusti) {
+    listaGustiEl.innerHTML = '';
+    campoCercaGusti.value = '';
+    if (gusti.length === 0) {
+      listaGustiEl.innerHTML = '<p class="gestione__vuoto">Non ci sono ancora gusti nel catalogo.</p>';
+      return;
+    }
+    gusti.forEach((gusto) => listaGustiEl.appendChild(creaVoceGusto(gusto)));
+  }
+
+  function creaVoceGusto(gusto) {
+    const voce = document.createElement('div');
+    voce.className = 'gestione__voce';
+    voce.dataset.ricerca = (gusto.nome || '').toLowerCase();
+
+    const foto = document.createElement('img');
+    foto.className = 'gestione__voce-foto';
+    if (gusto.fotoUrl) foto.src = `${gusto.fotoUrl}?w=96&auto=format&fit=max`;
+    voce.appendChild(foto);
+
+    const testo = document.createElement('div');
+    testo.className = 'gestione__voce-testo';
+    testo.addEventListener('click', () => apriGustoModifica(gusto));
+    const nomeEl = document.createElement('div');
+    nomeEl.className = 'gestione__voce-titolo';
+    nomeEl.textContent = gusto.nome;
+    const sottotitolo = document.createElement('div');
+    sottotitolo.className = 'gestione__voce-data';
+    sottotitolo.textContent = gusto.esaurito ? `${etichettaLinea(gusto.linea)} · Esaurito` : etichettaLinea(gusto.linea);
+    const hint = document.createElement('div');
+    hint.className = 'gestione__voce-modifica-hint';
+    hint.textContent = 'Tocca per modificare';
+    testo.append(nomeEl, sottotitolo, hint);
+    voce.appendChild(testo);
+
+    const btnCancella = document.createElement('button');
+    btnCancella.type = 'button';
+    btnCancella.className = 'gestione__voce-cancella';
+    btnCancella.textContent = 'Cancella';
+    btnCancella.addEventListener('click', () => cancellaGusto(gusto._id, gusto.nome, voce, btnCancella));
+    voce.appendChild(btnCancella);
+
+    return voce;
+  }
+
+  campoCercaGusti.addEventListener('input', () => {
+    const query = campoCercaGusti.value.trim().toLowerCase();
+    const voci = listaGustiEl.querySelectorAll('.gestione__voce');
+    let visibili = 0;
+    voci.forEach((voce) => {
+      const corrisponde = !query || voce.dataset.ricerca.includes(query);
+      voce.hidden = !corrisponde;
+      if (corrisponde) visibili += 1;
+    });
+    let nessunRisultato = listaGustiEl.querySelector('.gestione__vuoto');
+    if (voci.length > 0 && visibili === 0) {
+      if (!nessunRisultato) {
+        nessunRisultato = document.createElement('p');
+        nessunRisultato.className = 'gestione__vuoto';
+        nessunRisultato.textContent = 'Nessun gusto corrisponde alla ricerca.';
+        listaGustiEl.appendChild(nessunRisultato);
+      }
+    } else if (nessunRisultato) {
+      nessunRisultato.remove();
+    }
+  });
+
+  async function cancellaGusto(id, nome, voceEl, btnEl) {
+    if (!confirm(`Cancellare "${nome}"? Non si può annullare.`)) return;
+
+    btnEl.disabled = true;
+    btnEl.textContent = '…';
+    erroreGustiLista.classList.remove('visibile');
+
+    try {
+      const risposta = await fetch('/api/cancella-gusto', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin: pinSalvato(), id }),
+      });
+
+      if (risposta.status === 401) {
+        localStorage.removeItem(PIN_KEY);
+        mostra('pin');
+        erroreePin.textContent = 'PIN errato — inseriscilo di nuovo.';
+        erroreePin.classList.add('visibile');
+        return;
+      }
+
+      const dati = await risposta.json().catch(() => ({}));
+      if (!risposta.ok) throw new Error(dati.errore || 'Errore sconosciuto');
+
+      voceEl.remove();
+      if (!listaGustiEl.querySelector('.gestione__voce')) {
+        listaGustiEl.innerHTML = '<p class="gestione__vuoto">Non ci sono ancora gusti nel catalogo.</p>';
+      }
+    } catch (e) {
+      btnEl.disabled = false;
+      btnEl.textContent = 'Cancella';
+      erroreGustiLista.textContent = e.message || 'Non sono riuscito a cancellarlo. Riprova.';
+      erroreGustiLista.classList.add('visibile');
+    }
+  }
+
+  $('btn-gusti').addEventListener('click', () => {
+    mostra('gustiLista');
+    caricaGustiLista();
+  });
+  $('btn-gusti-indietro').addEventListener('click', () => mostra('hub'));
+  $('btn-nuovo-gusto').addEventListener('click', () => {
+    resetGustoModuloANuovo();
+    mostra('gustoModulo');
+  });
+  $('btn-gusto-modulo-indietro').addEventListener('click', () => mostra('gustiLista'));
+
+  // ---- Gusti: modulo aggiungi/modifica ----
+  const gustoModuloTitolo = $('gusto-modulo-titolo');
+  const gustoNome = $('gusto-nome');
+  const gustoDescrizione = $('gusto-descrizione');
+  const gustoContatoreNome = $('gusto-contatore-nome');
+  const gustoContatoreDescrizione = $('gusto-contatore-descrizione');
+  const gustoCampoFoto = $('gusto-campo-foto');
+  const gustoFotoPicker = $('gusto-foto-picker');
+  const gustoFotoAnteprima = $('gusto-foto-anteprima');
+  const gustoBtnRimuoviFoto = $('gusto-btn-rimuovi-foto');
+  const gustoLinea = $('gusto-linea');
+  const gustoIngrediente = $('gusto-ingrediente');
+  const gustoSoloCoppetta = $('gusto-solocoppetta');
+  const gustoEsaurito = $('gusto-esaurito');
+  const gustoVetrina = $('gusto-vetrina');
+  const erroreGustoModulo = $('errore-gusto-modulo');
+  const btnSalvaGusto = $('btn-salva-gusto');
+
+  let gustoFotoCompressaDataUrl = null;
+  // null = nuovo gusto; altrimenti { id, fotoUrlEsistente }
+  let gustoInModifica = null;
+  let gustoRimuoviFotoRichiesto = false;
+
+  function aggiornaContatoriGusto() {
+    gustoContatoreNome.textContent = `${gustoNome.value.length} / 60`;
+    gustoContatoreNome.classList.toggle('limite', gustoNome.value.length >= 60);
+    gustoContatoreDescrizione.textContent = `${gustoDescrizione.value.length} / 160`;
+    gustoContatoreDescrizione.classList.toggle('limite', gustoDescrizione.value.length >= 160);
+  }
+  gustoNome.addEventListener('input', aggiornaContatoriGusto);
+  gustoDescrizione.addEventListener('input', aggiornaContatoriGusto);
+
+  function resetGustoModuloANuovo() {
+    gustoInModifica = null;
+    gustoRimuoviFotoRichiesto = false;
+    gustoNome.value = '';
+    gustoDescrizione.value = '';
+    gustoFotoCompressaDataUrl = null;
+    gustoCampoFoto.value = '';
+    gustoFotoPicker.classList.remove('ha-foto');
+    gustoFotoAnteprima.src = '';
+    gustoBtnRimuoviFoto.classList.remove('visibile');
+    gustoLinea.selectedIndex = 0;
+    gustoIngrediente.selectedIndex = 0;
+    $('gusto-categorie').querySelectorAll('input[type=checkbox]').forEach((cb) => { cb.checked = false; });
+    $('gusto-badge').querySelectorAll('input[type=checkbox]').forEach((cb) => { cb.checked = false; });
+    gustoSoloCoppetta.checked = false;
+    gustoEsaurito.checked = false;
+    gustoVetrina.checked = false;
+    aggiornaContatoriGusto();
+    gustoModuloTitolo.textContent = 'Nuovo gusto';
+    btnSalvaGusto.textContent = 'Pubblica';
+    erroreGustoModulo.classList.remove('visibile');
+  }
+
+  function apriGustoModifica(gusto) {
+    gustoInModifica = { id: gusto._id, fotoUrlEsistente: gusto.fotoUrl || null };
+    gustoRimuoviFotoRichiesto = false;
+    gustoFotoCompressaDataUrl = null;
+    gustoCampoFoto.value = '';
+
+    gustoNome.value = gusto.nome || '';
+    gustoDescrizione.value = gusto.descrizione || '';
+    aggiornaContatoriGusto();
+
+    if (gusto.fotoUrl) {
+      gustoFotoAnteprima.src = `${gusto.fotoUrl}?w=800&auto=format&fit=max`;
+      gustoFotoPicker.classList.add('ha-foto');
+      gustoBtnRimuoviFoto.classList.add('visibile');
+    } else {
+      gustoFotoAnteprima.src = '';
+      gustoFotoPicker.classList.remove('ha-foto');
+      gustoBtnRimuoviFoto.classList.remove('visibile');
+    }
+
+    gustoLinea.value = gusto.linea || 'creme';
+    gustoIngrediente.value = gusto.ingrediente || 'cioccolato';
+    $('gusto-categorie').querySelectorAll('input[type=checkbox]').forEach((cb) => {
+      cb.checked = (gusto.categorie || []).includes(cb.value);
+    });
+    $('gusto-badge').querySelectorAll('input[type=checkbox]').forEach((cb) => {
+      cb.checked = (gusto.badge || []).includes(cb.value);
+    });
+    gustoSoloCoppetta.checked = !!gusto.soloCoppetta;
+    gustoEsaurito.checked = !!gusto.esaurito;
+    gustoVetrina.checked = !!gusto.vetrina;
+
+    gustoModuloTitolo.textContent = 'Modifica gusto';
+    btnSalvaGusto.textContent = 'Salva modifiche';
+    erroreGustoModulo.classList.remove('visibile');
+    mostra('gustoModulo');
+  }
+
+  gustoBtnRimuoviFoto.addEventListener('click', () => {
+    gustoRimuoviFotoRichiesto = true;
+    gustoFotoCompressaDataUrl = null;
+    gustoCampoFoto.value = '';
+    gustoFotoAnteprima.src = '';
+    gustoFotoPicker.classList.remove('ha-foto');
+    gustoBtnRimuoviFoto.classList.remove('visibile');
+  });
+
+  gustoCampoFoto.addEventListener('change', async () => {
+    const file = gustoCampoFoto.files[0];
+    if (!file) return;
+    erroreGustoModulo.classList.remove('visibile');
+    try {
+      gustoFotoCompressaDataUrl = await comprimiFoto(file);
+      gustoRimuoviFotoRichiesto = false;
+      gustoFotoAnteprima.src = gustoFotoCompressaDataUrl;
+      gustoFotoPicker.classList.add('ha-foto');
+      gustoBtnRimuoviFoto.classList.remove('visibile');
+    } catch (e) {
+      erroreGustoModulo.textContent = 'Non sono riuscito a leggere questa foto. Riprova.';
+      erroreGustoModulo.classList.add('visibile');
+    }
+  });
+
+  function mostraErroreGustoModulo(testo) {
+    erroreGustoModulo.textContent = testo;
+    erroreGustoModulo.classList.add('visibile');
+  }
+
+  btnSalvaGusto.addEventListener('click', async () => {
+    erroreGustoModulo.classList.remove('visibile');
+
+    const nome = gustoNome.value.trim();
+    const descrizione = gustoDescrizione.value.trim();
+    const categorie = Array.from($('gusto-categorie').querySelectorAll('input:checked')).map((cb) => cb.value);
+    const badge = Array.from($('gusto-badge').querySelectorAll('input:checked')).map((cb) => cb.value);
+
+    if (!nome) return mostraErroreGustoModulo('Manca il nome.');
+    if (!descrizione) return mostraErroreGustoModulo('Manca la descrizione.');
+    if (categorie.length === 0) return mostraErroreGustoModulo('Scegli almeno una categoria.');
+
+    const inModifica = !!gustoInModifica;
+    btnSalvaGusto.disabled = true;
+    btnSalvaGusto.innerHTML = inModifica ? '<span class="spinner"></span>Salvo…' : '<span class="spinner"></span>Pubblico…';
+
+    try {
+      const corpo = {
+        pin: pinSalvato(),
+        nome,
+        descrizione,
+        categorie,
+        linea: gustoLinea.value,
+        ingrediente: gustoIngrediente.value,
+        badge,
+        soloCoppetta: gustoSoloCoppetta.checked,
+        esaurito: gustoEsaurito.checked,
+        vetrina: gustoVetrina.checked,
+        fotoBase64: gustoFotoCompressaDataUrl,
+      };
+      const url = inModifica ? '/api/modifica-gusto' : '/api/pubblica-gusto';
+      if (inModifica) {
+        corpo.id = gustoInModifica.id;
+        corpo.rimuoviFoto = gustoRimuoviFotoRichiesto;
+      }
+
+      const risposta = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(corpo),
+      });
+
+      const dati = await risposta.json().catch(() => ({}));
+
+      if (risposta.status === 401) {
+        localStorage.removeItem(PIN_KEY);
+        mostra('pin');
+        erroreePin.textContent = 'PIN errato — inseriscilo di nuovo.';
+        erroreePin.classList.add('visibile');
+        return;
+      }
+
+      if (!risposta.ok) throw new Error(dati.errore || 'Errore sconosciuto');
+
+      resetGustoModuloANuovo();
+      mostra('gustiLista');
+      caricaGustiLista();
+    } catch (err) {
+      mostraErroreGustoModulo(err.message || 'Qualcosa è andato storto. Riprova.');
+    } finally {
+      btnSalvaGusto.disabled = false;
+      btnSalvaGusto.textContent = gustoInModifica ? 'Salva modifiche' : 'Pubblica';
+    }
+  });
+
+  // ---- Prezzi ----
+  const TICKET_PREZZI = [
+    { chiave: 'piccola', nome: 'Vaschetta piccola' },
+    { chiave: 'media', nome: 'Vaschetta media' },
+    { chiave: 'granita', nome: 'Granita' },
+  ];
+  const errorePrezzi = $('errore-prezzi');
+  const successoPrezzi = $('successo-prezzi');
+  const btnSalvaPrezzi = $('btn-salva-prezzi');
+
+  (function costruisciRighePrezzi() {
+    const contenitore = $('prezzi-righe');
+    TICKET_PREZZI.forEach((t) => {
+      const blocco = document.createElement('div');
+      blocco.className = 'prezzo-blocco';
+      const titolo = document.createElement('p');
+      titolo.className = 'prezzo-blocco__titolo';
+      titolo.textContent = t.nome;
+      blocco.appendChild(titolo);
+
+      [['nome', 'Nome'], ['dettaglio', 'Dettaglio'], ['prezzo', 'Prezzo']].forEach(([campo, etichetta]) => {
+        const wrap = document.createElement('div');
+        const label = document.createElement('label');
+        label.setAttribute('for', `prezzo-${t.chiave}-${campo}`);
+        label.textContent = etichetta;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.id = `prezzo-${t.chiave}-${campo}`;
+        input.maxLength = 60;
+        wrap.append(label, input);
+        blocco.appendChild(wrap);
+      });
+      contenitore.appendChild(blocco);
+    });
+  })();
+
+  async function caricaPrezzi() {
+    errorePrezzi.classList.remove('visibile');
+    successoPrezzi.classList.remove('visibile');
+    try {
+      const query = encodeURIComponent('*[_id == "prezzi-catalogo"][0]');
+      const url = `https://${SANITY_PROJECT_ID}.apicdn.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
+      const risposta = await fetch(url);
+      if (!risposta.ok) throw new Error('risposta non ok');
+      const { result } = await risposta.json();
+      TICKET_PREZZI.forEach((t) => {
+        const voce = result?.[t.chiave];
+        $(`prezzo-${t.chiave}-nome`).value = voce?.nome || '';
+        $(`prezzo-${t.chiave}-dettaglio`).value = voce?.dettaglio || '';
+        $(`prezzo-${t.chiave}-prezzo`).value = voce?.prezzo || '';
+      });
+    } catch (e) {
+      errorePrezzi.textContent = 'Non riesco a caricare i prezzi attuali. Riprova.';
+      errorePrezzi.classList.add('visibile');
+    }
+  }
+
+  $('btn-prezzi').addEventListener('click', () => {
+    mostra('prezzi');
+    caricaPrezzi();
+  });
+  $('btn-prezzi-indietro').addEventListener('click', () => mostra('hub'));
+
+  btnSalvaPrezzi.addEventListener('click', async () => {
+    errorePrezzi.classList.remove('visibile');
+    successoPrezzi.classList.remove('visibile');
+
+    const corpo = { pin: pinSalvato() };
+    for (const t of TICKET_PREZZI) {
+      const nome = $(`prezzo-${t.chiave}-nome`).value.trim();
+      const dettaglio = $(`prezzo-${t.chiave}-dettaglio`).value.trim();
+      const prezzo = $(`prezzo-${t.chiave}-prezzo`).value.trim();
+      if (!nome || !dettaglio || !prezzo) {
+        errorePrezzi.textContent = `Mancano dei campi per "${t.nome}".`;
+        errorePrezzi.classList.add('visibile');
+        return;
+      }
+      corpo[t.chiave] = { nome, dettaglio, prezzo };
+    }
+
+    btnSalvaPrezzi.disabled = true;
+    btnSalvaPrezzi.innerHTML = '<span class="spinner"></span>Salvo…';
+    try {
+      const risposta = await fetch('/api/modifica-prezzi', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(corpo),
+      });
+      if (risposta.status === 401) {
+        localStorage.removeItem(PIN_KEY);
+        mostra('pin');
+        erroreePin.textContent = 'PIN errato — inseriscilo di nuovo.';
+        erroreePin.classList.add('visibile');
+        return;
+      }
+      const dati = await risposta.json().catch(() => ({}));
+      if (!risposta.ok) throw new Error(dati.errore || 'Errore sconosciuto');
+      successoPrezzi.classList.add('visibile');
+    } catch (e) {
+      errorePrezzi.textContent = e.message || 'Non sono riuscito a salvare. Riprova.';
+      errorePrezzi.classList.add('visibile');
+    } finally {
+      btnSalvaPrezzi.disabled = false;
+      btnSalvaPrezzi.textContent = 'Salva prezzi';
     }
   });
 
