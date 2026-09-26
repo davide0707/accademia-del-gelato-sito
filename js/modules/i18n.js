@@ -72,7 +72,6 @@ const I18N = {
   'footer-contatti': { it: 'Contatti', en: 'Contact' },
   'footer-orari': { it: 'Orari', en: 'Hours' },
   'footer-seguici': { it: 'Seguici', en: 'Follow us' },
-  'floating-chiama': { it: 'Chiama ora', en: 'Call now' },
   'skip-link': { it: 'Vai al contenuto principale', en: 'Skip to main content' },
   'riconoscimenti-link': { it: 'Scopri di più sulla guida Gambero Rosso', en: 'Learn more about the Gambero Rosso guide' },
 };
