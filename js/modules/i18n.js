@@ -67,7 +67,7 @@ const I18N = {
   'giorno-dom': { it: 'Domenica', en: 'Sunday' },
   'orari-nota': { it: 'Orari indicativi — verifica telefonica consigliata.', en: 'Hours are indicative — checking by phone is recommended.' },
   'orari-oggi': { it: 'Oggi', en: 'Today' },
-  'footer-payoff': { it: 'Il gelato naturale italiano', en: 'The natural Italian gelato' },
+  'footer-payoff': { it: 'Il Gelato Naturale Italiano', en: 'The natural Italian gelato' },
   'footer-contatti': { it: 'Contatti', en: 'Contact' },
   'footer-orari': { it: 'Orari', en: 'Hours' },
   'footer-orari-tutti': { it: 'Tutti i giorni: 10:00–23:30', en: 'Every day: 10:00–23:30' },

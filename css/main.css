@@ -430,7 +430,7 @@ section {
 }
 
 .preloader__logo {
-  width: min(38vw, 150px);
+  width: min(78vw, 360px);
   height: auto;
   filter: drop-shadow(0 12px 32px rgb(0 0 0 / 25%));
 }
@@ -1667,40 +1667,16 @@ section {
   font-size: var(--fs-eyebrow);
   letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
-  color: var(--rosso-accent);
-}
-
-.nav__logo-nome {
-  font-size: var(--fs-h6);
   color: var(--rosso-scuro);
   font-weight: var(--fw-display-medium);
 }
 
-/* stessa struttura del logo in nav (eyebrow + nome in Fraunces), ricolorata
-   per lo sfondo bordeaux scuro del preloader */
-.preloader__nome {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-1);
-  font-family: var(--font-display);
-  text-align: center;
-  line-height: 1.15;
-}
-
-.preloader__nome-eyebrow {
-  font-family: var(--font-body);
-  font-size: var(--fs-eyebrow);
-  font-weight: var(--fw-semibold);
+.nav__logo-nome {
+  font-size: var(--fs-h6);
   letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
-  color: var(--oro-tenue);
-}
-
-.preloader__nome-testo {
-  font-size: var(--fs-h6);
+  color: var(--rosso-scuro);
   font-weight: var(--fw-display-medium);
-  color: var(--crema);
 }
 
 .nav__links ul {
@@ -2768,6 +2744,16 @@ body.menu-aperto .nav__toggle-linea {
   margin-block: calc(var(--space-2) * -1);
 }
 
+.footer__colonna a.footer__link-deliveroo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.footer__link-deliveroo img { flex: none; }
+
+.btn__icona-deliveroo { flex: none; }
+
 .footer__social {
   flex-direction: row !important;
   gap: var(--space-4) !important;
@@ -2889,14 +2875,6 @@ body.menu-aperto .nav__toggle-linea {
   animation-delay: 100ms;
 }
 
-/* la scritta arriva subito dopo il logo, con un piccolo overlap per una
-   sequenza continua invece di due comparse staccate */
-.preloader__nome {
-  opacity: 0;
-  animation: fade-in-up 450ms var(--ease-soft) forwards;
-  animation-delay: 500ms;
-}
-
 .preloader {
   transition: opacity var(--dur-slow) var(--ease-soft), visibility 0s linear var(--dur-slow);
 }
@@ -2965,8 +2943,7 @@ body.menu-aperto .nav__toggle-linea {
 /* ------------------------------ REDUCED MOTION ------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
-  .preloader__logo,
-  .preloader__nome {
+  .preloader__logo {
     animation: none;
     opacity: 1;
     transform: none;
