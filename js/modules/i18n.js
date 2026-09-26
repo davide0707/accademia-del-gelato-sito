@@ -19,9 +19,11 @@ const I18N = {
   'nav-dovesiamo': { it: 'Dove Siamo', en: 'Find Us' },
   'menu-chiama': { it: 'Chiama 340 101 4316', en: 'Call 340 101 4316' },
   'menu-whatsapp': { it: 'Scrivici su WhatsApp', en: 'Message us on WhatsApp' },
-  'archivio-eyebrow': { it: 'Dal laboratorio di Roberto', en: "From Roberto's workshop" },
+  'archivio-eyebrow': { it: 'Ti racconto il mio gelato', en: 'Let me tell you about my gelato' },
   'archivio-titolo': { it: 'Tutti gli aggiornamenti', en: 'All updates' },
   'archivio-cerca': { it: 'Cerca per argomento…', en: 'Search by topic…' },
+  'archivio-miti-eyebrow': { it: 'Falsi miti del gelato', en: 'Gelato myths' },
+  'archivio-miti-titolo': { it: 'Tutti i falsi miti', en: 'All gelato myths' },
   // etichette che compaiono decine di volte identiche sulle card gusto:
   // un dizionario condiviso invece di duplicare ogni card
   'eyebrow-creme': { it: 'Linea Creme', en: 'Cream Line' },

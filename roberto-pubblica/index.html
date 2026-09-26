@@ -53,6 +53,26 @@
     color: var(--rosso);
     opacity: 0.8;
   }
+  .hub__bottone {
+    display: block;
+    width: 100%;
+    text-align: left;
+    margin-bottom: 12px;
+  }
+  .hub__bottone:last-child { margin-bottom: 0; }
+  .modulo__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .modulo__blog-nome {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--rosso);
+    opacity: 0.75;
+    text-align: right;
+  }
   .btn-esci {
     margin-left: auto;
     flex-shrink: 0;
@@ -286,7 +306,7 @@
   <img src="../assets/logo/favicon.png" alt="">
   <div>
     <h1>Accademia del Gelato</h1>
-    <p>Pubblica un aggiornamento</p>
+    <p>Gestisci il tuo sito</p>
   </div>
   <button type="button" class="btn-esci" id="btn-esci" hidden>Esci</button>
 </header>
@@ -305,8 +325,22 @@
     <button class="btn-primario" id="btn-sblocca">Sblocca</button>
   </section>
 
+  <!-- SCHERMATA HUB (scelta del blog) -->
+  <section class="schermata" id="schermata-hub">
+    <div>
+      <p class="gestione__titolo">Cosa vuoi gestire?</p>
+      <p class="gestione__sottotitolo">Scegli dove pubblicare o modificare un post.</p>
+    </div>
+    <button class="btn-primario hub__bottone" id="btn-blog-racconto" type="button">Ti racconto il mio gelato</button>
+    <button class="btn-primario hub__bottone" id="btn-blog-miti" type="button">Falsi miti del gelato</button>
+  </section>
+
   <!-- SCHERMATA MODULO -->
   <section class="schermata" id="schermata-modulo">
+    <div class="modulo__header">
+      <button class="link-indietro" id="btn-cambia-blog" type="button">← Cambia blog</button>
+      <span class="modulo__blog-nome" id="modulo-blog-nome"></span>
+    </div>
     <p class="modulo__titolo" id="modulo-titolo">Nuovo aggiornamento</p>
     <div>
       <label for="campo-titolo">Titolo</label>
@@ -347,7 +381,10 @@
 
   <!-- SCHERMATA GESTIONE (cancellazione) -->
   <section class="schermata" id="schermata-gestione">
-    <button class="link-indietro" id="btn-indietro-gestione" type="button">← Torna a pubblica</button>
+    <div class="modulo__header">
+      <button class="link-indietro" id="btn-indietro-gestione" type="button">← Torna a pubblica</button>
+      <span class="modulo__blog-nome" id="gestione-blog-nome"></span>
+    </div>
     <div>
       <p class="gestione__titolo">I tuoi aggiornamenti</p>
       <p class="gestione__sottotitolo">Tocca un aggiornamento per modificarlo, o "Cancella" per rimuoverlo dal sito.</p>
@@ -371,9 +408,30 @@
   const SANITY_PROJECT_ID = 'jskwy1n7';
   const SANITY_DATASET = 'production';
 
+  // Due blog, stesso identico modulo/gestione: cambia solo il tipo Sanity
+  // e su quali funzioni portiere si appoggiano.
+  const BLOG = {
+    racconto: {
+      tipo: 'aggiornamento',
+      nome: 'Ti racconto il mio gelato',
+      endpointPubblica: '/api/pubblica',
+      endpointModifica: '/api/modifica',
+      endpointCancella: '/api/cancella',
+    },
+    miti: {
+      tipo: 'falsoMito',
+      nome: 'Falsi miti del gelato',
+      endpointPubblica: '/api/pubblica-mito',
+      endpointModifica: '/api/modifica-mito',
+      endpointCancella: '/api/cancella-mito',
+    },
+  };
+  let blogAttivo = null; // 'racconto' | 'miti', scelto nella schermata hub
+
   const $ = (id) => document.getElementById(id);
   const schermate = {
     pin: $('schermata-pin'),
+    hub: $('schermata-hub'),
     modulo: $('schermata-modulo'),
     esito: $('schermata-esito'),
     gestione: $('schermata-gestione'),
@@ -414,7 +472,7 @@
       if (risposta.ok) {
         localStorage.setItem(PIN_KEY, valore);
         erroreePin.classList.remove('visibile');
-        mostra('modulo');
+        mostra('hub');
         return;
       }
       localStorage.removeItem(PIN_KEY);
@@ -447,6 +505,18 @@
   // silenzio: se è ancora corretto salta la schermata, altrimenti resta
   // sulla schermata PIN pronta per un nuovo tentativo
   if (pinSalvato()) verificaEProsegui(pinSalvato(), { silenzioso: true });
+
+  // ---- Schermata hub (scelta del blog) ----
+  function sceglieBlog(chiave) {
+    blogAttivo = chiave;
+    $('modulo-blog-nome').textContent = BLOG[chiave].nome;
+    $('gestione-blog-nome').textContent = BLOG[chiave].nome;
+    resetModuloANuovo();
+    mostra('modulo');
+  }
+  $('btn-blog-racconto').addEventListener('click', () => sceglieBlog('racconto'));
+  $('btn-blog-miti').addEventListener('click', () => sceglieBlog('miti'));
+  $('btn-cambia-blog').addEventListener('click', () => mostra('hub'));
 
   // ---- Schermata modulo ----
   const moduloTitolo = $('modulo-titolo');
@@ -605,7 +675,7 @@
 
     try {
       const corpo = { pin: pinSalvato(), titolo, testo, fotoBase64: fotoCompressaDataUrl };
-      const url = inModifica ? '/api/modifica' : '/api/pubblica';
+      const url = inModifica ? BLOG[blogAttivo].endpointModifica : BLOG[blogAttivo].endpointPubblica;
       if (inModifica) {
         corpo.id = postInModifica.id;
         corpo.rimuoviFoto = rimuoviFotoRichiesto;
@@ -669,7 +739,7 @@
     listaGestione.innerHTML = '<p class="gestione__caricamento">Carico…</p>';
     try {
       const query = encodeURIComponent(
-        `*[_type == "aggiornamento"] | order(pubblicatoIl desc){_id, titolo, testo, pubblicatoIl, "fotoUrl": foto.asset->url}`
+        `*[_type == "${BLOG[blogAttivo].tipo}"] | order(pubblicatoIl desc){_id, titolo, testo, pubblicatoIl, "fotoUrl": foto.asset->url}`
       );
       const url = `https://${SANITY_PROJECT_ID}.apicdn.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
       const risposta = await fetch(url);
@@ -758,7 +828,7 @@
     erroreGestione.classList.remove('visibile');
 
     try {
-      const risposta = await fetch('/api/cancella', {
+      const risposta = await fetch(BLOG[blogAttivo].endpointCancella, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pin: pinSalvato(), id }),
@@ -807,6 +877,7 @@
     localStorage.removeItem(PIN_KEY);
     campoPin.value = '';
     erroreePin.classList.remove('visibile');
+    blogAttivo = null;
     resetModuloANuovo();
     mostra('pin');
   });

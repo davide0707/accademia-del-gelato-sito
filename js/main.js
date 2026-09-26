@@ -13,6 +13,7 @@ import { initReviewsMarquee } from './modules/reviewsMarquee.js';
 import { initCounters } from './modules/counters.js';
 import { initHoursTable } from './modules/hoursTable.js';
 import { initSpazioRoberto, initArchivioRoberto } from './modules/spazioRoberto.js';
+import { initFalsiMiti, initArchivioFalsiMiti } from './modules/falsiMiti.js';
 import { initAnalytics } from './modules/analytics.js';
 
 function initFloatingCta() {
@@ -47,6 +48,8 @@ initCounters();
 initHoursTable();
 initSpazioRoberto();
 initArchivioRoberto();
+initFalsiMiti();
+initArchivioFalsiMiti();
 initFloatingCta();
 initFooterYear();
 initAnalytics();

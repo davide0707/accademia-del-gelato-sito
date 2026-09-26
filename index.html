@@ -211,18 +211,19 @@
         <span>Two Cones, <strong>Gambero Rosso</strong> — Gelaterie d'Italia 2025 &amp; 2027</span>
       </div>
 
-      <!-- "Spazio di Roberto": nome definitivo da scegliere (lo sceglie
-           lui) — sostituire il testo qui sotto quando lo decide. Gli
-           aggiornamenti che scrive restano in italiano in entrambe le
-           lingue: sono contenuto suo, scritto a mano dal telefono, non
-           traducibile automaticamente — solo l'etichetta intorno cambia. -->
+      <!-- "Ti racconto il mio gelato": il blog personale di Roberto (nome
+           definitivo, deciso da lui). Gli aggiornamenti che scrive restano
+           in italiano in entrambe le lingue: sono contenuto suo, scritto a
+           mano dal telefono, non traducibile automaticamente — solo
+           l'etichetta intorno cambia. Il secondo blog "Falsi miti del
+           gelato" è più avanti nella pagina, dopo la Filosofia. -->
       <article class="spazio-roberto" id="spazioRoberto" data-spazio-roberto data-reveal>
         <div class="spazio-roberto__foto-wrap" data-sr-foto-wrap hidden>
           <img class="spazio-roberto__foto" data-sr-foto src="" alt="" loading="eager">
         </div>
         <div class="spazio-roberto__testo">
-          <h2 class="spazio-roberto__eyebrow" data-lc="it">Dal laboratorio di Roberto</h2>
-          <h2 class="spazio-roberto__eyebrow" data-lc="en">From Roberto's workshop (in Italian)</h2>
+          <h2 class="spazio-roberto__eyebrow" data-lc="it">Ti racconto il mio gelato</h2>
+          <h2 class="spazio-roberto__eyebrow" data-lc="en">Let me tell you about my gelato (in Italian)</h2>
           <h3 class="spazio-roberto__titolo" data-sr-titolo></h3>
           <p class="spazio-roberto__estratto" data-sr-testo></p>
           <span class="spazio-roberto__data" data-sr-data hidden></span>
@@ -249,7 +250,7 @@
     <div class="menu-gusti__inner">
       <header class="menu-gusti__header">
         <div>
-          <p class="eyebrow" data-i18n="archivio-eyebrow">Dal laboratorio di Roberto</p>
+          <p class="eyebrow" data-i18n="archivio-eyebrow">Ti racconto il mio gelato</p>
           <h2 id="menuAggiornamentiTitolo" class="menu-gusti__titolo" data-i18n="archivio-titolo">Tutti gli aggiornamenti</h2>
           <div class="archivio-roberto__cerca-wrap">
             <svg class="archivio-roberto__cerca-icona" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -546,6 +547,71 @@
       </div>
     </div>
   </section>
+
+  <!-- ========================= FALSI MITI DEL GELATO ======================== -->
+  <section class="falsi-miti" id="falsiMiti">
+    <div class="container falsi-miti__inner">
+      <div class="section-intro" data-lc="it">
+        <p class="eyebrow" data-reveal>Falsi miti del gelato</p>
+        <h2 class="section-intro__titolo" data-reveal>Sfatiamo qualche leggenda</h2>
+        <p class="section-intro__testo" data-reveal>
+          Il mondo del gelato artigianale è pieno di idee sbagliate. Ogni tanto Roberto
+          ne sfata una, con i fatti.
+        </p>
+      </div>
+      <div class="section-intro" data-lc="en">
+        <p class="eyebrow" data-reveal>Gelato myths</p>
+        <h2 class="section-intro__titolo" data-reveal>Busting a few legends</h2>
+        <p class="section-intro__testo" data-reveal>
+          The world of artisan gelato is full of misconceptions. Every so often Roberto
+          busts one, with the facts.
+        </p>
+      </div>
+
+      <article class="spazio-roberto falsi-miti__card" data-blog-miti data-reveal>
+        <div class="spazio-roberto__foto-wrap" data-sr-foto-wrap hidden>
+          <img class="spazio-roberto__foto" data-sr-foto src="" alt="" loading="lazy">
+        </div>
+        <div class="spazio-roberto__testo">
+          <h3 class="spazio-roberto__titolo" data-sr-titolo></h3>
+          <p class="spazio-roberto__estratto" data-sr-testo></p>
+          <span class="spazio-roberto__data" data-sr-data hidden></span>
+        </div>
+      </article>
+
+      <button type="button" class="spazio-roberto__archivio-link" data-apri-menu-falsimiti data-reveal data-lc="it">
+        Vedi tutti i falsi miti
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button type="button" class="spazio-roberto__archivio-link" data-apri-menu-falsimiti data-reveal data-lc="en">
+        See all gelato myths
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- ==================== ARCHIVIO FALSI MITI (schermo intero) =================== -->
+  <div class="menu-gusti" id="menuFalsiMiti" role="dialog" aria-modal="true" aria-labelledby="menuFalsiMitiTitolo">
+    <div class="menu-gusti__inner">
+      <header class="menu-gusti__header">
+        <div>
+          <p class="eyebrow" data-i18n="archivio-miti-eyebrow">Falsi miti del gelato</p>
+          <h2 id="menuFalsiMitiTitolo" class="menu-gusti__titolo" data-i18n="archivio-miti-titolo">Tutti i falsi miti</h2>
+          <div class="archivio-roberto__cerca-wrap">
+            <svg class="archivio-roberto__cerca-icona" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <input type="search" id="archivioFalsiMitiCerca" class="archivio-roberto__cerca" placeholder="Cerca per argomento…" aria-label="Cerca tra i falsi miti" data-i18n-placeholder="archivio-cerca">
+          </div>
+        </div>
+        <button type="button" class="menu-gusti__chiudi" data-chiudi-menu-falsimiti aria-label="Chiudi l'archivio dei falsi miti">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+      </header>
+
+      <div class="menu-gusti__scroll" data-lenis-prevent>
+        <div class="archivio-roberto" data-archivio-falsimiti></div>
+      </div>
+    </div>
+  </div>
 
   <!-- ================================ GUSTI ================================ -->
   <section class="gusti" id="gusti">

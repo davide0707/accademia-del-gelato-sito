@@ -730,6 +730,27 @@ section {
 
 /* --------------------------- RICONOSCIMENTI --------------------------------- */
 
+/* ------------------------------- FALSI MITI ------------------------------- */
+
+.falsi-miti {
+  padding-block: var(--space-section-y-sm);
+}
+
+.falsi-miti__inner {
+  text-align: center;
+}
+
+.falsi-miti .section-intro {
+  margin-inline: auto;
+  margin-bottom: var(--space-12);
+}
+
+.falsi-miti__card {
+  margin-inline: auto;
+  margin-bottom: var(--space-8);
+  text-align: left;
+}
+
 .riconoscimenti {
   padding-block: var(--space-section-y-sm);
   background: var(--beige-caldo);
