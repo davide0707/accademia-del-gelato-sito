@@ -1306,10 +1306,10 @@
     errorePrezziLista.classList.remove('visibile');
 
     try {
-      const risposta = await fetch('/api/cancella-prezzo', {
+      const risposta = await fetch('/api/prezzo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pin: pinSalvato(), id }),
+        body: JSON.stringify({ pin: pinSalvato(), azione: 'cancella', id }),
       });
 
       if (risposta.status === 401) {
@@ -1397,11 +1397,10 @@
     btnSalvaPrezzo.innerHTML = inModifica ? '<span class="spinner"></span>Salvo…' : '<span class="spinner"></span>Pubblico…';
 
     try {
-      const corpo = { pin: pinSalvato(), nome, dettaglio, prezzo };
-      const url = inModifica ? '/api/modifica-prezzo' : '/api/pubblica-prezzo';
+      const corpo = { pin: pinSalvato(), azione: inModifica ? 'modifica' : 'crea', nome, dettaglio, prezzo };
       if (inModifica) corpo.id = prezzoInModifica.id;
 
-      const risposta = await fetch(url, {
+      const risposta = await fetch('/api/prezzo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(corpo),
