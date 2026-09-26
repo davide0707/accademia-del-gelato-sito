@@ -1978,15 +1978,19 @@ body.menu-aperto .nav__toggle-linea {
 
 @media (min-width: 560px) {
   .spazio-roberto__foto-wrap {
-    width: 148px;
+    width: 220px;
     aspect-ratio: 1 / 1;
   }
 }
 
+/* object-fit:contain invece di cover: Roberto carica foto di proporzioni
+   diverse (verticali, orizzontali, quadrate) e "cover" ne tagliava una
+   parte per riempire lo spazio — con "contain" si vede sempre la foto
+   intera, con lo sfondo del riquadro a fare da cornice se avanza spazio. */
 .spazio-roberto__foto {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 
@@ -2126,7 +2130,7 @@ body.menu-aperto .nav__toggle-linea {
 }
 
 .archivio-roberto .spazio-roberto__foto-wrap {
-  width: 108px;
+  width: 148px;
   aspect-ratio: 1 / 1;
   transition: width var(--dur-base) var(--ease-premium), aspect-ratio var(--dur-base) var(--ease-premium);
 }
