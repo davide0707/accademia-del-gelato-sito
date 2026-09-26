@@ -2340,15 +2340,19 @@ body.menu-aperto .nav__toggle-linea {
   background-size: var(--ing-pattern-size, 10px 10px);
 }
 
-/* Foto vera caricata da Roberto (Sanity): copre il gradiente decorativo,
-   che resta come sfondo per i gusti senza ancora una foto propria — mai
-   più un placeholder generico, solo il colore/motivo dato dall'ingrediente. */
+/* Foto vera caricata da Roberto (Sanity): mai più un placeholder generico,
+   solo il colore/motivo dato dall'ingrediente per chi non ne ha ancora una.
+   object-fit:contain invece di cover: le foto di Roberto arrivano in
+   proporzioni diverse (quadrate, verticali, orizzontali) e "cover"
+   tagliava una parte del soggetto per riempire lo spazio — con "contain"
+   si vede sempre la foto intera, con il gradiente dell'ingrediente a
+   fare da cornice nello spazio che resta libero ai lati. */
 .gusto-card__foto {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 /* con una foto vera il micro-pattern decorativo diventa ridondante */
