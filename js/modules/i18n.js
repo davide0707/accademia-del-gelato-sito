@@ -98,9 +98,9 @@ const BADGE_CLASSI = {
 // che con la coppia di elementi [data-lc] usata per tutto il resto.
 const META = {
   it: {
-    title: 'Accademia del Gelato — Il gelato naturale italiano | Udine',
+    title: 'Accademia del Gelato — Il Gelato Naturale Italiano | Udine',
     description: 'Gelateria artigianale a Udine: gelato naturale preparato ogni mattina, senza conservanti. Due Coni Gambero Rosso 2025 e 2027. Via Savorgnana 16.',
-    ogTitle: 'Accademia del Gelato — Il gelato naturale italiano',
+    ogTitle: 'Accademia del Gelato — Il Gelato Naturale Italiano',
     ogDescription: "Gelato artigianale naturale a Udine, preparato ogni mattina in laboratorio, senza conservanti né additivi. Via Savorgnana 16, Udine (UD).",
   },
   en: {
