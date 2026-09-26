@@ -48,7 +48,7 @@
 <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Flip.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
 
-<script type="application/ld+json">
+<script type="application/ld+json" id="datiStrutturati">
 {
   "@context": "https://schema.org",
   "@type": "IceCreamShop",
@@ -1502,7 +1502,8 @@
             <tr data-giorno="0"><th scope="row" data-i18n="giorno-dom">Domenica</th><td>10:00 – 23:30</td></tr>
           </tbody>
         </table>
-        <p class="orari-nota" data-i18n="orari-nota">Orari indicativi — verifica telefonica consigliata.</p>
+        <p class="orari-nota" data-lc="it">Orari indicativi — verifica telefonica consigliata.</p>
+        <p class="orari-nota" data-lc="en">Hours are indicative — checking by phone is recommended.</p>
 
         <a href="https://deliveroo.it/it/menu/udine/udine-centro/accademia-del-gelato/?utm_medium=affiliate&amp;utm_source=google_maps_link&amp;fulfillment_type=COLLECTION" target="_blank" rel="noopener" class="btn btn--primario contatti__ordina" data-evento="Deliveroo">
           <img class="btn__icona-deliveroo" src="assets/logo/deliveroo-icona.webp" alt="" width="20" height="18">
@@ -1567,9 +1568,11 @@
 
     <div class="footer__colonna">
       <h3 data-i18n="footer-orari">Orari</h3>
-      <ul>
-        <li data-i18n="footer-orari-tutti">Tutti i giorni: 10:00–23:30</li>
-        <li data-i18n="footer-orari-venSab">Ven–Sab: 10:00–24:00</li>
+      <ul data-footer-orari data-lc="it">
+        <li>Tutti i giorni: 10:00–23:30</li>
+      </ul>
+      <ul data-footer-orari data-lc="en">
+        <li>Every day: 10:00–23:30</li>
       </ul>
     </div>
 

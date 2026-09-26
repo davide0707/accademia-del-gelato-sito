@@ -73,6 +73,23 @@
     opacity: 0.75;
     text-align: right;
   }
+
+  .orario-riga {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .orario-riga__giorno {
+    width: 78px;
+    flex-shrink: 0;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .orario-riga input[type="text"] {
+    padding: 10px 8px;
+    text-align: center;
+  }
+  .orario-riga__separatore { opacity: 0.4; flex-shrink: 0; }
   .btn-esci {
     margin-left: auto;
     flex-shrink: 0;
@@ -178,6 +195,7 @@
   }
   .messaggio.visibile { display: block; }
   .messaggio.errore { background: rgb(165 52 42 / 10%); color: var(--rosso-errore); }
+  .messaggio.successo { background: rgb(47 107 63 / 10%); color: var(--verde-ok); }
 
   .schermata.esito {
     flex: 1;
@@ -333,6 +351,23 @@
     </div>
     <button class="btn-primario hub__bottone" id="btn-blog-racconto" type="button">Ti racconto il mio gelato</button>
     <button class="btn-primario hub__bottone" id="btn-blog-miti" type="button">Falsi miti del gelato</button>
+    <button class="btn-primario hub__bottone" id="btn-orari" type="button">Orari di apertura</button>
+  </section>
+
+  <!-- SCHERMATA ORARI -->
+  <section class="schermata" id="schermata-orari">
+    <div class="modulo__header">
+      <button class="link-indietro" id="btn-orari-indietro" type="button">← Cambia blog</button>
+    </div>
+    <p class="modulo__titolo">Orari di apertura</p>
+    <div id="orari-righe"><!-- 7 righe generate via JS --></div>
+    <div>
+      <label for="orari-nota">Nota <span class="label-facoltativo">(facoltativa)</span></label>
+      <input type="text" id="orari-nota" maxlength="200" placeholder="Es. Orari indicativi — verifica telefonica consigliata.">
+    </div>
+    <p class="messaggio errore" id="errore-orari"></p>
+    <p class="messaggio successo" id="successo-orari">Salvato — sarà visibile sul sito tra pochi secondi.</p>
+    <button class="btn-primario" id="btn-salva-orari">Salva orari</button>
   </section>
 
   <!-- SCHERMATA MODULO -->
@@ -435,6 +470,7 @@
     modulo: $('schermata-modulo'),
     esito: $('schermata-esito'),
     gestione: $('schermata-gestione'),
+    orari: $('schermata-orari'),
   };
   const btnEsci = $('btn-esci');
   function mostra(nome) {
@@ -517,6 +553,116 @@
   $('btn-blog-racconto').addEventListener('click', () => sceglieBlog('racconto'));
   $('btn-blog-miti').addEventListener('click', () => sceglieBlog('miti'));
   $('btn-cambia-blog').addEventListener('click', () => mostra('hub'));
+
+  // ---- Schermata orari ----
+  const GIORNI_ORARI = [
+    { chiave: 'lunedi', nome: 'Lunedì' },
+    { chiave: 'martedi', nome: 'Martedì' },
+    { chiave: 'mercoledi', nome: 'Mercoledì' },
+    { chiave: 'giovedi', nome: 'Giovedì' },
+    { chiave: 'venerdi', nome: 'Venerdì' },
+    { chiave: 'sabato', nome: 'Sabato' },
+    { chiave: 'domenica', nome: 'Domenica' },
+  ];
+  const erroreOrari = $('errore-orari');
+  const successoOrari = $('successo-orari');
+  const btnSalvaOrari = $('btn-salva-orari');
+
+  (function costruisciRigheOrari() {
+    const contenitore = $('orari-righe');
+    GIORNI_ORARI.forEach((g) => {
+      const riga = document.createElement('div');
+      riga.className = 'orario-riga';
+      const apertura = document.createElement('input');
+      apertura.type = 'text';
+      apertura.id = `orario-${g.chiave}-apertura`;
+      apertura.maxLength = 6;
+      apertura.placeholder = '10:00';
+      const chiusura = document.createElement('input');
+      chiusura.type = 'text';
+      chiusura.id = `orario-${g.chiave}-chiusura`;
+      chiusura.maxLength = 6;
+      chiusura.placeholder = '23:30';
+      const nomeGiorno = document.createElement('span');
+      nomeGiorno.className = 'orario-riga__giorno';
+      nomeGiorno.textContent = g.nome;
+      const separatore = document.createElement('span');
+      separatore.className = 'orario-riga__separatore';
+      separatore.textContent = '–';
+      riga.append(nomeGiorno, apertura, separatore, chiusura);
+      contenitore.appendChild(riga);
+    });
+  })();
+
+  async function caricaOrari() {
+    erroreOrari.classList.remove('visibile');
+    successoOrari.classList.remove('visibile');
+    try {
+      const query = encodeURIComponent('*[_id == "orari-apertura"][0]');
+      const url = `https://${SANITY_PROJECT_ID}.apicdn.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
+      const risposta = await fetch(url);
+      if (!risposta.ok) throw new Error('risposta non ok');
+      const { result } = await risposta.json();
+      GIORNI_ORARI.forEach((g) => {
+        const voce = result?.[g.chiave];
+        $(`orario-${g.chiave}-apertura`).value = voce?.apertura || '';
+        $(`orario-${g.chiave}-chiusura`).value = voce?.chiusura || '';
+      });
+      $('orari-nota').value = result?.nota || '';
+    } catch (e) {
+      erroreOrari.textContent = 'Non riesco a caricare gli orari attuali. Riprova.';
+      erroreOrari.classList.add('visibile');
+    }
+  }
+
+  $('btn-orari').addEventListener('click', () => {
+    mostra('orari');
+    caricaOrari();
+  });
+  $('btn-orari-indietro').addEventListener('click', () => mostra('hub'));
+
+  btnSalvaOrari.addEventListener('click', async () => {
+    erroreOrari.classList.remove('visibile');
+    successoOrari.classList.remove('visibile');
+
+    const corpo = { pin: pinSalvato(), nota: $('orari-nota').value.trim() };
+    for (const g of GIORNI_ORARI) {
+      const apertura = $(`orario-${g.chiave}-apertura`).value.trim();
+      const chiusura = $(`orario-${g.chiave}-chiusura`).value.trim();
+      if (!apertura || !chiusura) {
+        erroreOrari.textContent = `Manca l'orario di ${g.nome}.`;
+        erroreOrari.classList.add('visibile');
+        return;
+      }
+      corpo[g.chiave] = { apertura, chiusura };
+    }
+
+    btnSalvaOrari.disabled = true;
+    btnSalvaOrari.innerHTML = '<span class="spinner"></span>Salvo…';
+    try {
+      const risposta = await fetch('/api/modifica-orari', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(corpo),
+      });
+      if (risposta.status === 401) {
+        localStorage.removeItem(PIN_KEY);
+        mostra('pin');
+        erroreePin.textContent = 'PIN errato — inseriscilo di nuovo.';
+        erroreePin.classList.add('visibile');
+        return;
+      }
+      const dati = await risposta.json().catch(() => ({}));
+      if (!risposta.ok) throw new Error(dati.errore || 'Errore sconosciuto');
+      successoOrari.classList.add('visibile');
+    } catch (e) {
+      erroreOrari.textContent = e.message || 'Non sono riuscito a salvare. Riprova.';
+      erroreOrari.classList.add('visibile');
+    } finally {
+      btnSalvaOrari.disabled = false;
+      btnSalvaOrari.textContent = 'Salva orari';
+    }
+  });
 
   // ---- Schermata modulo ----
   const moduloTitolo = $('modulo-titolo');
