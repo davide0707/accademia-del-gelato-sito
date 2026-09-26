@@ -82,11 +82,9 @@ Per sostituire: rimuovi il `<div class="media-placeholder ...">` e il suo conten
 
 ## 4. Foto dei gusti
 
-Le illustrazioni sono integrate: ogni card gusto ha un `<img class="gusto-card__foto">` dentro `.gusto-card__visivo` che punta a `assets/img/gusti/<nome-file>.png`, con `onerror="this.remove()"` come rete di sicurezza — se un file manca o non carica, l'immagine si rimuove da sola e resta visibile il gradiente colorato di sfondo (mai un'icona rotta). Stessa logica per le 4 card "Da gustare anche" (`assets/img/esperienze/`) e per l'illustrazione di "Qua la Zampa" (`assets/img/varie/qua-la-zampa.png`).
+Le foto dei gusti **non sono più file statici nel repository**: dal passaggio al catalogo gestito da Roberto (`js/modules/gustiCatalogo.js`), ogni gusto è un documento su Sanity con un campo `foto` opzionale, caricato da Roberto stesso dalla schermata "Gusti del catalogo" in `roberto-pubblica/`. La card genera l'`<img class="gusto-card__foto">` solo se quel gusto ha una foto caricata; altrimenti resta visibile il gradiente colorato di sfondo (`.gusto-card__visivo`), mai un'icona rotta o una foto generica non pertinente.
 
-**Nocciola Piemonte I.G.P.** e **Pistacchio Spagna** esistono in due formulazioni (Creme e Puro Zero): è stata usata la stessa immagine per entrambe (`nocciola-piemonte-igp.png` + `nocciola-piemonte-igp-puro-zero.png`, `pistacchio-spagna.png` + `pistacchio-spagna-puro-zero.png`) — se in futuro avrai scatti distinti, sostituisci semplicemente i file con quei nomi.
-
-Per aggiungere un gusto nuovo in futuro: il nome file segue la stessa logica di slug (minuscolo, spazi/apostrofi/accenti rimossi o sostituiti da trattini) usata per tutti i file esistenti in `assets/img/gusti/`, `assets/img/esperienze/` e `assets/img/varie/` — usa quei nomi come riferimento.
+In precedenza il catalogo usava foto stock generiche come placeholder per ogni gusto (`assets/img/gusti/*.webp`) — rimosse perché non erano scatti reali del prodotto e, nel formato ridotto della card, risultavano poco leggibili. Stessa logica di file statici ancora in uso per le 4 card "Da gustare anche" (`assets/img/esperienze/`) e per l'illustrazione di "Qua la Zampa" (`assets/img/varie/qua-la-zampa.png`), non toccate da questo cambiamento.
 
 ---
 

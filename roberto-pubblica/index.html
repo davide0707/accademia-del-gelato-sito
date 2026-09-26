@@ -90,7 +90,7 @@
     text-align: center;
   }
   .orario-riga__separatore { opacity: 0.4; flex-shrink: 0; }
-  #orari-righe, #prezzi-righe { display: flex; flex-direction: column; gap: 10px; }
+  #orari-righe { display: flex; flex-direction: column; gap: 10px; }
 
   select {
     width: 100%;
@@ -139,16 +139,6 @@
   }
   .checkbox-riga input { width: 20px; height: 20px; flex-shrink: 0; accent-color: var(--rosso); margin: 0; }
 
-  .prezzo-blocco {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 14px;
-    background: var(--avorio);
-    border: 1px solid var(--beige);
-    border-radius: 12px;
-  }
-  .prezzo-blocco__titolo { margin: 0; font-size: 14px; font-weight: 700; color: var(--rosso-scuro); }
   .btn-esci {
     margin-left: auto;
     flex-shrink: 0;
@@ -506,16 +496,47 @@
     <button class="btn-primario" id="btn-salva-gusto">Pubblica</button>
   </section>
 
-  <!-- SCHERMATA PREZZI -->
-  <section class="schermata" id="schermata-prezzi">
+  <!-- SCHERMATA PREZZI: elenco -->
+  <section class="schermata" id="schermata-prezzi-lista">
     <div class="modulo__header">
       <button class="link-indietro" id="btn-prezzi-indietro" type="button">← Cambia sezione</button>
     </div>
-    <p class="modulo__titolo">Prezzi</p>
-    <div id="prezzi-righe"><!-- 3 blocchi generati via JS --></div>
-    <p class="messaggio errore" id="errore-prezzi"></p>
-    <p class="messaggio successo" id="successo-prezzi">Salvato — sarà visibile sul sito tra pochi secondi.</p>
-    <button class="btn-primario" id="btn-salva-prezzi">Salva prezzi</button>
+    <div>
+      <p class="gestione__titolo">Prezzi</p>
+      <p class="gestione__sottotitolo">Tocca una voce per modificarla, o "Cancella" per rimuoverla. Aggiungine quante vuoi: vaschette, torte, formati speciali…</p>
+    </div>
+    <button class="btn-primario" id="btn-nuovo-prezzo" type="button">+ Nuova voce</button>
+    <p class="messaggio errore" id="errore-prezzi-lista"></p>
+    <div class="gestione__lista" id="prezzi-lista">
+      <p class="gestione__caricamento">Carico…</p>
+    </div>
+  </section>
+
+  <!-- SCHERMATA PREZZO: modulo aggiungi/modifica -->
+  <section class="schermata" id="schermata-prezzo-modulo">
+    <div class="modulo__header">
+      <button class="link-indietro" id="btn-prezzo-modulo-indietro" type="button">← Torna all'elenco</button>
+    </div>
+    <p class="modulo__titolo" id="prezzo-modulo-titolo">Nuova voce</p>
+
+    <div>
+      <label for="prezzo-nome">Nome</label>
+      <input type="text" id="prezzo-nome" maxlength="60" placeholder="Es. Torta gelato su ordinazione">
+    </div>
+
+    <div>
+      <label for="prezzo-dettaglio">Dettaglio <span class="label-facoltativo">(facoltativo)</span></label>
+      <input type="text" id="prezzo-dettaglio" maxlength="80" placeholder="Es. da 8 persone, 24h di preavviso">
+    </div>
+
+    <div>
+      <label for="prezzo-valore">Prezzo</label>
+      <input type="text" id="prezzo-valore" maxlength="30" placeholder="Es. 25,00 € oppure da 25,00 €">
+    </div>
+
+    <p class="messaggio errore" id="errore-prezzo-modulo"></p>
+
+    <button class="btn-primario" id="btn-salva-prezzo">Pubblica</button>
   </section>
 
   <!-- SCHERMATA MODULO -->
@@ -621,7 +642,8 @@
     orari: $('schermata-orari'),
     gustiLista: $('schermata-gusti-lista'),
     gustoModulo: $('schermata-gusto-modulo'),
-    prezzi: $('schermata-prezzi'),
+    prezziLista: $('schermata-prezzi-lista'),
+    prezzoModulo: $('schermata-prezzo-modulo'),
   };
   const btnEsci = $('btn-esci');
   function mostra(nome) {
@@ -1217,94 +1239,79 @@
     }
   });
 
-  // ---- Prezzi ----
-  const TICKET_PREZZI = [
-    { chiave: 'piccola', nome: 'Vaschetta piccola' },
-    { chiave: 'media', nome: 'Vaschetta media' },
-    { chiave: 'granita', nome: 'Granita' },
-  ];
-  const errorePrezzi = $('errore-prezzi');
-  const successoPrezzi = $('successo-prezzi');
-  const btnSalvaPrezzi = $('btn-salva-prezzi');
+  // ---- Prezzi: elenco (listino libero, non più 3 voci fisse) ----
+  const listaPrezziEl = $('prezzi-lista');
+  const errorePrezziLista = $('errore-prezzi-lista');
 
-  (function costruisciRighePrezzi() {
-    const contenitore = $('prezzi-righe');
-    TICKET_PREZZI.forEach((t) => {
-      const blocco = document.createElement('div');
-      blocco.className = 'prezzo-blocco';
-      const titolo = document.createElement('p');
-      titolo.className = 'prezzo-blocco__titolo';
-      titolo.textContent = t.nome;
-      blocco.appendChild(titolo);
-
-      [['nome', 'Nome'], ['dettaglio', 'Dettaglio'], ['prezzo', 'Prezzo']].forEach(([campo, etichetta]) => {
-        const wrap = document.createElement('div');
-        const label = document.createElement('label');
-        label.setAttribute('for', `prezzo-${t.chiave}-${campo}`);
-        label.textContent = etichetta;
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.id = `prezzo-${t.chiave}-${campo}`;
-        input.maxLength = 60;
-        wrap.append(label, input);
-        blocco.appendChild(wrap);
-      });
-      contenitore.appendChild(blocco);
-    });
-  })();
-
-  async function caricaPrezzi() {
-    errorePrezzi.classList.remove('visibile');
-    successoPrezzi.classList.remove('visibile');
+  async function caricaPrezziLista() {
+    errorePrezziLista.classList.remove('visibile');
+    listaPrezziEl.innerHTML = '<p class="gestione__caricamento">Carico…</p>';
     try {
-      const query = encodeURIComponent('*[_id == "prezzi-catalogo"][0]');
+      const query = encodeURIComponent('*[_type == "vocePrezzo"] | order(ordine asc){_id, nome, dettaglio, prezzo}');
       const url = `https://${SANITY_PROJECT_ID}.apicdn.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
       const risposta = await fetch(url);
       if (!risposta.ok) throw new Error('risposta non ok');
       const { result } = await risposta.json();
-      TICKET_PREZZI.forEach((t) => {
-        const voce = result?.[t.chiave];
-        $(`prezzo-${t.chiave}-nome`).value = voce?.nome || '';
-        $(`prezzo-${t.chiave}-dettaglio`).value = voce?.dettaglio || '';
-        $(`prezzo-${t.chiave}-prezzo`).value = voce?.prezzo || '';
-      });
+      renderizzaPrezziLista(result || []);
     } catch (e) {
-      errorePrezzi.textContent = 'Non riesco a caricare i prezzi attuali. Riprova.';
-      errorePrezzi.classList.add('visibile');
+      listaPrezziEl.innerHTML = '';
+      errorePrezziLista.textContent = 'Non riesco a caricare i prezzi. Riprova.';
+      errorePrezziLista.classList.add('visibile');
     }
   }
 
-  $('btn-prezzi').addEventListener('click', () => {
-    mostra('prezzi');
-    caricaPrezzi();
-  });
-  $('btn-prezzi-indietro').addEventListener('click', () => mostra('hub'));
-
-  btnSalvaPrezzi.addEventListener('click', async () => {
-    errorePrezzi.classList.remove('visibile');
-    successoPrezzi.classList.remove('visibile');
-
-    const corpo = { pin: pinSalvato() };
-    for (const t of TICKET_PREZZI) {
-      const nome = $(`prezzo-${t.chiave}-nome`).value.trim();
-      const dettaglio = $(`prezzo-${t.chiave}-dettaglio`).value.trim();
-      const prezzo = $(`prezzo-${t.chiave}-prezzo`).value.trim();
-      if (!nome || !dettaglio || !prezzo) {
-        errorePrezzi.textContent = `Mancano dei campi per "${t.nome}".`;
-        errorePrezzi.classList.add('visibile');
-        return;
-      }
-      corpo[t.chiave] = { nome, dettaglio, prezzo };
+  function renderizzaPrezziLista(voci) {
+    listaPrezziEl.innerHTML = '';
+    if (voci.length === 0) {
+      listaPrezziEl.innerHTML = '<p class="gestione__vuoto">Non ci sono ancora voci nel listino.</p>';
+      return;
     }
+    voci.forEach((voce) => listaPrezziEl.appendChild(creaVocePrezzoRiga(voce)));
+  }
 
-    btnSalvaPrezzi.disabled = true;
-    btnSalvaPrezzi.innerHTML = '<span class="spinner"></span>Salvo…';
+  function creaVocePrezzoRiga(voce) {
+    const riga = document.createElement('div');
+    riga.className = 'gestione__voce';
+
+    const testo = document.createElement('div');
+    testo.className = 'gestione__voce-testo';
+    testo.addEventListener('click', () => apriPrezzoModifica(voce));
+    const nomeEl = document.createElement('div');
+    nomeEl.className = 'gestione__voce-titolo';
+    nomeEl.textContent = voce.nome;
+    const sottotitolo = document.createElement('div');
+    sottotitolo.className = 'gestione__voce-data';
+    sottotitolo.textContent = voce.prezzo;
+    const hint = document.createElement('div');
+    hint.className = 'gestione__voce-modifica-hint';
+    hint.textContent = 'Tocca per modificare';
+    testo.append(nomeEl, sottotitolo, hint);
+    riga.appendChild(testo);
+
+    const btnCancella = document.createElement('button');
+    btnCancella.type = 'button';
+    btnCancella.className = 'gestione__voce-cancella';
+    btnCancella.textContent = 'Cancella';
+    btnCancella.addEventListener('click', () => cancellaPrezzo(voce._id, voce.nome, riga, btnCancella));
+    riga.appendChild(btnCancella);
+
+    return riga;
+  }
+
+  async function cancellaPrezzo(id, nome, rigaEl, btnEl) {
+    if (!confirm(`Cancellare "${nome}"? Non si può annullare.`)) return;
+
+    btnEl.disabled = true;
+    btnEl.textContent = '…';
+    errorePrezziLista.classList.remove('visibile');
+
     try {
-      const risposta = await fetch('/api/modifica-prezzi', {
+      const risposta = await fetch('/api/cancella-prezzo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(corpo),
+        body: JSON.stringify({ pin: pinSalvato(), id }),
       });
+
       if (risposta.status === 401) {
         localStorage.removeItem(PIN_KEY);
         mostra('pin');
@@ -1312,15 +1319,114 @@
         erroreePin.classList.add('visibile');
         return;
       }
+
       const dati = await risposta.json().catch(() => ({}));
       if (!risposta.ok) throw new Error(dati.errore || 'Errore sconosciuto');
-      successoPrezzi.classList.add('visibile');
+
+      rigaEl.remove();
+      if (!listaPrezziEl.querySelector('.gestione__voce')) {
+        listaPrezziEl.innerHTML = '<p class="gestione__vuoto">Non ci sono ancora voci nel listino.</p>';
+      }
     } catch (e) {
-      errorePrezzi.textContent = e.message || 'Non sono riuscito a salvare. Riprova.';
-      errorePrezzi.classList.add('visibile');
+      btnEl.disabled = false;
+      btnEl.textContent = 'Cancella';
+      errorePrezziLista.textContent = e.message || 'Non sono riuscito a cancellarlo. Riprova.';
+      errorePrezziLista.classList.add('visibile');
+    }
+  }
+
+  $('btn-prezzi').addEventListener('click', () => {
+    mostra('prezziLista');
+    caricaPrezziLista();
+  });
+  $('btn-prezzi-indietro').addEventListener('click', () => mostra('hub'));
+  $('btn-nuovo-prezzo').addEventListener('click', () => {
+    resetPrezzoModuloANuovo();
+    mostra('prezzoModulo');
+  });
+  $('btn-prezzo-modulo-indietro').addEventListener('click', () => mostra('prezziLista'));
+
+  // ---- Prezzi: modulo aggiungi/modifica ----
+  const prezzoModuloTitolo = $('prezzo-modulo-titolo');
+  const prezzoNome = $('prezzo-nome');
+  const prezzoDettaglio = $('prezzo-dettaglio');
+  const prezzoValore = $('prezzo-valore');
+  const erroreprezzoModulo = $('errore-prezzo-modulo');
+  const btnSalvaPrezzo = $('btn-salva-prezzo');
+
+  let prezzoInModifica = null; // null = nuova voce; altrimenti { id }
+
+  function resetPrezzoModuloANuovo() {
+    prezzoInModifica = null;
+    prezzoNome.value = '';
+    prezzoDettaglio.value = '';
+    prezzoValore.value = '';
+    prezzoModuloTitolo.textContent = 'Nuova voce';
+    btnSalvaPrezzo.textContent = 'Pubblica';
+    erroreprezzoModulo.classList.remove('visibile');
+  }
+
+  function apriPrezzoModifica(voce) {
+    prezzoInModifica = { id: voce._id };
+    prezzoNome.value = voce.nome || '';
+    prezzoDettaglio.value = voce.dettaglio || '';
+    prezzoValore.value = voce.prezzo || '';
+    prezzoModuloTitolo.textContent = 'Modifica voce';
+    btnSalvaPrezzo.textContent = 'Salva modifiche';
+    erroreprezzoModulo.classList.remove('visibile');
+    mostra('prezzoModulo');
+  }
+
+  function mostraErrorePrezzoModulo(testo) {
+    erroreprezzoModulo.textContent = testo;
+    erroreprezzoModulo.classList.add('visibile');
+  }
+
+  btnSalvaPrezzo.addEventListener('click', async () => {
+    erroreprezzoModulo.classList.remove('visibile');
+
+    const nome = prezzoNome.value.trim();
+    const dettaglio = prezzoDettaglio.value.trim();
+    const prezzo = prezzoValore.value.trim();
+
+    if (!nome) return mostraErrorePrezzoModulo('Manca il nome.');
+    if (!prezzo) return mostraErrorePrezzoModulo('Manca il prezzo.');
+
+    const inModifica = !!prezzoInModifica;
+    btnSalvaPrezzo.disabled = true;
+    btnSalvaPrezzo.innerHTML = inModifica ? '<span class="spinner"></span>Salvo…' : '<span class="spinner"></span>Pubblico…';
+
+    try {
+      const corpo = { pin: pinSalvato(), nome, dettaglio, prezzo };
+      const url = inModifica ? '/api/modifica-prezzo' : '/api/pubblica-prezzo';
+      if (inModifica) corpo.id = prezzoInModifica.id;
+
+      const risposta = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(corpo),
+      });
+
+      const dati = await risposta.json().catch(() => ({}));
+
+      if (risposta.status === 401) {
+        localStorage.removeItem(PIN_KEY);
+        mostra('pin');
+        erroreePin.textContent = 'PIN errato — inseriscilo di nuovo.';
+        erroreePin.classList.add('visibile');
+        return;
+      }
+
+      if (!risposta.ok) throw new Error(dati.errore || 'Errore sconosciuto');
+
+      resetPrezzoModuloANuovo();
+      mostra('prezziLista');
+      caricaPrezziLista();
+    } catch (err) {
+      mostraErrorePrezzoModulo(err.message || 'Qualcosa è andato storto. Riprova.');
     } finally {
-      btnSalvaPrezzi.disabled = false;
-      btnSalvaPrezzi.textContent = 'Salva prezzi';
+      btnSalvaPrezzo.disabled = false;
+      btnSalvaPrezzo.textContent = prezzoInModifica ? 'Salva modifiche' : 'Pubblica';
     }
   });
 

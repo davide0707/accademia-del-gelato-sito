@@ -920,6 +920,7 @@ section {
 @media (min-width: 768px) {
   .prezzi-ticket {
     flex-direction: row;
+    flex-wrap: wrap;
     gap: var(--space-6);
   }
 }
@@ -2298,7 +2299,7 @@ body.menu-aperto .nav__toggle-linea {
   background: var(--avorio);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
-  padding-top: calc(96px + var(--space-6));
+  padding-top: calc(220px + var(--space-6));
   overflow: hidden;
   box-shadow: var(--shadow-sm);
   transition: box-shadow var(--dur-base) var(--ease-soft);
@@ -2319,7 +2320,7 @@ body.menu-aperto .nav__toggle-linea {
 .gusto-card__visivo {
   position: absolute;
   inset: 0;
-  height: 96px;
+  height: 220px;
   background: linear-gradient(135deg, var(--ing-1, var(--beige-caldo)), var(--ing-2, var(--avorio)));
 }
 
@@ -2339,9 +2340,9 @@ body.menu-aperto .nav__toggle-linea {
   background-size: var(--ing-pattern-size, 10px 10px);
 }
 
-/* Foto reale del gusto (assets/img/gusti/<slug>.jpg): copre il gradiente,
-   che resta come sfondo di riserva se il file non esiste ancora o fallisce
-   il caricamento (onerror la rimuove dal DOM, vedi index.html). */
+/* Foto vera caricata da Roberto (Sanity): copre il gradiente decorativo,
+   che resta come sfondo per i gusti senza ancora una foto propria — mai
+   più un placeholder generico, solo il colore/motivo dato dall'ingrediente. */
 .gusto-card__foto {
   position: absolute;
   inset: 0;
