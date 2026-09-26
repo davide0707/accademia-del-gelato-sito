@@ -172,7 +172,10 @@ export async function initGustiCatalogo() {
   let datiIniziali = GUSTI_EMERGENZA;
   try {
     const grezzo = localStorage.getItem(CACHE_KEY_GUSTI);
-    if (grezzo) datiIniziali = JSON.parse(grezzo);
+    if (grezzo) {
+      const parsato = JSON.parse(grezzo);
+      if (Array.isArray(parsato)) datiIniziali = parsato;
+    }
   } catch (e) {
     /* cache illeggibile: resta il catalogo di emergenza */
   }
@@ -235,7 +238,15 @@ export async function initPrezzi() {
   let datiIniziali = PREZZI_EMERGENZA;
   try {
     const grezzo = localStorage.getItem(CACHE_KEY_PREZZI);
-    if (grezzo) datiIniziali = JSON.parse(grezzo);
+    // Prima di oggi i prezzi erano un oggetto a 3 campi fissi, non un
+    // elenco: chi ha già visitato il sito può avere in cache quel vecchio
+    // formato. Array.isArray scarta silenziosamente una cache così vecchia
+    // (altrimenti lo spread qui sotto lancerebbe un errore non gestito,
+    // bloccando l'intera funzione prima ancora di arrivare al fetch live).
+    if (grezzo) {
+      const parsato = JSON.parse(grezzo);
+      if (Array.isArray(parsato)) datiIniziali = parsato;
+    }
   } catch (e) {
     /* cache illeggibile: restano i prezzi di emergenza */
   }
