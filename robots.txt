@@ -1,7 +1,7 @@
 # Se in futuro si aggiunge un dominio personalizzato al posto di quello
-# vercel.app, aggiornare l'indirizzo qui sotto e in sitemap.xml.
+# pages.dev (Cloudflare), aggiornare l'indirizzo qui sotto e in sitemap.xml.
 User-agent: *
 Allow: /
 Disallow: /roberto-pubblica/
 
-Sitemap: https://accademia-del-gelato-sito.vercel.app/sitemap.xml
+Sitemap: https://accademia-del-gelato.pages.dev/sitemap.xml

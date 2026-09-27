@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Se in futuro si aggiunge un dominio personalizzato (es. accademiadelgelato.it)
-  al posto di quello vercel.app, aggiornare l'indirizzo qui sotto e in robots.txt.
+  al posto di quello pages.dev (Cloudflare), aggiornare l'indirizzo qui sotto e in robots.txt.
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://accademia-del-gelato-sito.vercel.app/</loc>
-    <lastmod>2026-09-10</lastmod>
+    <loc>https://accademia-del-gelato.pages.dev/</loc>
+    <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
