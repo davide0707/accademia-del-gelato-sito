@@ -26,7 +26,13 @@ export async function onRequestGet({ request, env }) {
   }
 
   try {
-    const url = `${SITO_GOATCOUNTER}/api/v0/stats/total?start=${encodeURIComponent(DA_QUANDO)}`;
+    // Fine all'inizio dell'ora SUCCESSIVA: GoatCounter lavora a ore intere,
+    // e con la fine "adesso" le visite dell'ora in corso restavano fuori
+    // finché l'ora non finiva.
+    const fine = new Date();
+    fine.setUTCHours(fine.getUTCHours() + 1, 0, 0, 0);
+    const alle = fine.toISOString().replace(/\.\d{3}Z$/, 'Z');
+    const url = `${SITO_GOATCOUNTER}/api/v0/stats/total?start=${encodeURIComponent(DA_QUANDO)}&end=${encodeURIComponent(alle)}`;
     const risposta = await fetch(url, {
       headers: {
         Authorization: `Bearer ${env.GOATCOUNTER_TOKEN}`,
