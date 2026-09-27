@@ -1906,20 +1906,17 @@ section {
 .nav__logo {
   display: flex;
   flex-direction: column;
+  gap: 0.2em;
   line-height: 1;
   font-family: var(--font-display);
 }
 
-.nav__logo-eyebrow {
-  font-size: var(--fs-eyebrow);
-  letter-spacing: var(--tracking-eyebrow);
-  text-transform: uppercase;
-  color: var(--rosso-scuro);
-  font-weight: var(--fw-display-medium);
-}
-
+/* Come nel logo vero del negozio (assets/logo/accademia-logo-badge.webp):
+   "ACCADEMIA" e "DEL GELATO" su due righe identiche, stessa grandezza e
+   stessa spaziatura — richiesto da Roberto. */
+.nav__logo-eyebrow,
 .nav__logo-nome {
-  font-size: var(--fs-h6);
+  font-size: clamp(0.8rem, 0.74rem + 0.3vw, 0.95rem);
   letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
   color: var(--rosso-scuro);
