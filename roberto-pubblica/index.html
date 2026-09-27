@@ -959,7 +959,7 @@
     erroreOrari.classList.remove('visibile');
     successoOrari.classList.remove('visibile');
 
-    const corpo = { pin: pinSalvato(), nota: $('orari-nota').value.trim() };
+    const corpo = { pin: pinSalvato(), tipo: 'orari', nota: $('orari-nota').value.trim() };
     for (const g of GIORNI_ORARI) {
       const apertura = $(`orario-${g.chiave}-apertura`).value.trim();
       const chiusura = $(`orario-${g.chiave}-chiusura`).value.trim();
@@ -974,7 +974,7 @@
     btnSalvaOrari.disabled = true;
     btnSalvaOrari.innerHTML = '<span class="spinner"></span>Salvo…';
     try {
-      const risposta = await fetch('/api/modifica-orari', {
+      const risposta = await fetch('/api/configurazione', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(corpo),
@@ -989,7 +989,7 @@
       const dati = await risposta.json().catch(() => ({}));
       if (!risposta.ok) throw new Error(dati.errore || 'Errore sconosciuto');
 
-      const { pin, ...datiOrari } = corpo;
+      const { pin, tipo, ...datiOrari } = corpo;
       registraAzione(codaAzioniOrari, AZIONI_ORARI, { tipo: 'scrivi', voce: { _id: ID_ORARI, ...datiOrari } });
 
       successoOrari.classList.add('visibile');
@@ -1218,6 +1218,7 @@
 
     const corpo = {
       pin: pinSalvato(),
+      tipo: 'etichette',
       linee: leggiCampiEtichette('etichette-linee', RIFERIMENTO_LINEE),
       ingredienti: leggiCampiEtichette('etichette-ingredienti', RIFERIMENTO_INGREDIENTI),
       badge: leggiCampiEtichette('etichette-badge', RIFERIMENTO_BADGE),
@@ -1226,7 +1227,7 @@
     btnSalvaEtichette.disabled = true;
     btnSalvaEtichette.innerHTML = '<span class="spinner"></span>Salvo…';
     try {
-      const risposta = await fetch('/api/etichette-gusto', {
+      const risposta = await fetch('/api/configurazione', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(corpo),
@@ -1241,7 +1242,7 @@
       const dati = await risposta.json().catch(() => ({}));
       if (!risposta.ok) throw new Error(dati.errore || 'Errore sconosciuto');
 
-      const { pin, ...datiEtichette } = corpo;
+      const { pin, tipo, ...datiEtichette } = corpo;
       registraAzione(codaAzioniEtichette, AZIONI_ETICHETTE, { tipo: 'scrivi', voce: { _id: ID_ETICHETTE, ...datiEtichette } });
       applicaEtichetteAlModulo(datiEtichette);
 
