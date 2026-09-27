@@ -52,7 +52,8 @@ const I18N = {
   'linea-frutta-desc': { it: 'I nostri sorbetti', en: 'Our sorbets' },
   'linea-vegani-nome': { it: 'Gusti Vegan', en: 'Vegan Flavors' },
   'linea-vegani-desc': { it: 'Linea Puro', en: 'Puro Line' },
-  'linea-naturalmentesenza-nome': { it: 'Naturalmente Senza', en: 'Naturally Free-From' },
+  // ­ = trattino facoltativo: va a capo lì solo se non c'è spazio
+  'linea-naturalmentesenza-nome': { it: 'Natural­mente Senza', en: 'Naturally Free-From' },
   'linea-naturalmentesenza-desc': { it: 'No zucchero · No glutine', en: 'No sugar · No gluten' },
   'linea-purozero-nome': { it: 'Puro Zero Vegan', en: 'Puro Zero Vegan' },
   'linea-purozero-desc': { it: 'No glutine · No latte · No zucchero', en: 'No gluten · No dairy · No sugar' },

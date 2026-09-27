@@ -1022,14 +1022,22 @@ section {
   font-variant-numeric: tabular-nums;
 }
 
+/* Tutto maiuscolo, come li ha chiesti Roberto: spaziatura larga come il
+   logo "ACCADEMIA DEL GELATO", e un corpo un po' più piccolo di un titolo
+   normale perché "NATURALMENTE" stia su una riga anche nelle card strette
+   dei telefoni piccoli. */
 .linea-card__nome {
   font-family: var(--font-display);
-  font-size: var(--fs-h5);
+  font-size: clamp(0.9rem, 0.8rem + 0.55vw, 1.3rem);
   font-weight: var(--fw-display-medium);
-  line-height: var(--lh-heading);
-  letter-spacing: var(--tracking-tight);
+  line-height: 1.25;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   color: var(--rosso-scuro);
   text-wrap: balance;
+  /* ultima rete sugli schermi minuscoli: "NATURALMENTE" ha un trattino
+     facoltativo (&shy;) e va a capo lì invece di uscire dalla card */
+  hyphens: manual;
 }
 
 .linea-card__desc {
@@ -1084,6 +1092,38 @@ section {
   --lc-1: #B9D0D2; --lc-2: var(--ing-cocco-2);
   --lc-motivo: repeating-linear-gradient(60deg, rgb(255 255 255 / 55%) 0 1px, transparent 1px 11px),
     repeating-linear-gradient(-60deg, rgb(255 255 255 / 55%) 0 1px, transparent 1px 11px);
+}
+
+/* Su telefono, in mezza larghezza "NATURALMENTE" in maiuscolo non entra:
+   una card per riga, con la fascia colorata che diventa una striscia a
+   sinistra e la freccia sul bordo destro. Più compatta delle card alte, e
+   il titolo ha tutto lo spazio che gli serve. Sta in fondo apposta: deve
+   vincere sulle regole base delle card qui sopra. */
+@media (max-width: 559px) {
+  .gusti-linee { grid-template-columns: minmax(0, 1fr); }
+
+  .linea-card { flex-direction: row; }
+
+  .linea-card__visivo {
+    width: 64px;
+    height: auto;
+  }
+
+  .linea-card__testo {
+    flex: 1;
+    min-width: 0;
+    padding: var(--space-4) calc(var(--space-4) + 36px + var(--space-3)) var(--space-4) var(--space-4);
+  }
+
+  .linea-card__freccia {
+    top: 50%;
+    right: var(--space-4);
+    width: 36px;
+    height: 36px;
+    margin-top: -18px;
+  }
+
+  .linea-card__nome { font-size: 1.05rem; }
 }
 
 .gusti-cta {
