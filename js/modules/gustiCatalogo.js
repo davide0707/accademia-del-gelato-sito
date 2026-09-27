@@ -23,6 +23,18 @@ const SANITY_PROJECT_ID = 'jskwy1n7';
 const SANITY_DATASET = 'production';
 const CACHE_KEY_GUSTI = 'ag_gusti_catalogo';
 const CACHE_KEY_PREZZI = 'ag_prezzi_catalogo';
+const CACHE_KEY_ETICHETTE = 'ag_etichette_gusto';
+
+// Etichette italiane di Linea/Badge, personalizzabili da Roberto da
+// roberto-pubblica (solo il testo — i valori restano fissi, vedi
+// css/main.css per come guidano colori/animazioni). Finché Roberto non
+// personalizza nulla, restano mappe vuote e si usano i default qui sotto.
+let etichetteCorrenti = { linee: {}, ingredienti: {}, badge: {} };
+// Riferimento all'ultimo elenco gusti renderizzato: se le etichette
+// personalizzate arrivano DOPO i gusti (richieste in parallelo, ordine di
+// risposta non garantito), serve per ridisegnare le card con le etichette
+// giuste senza dover rifare la domanda a Sanity.
+let ultimiGustiRenderizzati = null;
 
 const EYEBROW_PER_LINEA = {
   creme: { chiave: 'eyebrow-creme', it: 'Linea Creme', en: 'Cream Line' },
@@ -69,7 +81,19 @@ function linguaAttuale() {
 function creaBadge(classe, lingua) {
   const span = document.createElement('span');
   span.className = `badge badge--${classe}`;
-  span.textContent = BADGE_TESTO[classe]?.[lingua] || '';
+  const personalizzata = etichetteCorrenti.badge[classe];
+  const defaultIt = BADGE_TESTO[classe]?.it;
+  if (personalizzata && personalizzata !== defaultIt) {
+    // Etichetta scritta da Roberto: stesso testo in IT e EN (come gli altri
+    // suoi contenuti — nomi gusti, post, prezzi). data-i18n con una chiave
+    // inesistente esclude questo span sia dal ciclo generale di i18n.js sia
+    // dalla sua traduzione automatica per classe CSS (BADGE_CLASSI), che
+    // altrimenti lo sovrascriverebbe al primo cambio lingua.
+    span.dataset.i18n = 'gusto-badge-personalizzato';
+    span.textContent = personalizzata;
+  } else {
+    span.textContent = BADGE_TESTO[classe]?.[lingua] || '';
+  }
   return span;
 }
 
@@ -101,8 +125,15 @@ function creaCard(gusto) {
   eyebrow.className = 'gusto-card__eyebrow';
   const infoEyebrow = EYEBROW_PER_LINEA[gusto.linea];
   if (infoEyebrow) {
-    eyebrow.dataset.i18n = infoEyebrow.chiave;
-    eyebrow.textContent = infoEyebrow[lingua];
+    const personalizzata = etichetteCorrenti.linee[gusto.linea];
+    if (personalizzata && personalizzata !== infoEyebrow.it) {
+      // stesso ragionamento di creaBadge: niente data-i18n, stesso testo
+      // in entrambe le lingue quando è Roberto ad averlo scritto
+      eyebrow.textContent = personalizzata;
+    } else {
+      eyebrow.dataset.i18n = infoEyebrow.chiave;
+      eyebrow.textContent = infoEyebrow[lingua];
+    }
   }
 
   const nome = document.createElement('h3');
@@ -151,6 +182,7 @@ function renderizzaGusti(gusti) {
   if (!griglia) return;
   const vetrina = document.querySelector('.gusti-vetrina');
 
+  ultimiGustiRenderizzati = gusti;
   const ordinati = [...gusti].sort((a, b) => (a.ordine ?? 999) - (b.ordine ?? 999));
 
   griglia.innerHTML = '';
@@ -164,10 +196,47 @@ function renderizzaGusti(gusti) {
   ribindaInterazioni();
 }
 
+// Le etichette personalizzate arrivano con un fetch separato, in
+// parallelo a quello dei gusti (nessuno dei due aspetta l'altro): quando
+// arrivano, se cambia qualcosa rispetto a quanto già mostrato, le card già
+// in pagina vengono ridisegnate al volo con il testo giusto.
+async function caricaEtichetteGusto() {
+  try {
+    const grezzo = localStorage.getItem(CACHE_KEY_ETICHETTE);
+    if (grezzo) {
+      const parsato = JSON.parse(grezzo);
+      if (parsato && typeof parsato === 'object') etichetteCorrenti = parsato;
+    }
+  } catch (e) {
+    /* cache illeggibile: restano le etichette di default */
+  }
+
+  try {
+    const query = encodeURIComponent('*[_id == "etichette-gusto"][0]');
+    const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
+    const risposta = await fetch(url);
+    if (!risposta.ok) return;
+    const { result } = await risposta.json();
+    if (!result) return;
+    const mappe = {
+      linee: Object.fromEntries((result.linee || []).map((v) => [v.valore, v.etichetta])),
+      ingredienti: Object.fromEntries((result.ingredienti || []).map((v) => [v.valore, v.etichetta])),
+      badge: Object.fromEntries((result.badge || []).map((v) => [v.valore, v.etichetta])),
+    };
+    etichetteCorrenti = mappe;
+    localStorage.setItem(CACHE_KEY_ETICHETTE, JSON.stringify(mappe));
+    if (ultimiGustiRenderizzati) renderizzaGusti(ultimiGustiRenderizzati);
+  } catch (e) {
+    /* rete assente o lenta: restano le etichette già in uso */
+  }
+}
+
 /** Catalogo gusti: vetrina homepage + griglia completa nel catalogo a schermo intero. */
 export async function initGustiCatalogo() {
   const griglia = document.getElementById('gustiGriglia');
   if (!griglia) return;
+
+  caricaEtichetteGusto();
 
   let datiIniziali = GUSTI_EMERGENZA;
   try {

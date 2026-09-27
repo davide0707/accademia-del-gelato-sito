@@ -91,6 +91,7 @@
   }
   .orario-riga__separatore { opacity: 0.4; flex-shrink: 0; }
   #orari-righe { display: flex; flex-direction: column; gap: 10px; }
+  #etichette-linee, #etichette-ingredienti, #etichette-badge { display: flex; flex-direction: column; gap: 12px; }
 
   select {
     width: 100%;
@@ -403,6 +404,7 @@
     <button class="btn-primario hub__bottone" id="btn-orari" type="button">Orari di apertura</button>
     <button class="btn-primario hub__bottone" id="btn-gusti" type="button">Gusti del catalogo</button>
     <button class="btn-primario hub__bottone" id="btn-prezzi" type="button">Prezzi</button>
+    <button class="btn-primario hub__bottone" id="btn-etichette" type="button">Etichette (Linea, Ingrediente, Badge)</button>
   </section>
 
   <!-- SCHERMATA ORARI -->
@@ -494,6 +496,36 @@
     <p class="messaggio errore" id="errore-gusto-modulo"></p>
 
     <button class="btn-primario" id="btn-salva-gusto">Pubblica</button>
+  </section>
+
+  <!-- SCHERMATA ETICHETTE -->
+  <section class="schermata" id="schermata-etichette">
+    <div class="modulo__header">
+      <button class="link-indietro" id="btn-etichette-indietro" type="button">← Cambia sezione</button>
+    </div>
+    <div>
+      <p class="gestione__titolo">Etichette</p>
+      <p class="gestione__sottotitolo">Cambia il testo che vedi quando aggiungi o modifichi un gusto. Le scelte restano le stesse, solo le parole possono cambiare.</p>
+    </div>
+
+    <div>
+      <p class="modulo__titolo">Linea</p>
+      <div id="etichette-linee"></div>
+    </div>
+
+    <div>
+      <p class="modulo__titolo">Ingrediente principale</p>
+      <div id="etichette-ingredienti"></div>
+    </div>
+
+    <div>
+      <p class="modulo__titolo">Badge</p>
+      <div id="etichette-badge"></div>
+    </div>
+
+    <p class="messaggio errore" id="errore-etichette"></p>
+    <p class="messaggio successo" id="successo-etichette">Salvato — sarà visibile sul sito tra pochi secondi.</p>
+    <button class="btn-primario" id="btn-salva-etichette">Salva etichette</button>
   </section>
 
   <!-- SCHERMATA PREZZI: elenco -->
@@ -656,6 +688,7 @@
     orari: $('schermata-orari'),
     gustiLista: $('schermata-gusti-lista'),
     gustoModulo: $('schermata-gusto-modulo'),
+    etichette: $('schermata-etichette'),
     prezziLista: $('schermata-prezzi-lista'),
     prezzoModulo: $('schermata-prezzo-modulo'),
   };
@@ -1043,6 +1076,190 @@
       contBadge.appendChild(pill);
     });
   })();
+
+  // ---- Etichette (Linea, Ingrediente, Badge): solo il testo è
+  // modificabile da Roberto, l'elenco dei valori resta fisso (guida
+  // colori/animazioni delle card, vedi css/main.css) ----
+  const CACHE_ETICHETTE = 'ag_roberto_etichette';
+  const AZIONI_ETICHETTE = 'ag_roberto_etichette_azioni';
+  const ID_ETICHETTE = 'etichette-gusto';
+  let codaAzioniEtichette = leggiCache(AZIONI_ETICHETTE) || [];
+
+  // Nomi di riferimento fissi (mai modificati): servono solo per capire,
+  // nella schermata Etichette, QUALE riga si sta rinominando — l'etichetta
+  // vera e propria è nel campo di testo accanto.
+  const RIFERIMENTO_LINEE = [
+    { valore: 'creme', nome: 'Creme' },
+    { valore: 'frutta', nome: 'Frutta' },
+    { valore: 'vegani', nome: 'Vegani' },
+    { valore: 'naturalmente-senza', nome: 'Naturalmente Senza' },
+    { valore: 'puro-zero', nome: 'Puro Zero' },
+    { valore: 'granite', nome: 'Granite' },
+  ];
+  const RIFERIMENTO_INGREDIENTI = INGREDIENTI_GUSTO.map((i) => ({ valore: i.valore, nome: i.etichetta }));
+  const RIFERIMENTO_BADGE = BADGE_GUSTO.map((b) => ({ valore: b.valore, nome: b.etichetta }));
+
+  function costruisciCampiEtichette(contenitoreId, riferimenti) {
+    const contenitore = $(contenitoreId);
+    contenitore.innerHTML = '';
+    riferimenti.forEach((r) => {
+      const wrap = document.createElement('div');
+      const label = document.createElement('label');
+      label.setAttribute('for', `etichetta-${contenitoreId}-${r.valore}`);
+      label.textContent = r.nome;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.id = `etichetta-${contenitoreId}-${r.valore}`;
+      input.maxLength = 80;
+      wrap.append(label, input);
+      contenitore.appendChild(wrap);
+    });
+  }
+  costruisciCampiEtichette('etichette-linee', RIFERIMENTO_LINEE);
+  costruisciCampiEtichette('etichette-ingredienti', RIFERIMENTO_INGREDIENTI);
+  costruisciCampiEtichette('etichette-badge', RIFERIMENTO_BADGE);
+
+  function popolaCampiEtichette(contenitoreId, riferimenti, lista) {
+    const mappa = Object.fromEntries((lista || []).map((v) => [v.valore, v.etichetta]));
+    riferimenti.forEach((r) => {
+      $(`etichetta-${contenitoreId}-${r.valore}`).value = mappa[r.valore] || r.nome;
+    });
+  }
+
+  // Applica le etichette caricate anche ai menu/pill già costruiti nel
+  // modulo "Nuovo gusto" (select/pill create una sola volta all'avvio con
+  // i testi di default): aggiorna il testo visibile senza doverli
+  // ricreare, e aggiorna anche gli array LINEE_GUSTO/INGREDIENTI_GUSTO/
+  // BADGE_GUSTO così il sottotitolo della lista gusti (etichettaLinea)
+  // resta coerente.
+  function applicaEtichetteAlModulo(dati) {
+    const mappaLinee = Object.fromEntries((dati.linee || []).map((v) => [v.valore, v.etichetta]));
+    const mappaIngredienti = Object.fromEntries((dati.ingredienti || []).map((v) => [v.valore, v.etichetta]));
+    const mappaBadge = Object.fromEntries((dati.badge || []).map((v) => [v.valore, v.etichetta]));
+
+    Array.from($('gusto-linea').options).forEach((opt) => {
+      if (mappaLinee[opt.value]) opt.textContent = mappaLinee[opt.value];
+    });
+    Array.from($('gusto-ingrediente').options).forEach((opt) => {
+      if (mappaIngredienti[opt.value]) opt.textContent = mappaIngredienti[opt.value];
+    });
+    $('gusto-categorie').querySelectorAll('.scelta-pill').forEach((pill) => {
+      const valore = pill.querySelector('input')?.value;
+      if (valore && mappaLinee[valore]) pill.lastChild.textContent = mappaLinee[valore];
+    });
+    $('gusto-badge').querySelectorAll('.scelta-pill').forEach((pill) => {
+      const valore = pill.querySelector('input')?.value;
+      if (valore && mappaBadge[valore]) pill.lastChild.textContent = mappaBadge[valore];
+    });
+
+    LINEE_GUSTO.forEach((l) => { if (mappaLinee[l.valore]) l.etichetta = mappaLinee[l.valore]; });
+    INGREDIENTI_GUSTO.forEach((i) => { if (mappaIngredienti[i.valore]) i.etichetta = mappaIngredienti[i.valore]; });
+    BADGE_GUSTO.forEach((b) => { if (mappaBadge[b.valore]) b.etichetta = mappaBadge[b.valore]; });
+  }
+
+  const erroreEtichette = $('errore-etichette');
+  const successoEtichette = $('successo-etichette');
+  const btnSalvaEtichette = $('btn-salva-etichette');
+
+  async function caricaEtichette({ forza = false } = {}) {
+    if (!forza) erroreEtichette.classList.remove('visibile');
+    successoEtichette.classList.remove('visibile');
+
+    function applicaOvunque(dati) {
+      applicaEtichetteAlModulo(dati);
+      popolaCampiEtichette('etichette-linee', RIFERIMENTO_LINEE, dati.linee);
+      popolaCampiEtichette('etichette-ingredienti', RIFERIMENTO_INGREDIENTI, dati.ingredienti);
+      popolaCampiEtichette('etichette-badge', RIFERIMENTO_BADGE, dati.badge);
+    }
+
+    if (!forza) {
+      const dallaCache = leggiCache(CACHE_ETICHETTE);
+      if (dallaCache) {
+        const base = [{ _id: ID_ETICHETTE, ...dallaCache }];
+        const [riapplicato] = riapplicaAzioni(base, codaAzioniEtichette);
+        if (riapplicato) applicaOvunque(riapplicato);
+      }
+    }
+
+    try {
+      const query = encodeURIComponent(`*[_id == "${ID_ETICHETTE}"][0]`);
+      const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
+      const risposta = await fetch(url);
+      if (!risposta.ok) throw new Error('risposta non ok');
+      const { result } = await risposta.json();
+      if (result) {
+        scriviCache(CACHE_ETICHETTE, result);
+        const base = [{ _id: ID_ETICHETTE, ...result }];
+        const [riapplicato] = riapplicaAzioni(base, codaAzioniEtichette);
+        if (riapplicato) applicaOvunque(riapplicato);
+      }
+    } catch (e) {
+      // se avevamo già applicato la cache, restano quei valori — mai
+      // svuotare un modulo già compilato per un fetch fallito
+    }
+  }
+
+  $('btn-etichette').addEventListener('click', () => {
+    mostra('etichette');
+    caricaEtichette();
+  });
+  $('btn-etichette-indietro').addEventListener('click', () => mostra('hub'));
+
+  function leggiCampiEtichette(contenitoreId, riferimenti) {
+    return riferimenti.map((r) => ({
+      valore: r.valore,
+      etichetta: $(`etichetta-${contenitoreId}-${r.valore}`).value.trim() || r.nome,
+    }));
+  }
+
+  btnSalvaEtichette.addEventListener('click', async () => {
+    erroreEtichette.classList.remove('visibile');
+    successoEtichette.classList.remove('visibile');
+
+    const corpo = {
+      pin: pinSalvato(),
+      linee: leggiCampiEtichette('etichette-linee', RIFERIMENTO_LINEE),
+      ingredienti: leggiCampiEtichette('etichette-ingredienti', RIFERIMENTO_INGREDIENTI),
+      badge: leggiCampiEtichette('etichette-badge', RIFERIMENTO_BADGE),
+    };
+
+    btnSalvaEtichette.disabled = true;
+    btnSalvaEtichette.innerHTML = '<span class="spinner"></span>Salvo…';
+    try {
+      const risposta = await fetch('/api/etichette-gusto', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(corpo),
+      });
+      if (risposta.status === 401) {
+        localStorage.removeItem(PIN_KEY);
+        mostra('pin');
+        erroreePin.textContent = 'PIN errato — inseriscilo di nuovo.';
+        erroreePin.classList.add('visibile');
+        return;
+      }
+      const dati = await risposta.json().catch(() => ({}));
+      if (!risposta.ok) throw new Error(dati.errore || 'Errore sconosciuto');
+
+      const { pin, ...datiEtichette } = corpo;
+      registraAzione(codaAzioniEtichette, AZIONI_ETICHETTE, { tipo: 'scrivi', voce: { _id: ID_ETICHETTE, ...datiEtichette } });
+      applicaEtichetteAlModulo(datiEtichette);
+
+      successoEtichette.classList.add('visibile');
+    } catch (e) {
+      erroreEtichette.textContent = e.message || 'Non sono riuscito a salvare. Riprova.';
+      erroreEtichette.classList.add('visibile');
+    } finally {
+      btnSalvaEtichette.disabled = false;
+      btnSalvaEtichette.textContent = 'Salva etichette';
+    }
+  });
+
+  // Applica subito eventuali etichette già personalizzate ai menu del
+  // modulo "Nuovo gusto", anche prima che Roberto apra "Etichette":
+  // altrimenti vedrebbe i testi di default finché non visita quella
+  // schermata almeno una volta in questa sessione.
+  caricaEtichette();
 
   // ---- Gusti: elenco ----
   const listaGustiEl = $('gusti-lista');
