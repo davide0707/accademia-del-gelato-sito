@@ -96,12 +96,13 @@ export default defineType({
     }),
     defineField({ name: 'soloCoppetta', title: 'Solo coppetta', type: 'boolean', initialValue: false }),
     defineField({ name: 'esaurito', title: 'Esaurito', type: 'boolean', initialValue: false }),
+    // Non più usato: la home mostra le card delle linee, non una vetrina di
+    // gusti. Resta nascosto solo perché i gusti già salvati lo contengono.
     defineField({
       name: 'vetrina',
-      title: 'In vetrina (anteprima homepage)',
-      description: 'Compare tra i pochi gusti mostrati in prima pagina, non solo nel catalogo completo',
+      title: 'In vetrina (non più usato)',
       type: 'boolean',
-      initialValue: false,
+      hidden: true,
     }),
     defineField({
       name: 'ordine',

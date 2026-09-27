@@ -486,7 +486,6 @@
 
     <label class="checkbox-riga"><input type="checkbox" id="gusto-solocoppetta"> Solo coppetta (non in vaschetta)</label>
     <label class="checkbox-riga"><input type="checkbox" id="gusto-esaurito"> Esaurito</label>
-    <label class="checkbox-riga"><input type="checkbox" id="gusto-vetrina"> In vetrina (anteprima homepage)</label>
 
     <p class="messaggio errore" id="errore-gusto-modulo"></p>
 
@@ -1270,7 +1269,7 @@
     }
     try {
       const query = encodeURIComponent(
-        '*[_type == "gusto"] | order(ordine asc){_id, nome, descrizione, linea, categorie, badge, soloCoppetta, esaurito, vetrina, "fotoUrl": foto.asset->url}'
+        '*[_type == "gusto"] | order(ordine asc){_id, nome, descrizione, linea, categorie, badge, soloCoppetta, esaurito, "fotoUrl": foto.asset->url}'
       );
       const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
       const risposta = await fetch(url);
@@ -1421,7 +1420,6 @@
   const gustoLinea = $('gusto-linea');
   const gustoSoloCoppetta = $('gusto-solocoppetta');
   const gustoEsaurito = $('gusto-esaurito');
-  const gustoVetrina = $('gusto-vetrina');
   const erroreGustoModulo = $('errore-gusto-modulo');
   const btnSalvaGusto = $('btn-salva-gusto');
 
@@ -1467,7 +1465,6 @@
     $('gusto-badge').querySelectorAll('input[type=checkbox]').forEach((cb) => { cb.checked = false; });
     gustoSoloCoppetta.checked = false;
     gustoEsaurito.checked = false;
-    gustoVetrina.checked = false;
     aggiornaContatoriGusto();
     gustoModuloTitolo.textContent = 'Nuovo gusto';
     btnSalvaGusto.textContent = 'Pubblica';
@@ -1503,7 +1500,6 @@
     });
     gustoSoloCoppetta.checked = !!gusto.soloCoppetta;
     gustoEsaurito.checked = !!gusto.esaurito;
-    gustoVetrina.checked = !!gusto.vetrina;
 
     gustoModuloTitolo.textContent = 'Modifica gusto';
     btnSalvaGusto.textContent = 'Salva modifiche';
@@ -1567,7 +1563,6 @@
         badge,
         soloCoppetta: gustoSoloCoppetta.checked,
         esaurito: gustoEsaurito.checked,
-        vetrina: gustoVetrina.checked,
         fotoBase64: gustoFotoCompressaDataUrl,
       };
       const url = inModifica ? '/api/modifica-gusto' : '/api/pubblica-gusto';
@@ -1610,7 +1605,6 @@
         badge: corpo.badge,
         soloCoppetta: corpo.soloCoppetta,
         esaurito: corpo.esaurito,
-        vetrina: corpo.vetrina,
         fotoUrl: fotoUrlOttimistico,
       };
 

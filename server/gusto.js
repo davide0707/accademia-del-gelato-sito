@@ -44,7 +44,6 @@ function campiGusto(corpo) {
     badge: corpo.badge || [],
     soloCoppetta: !!corpo.soloCoppetta,
     esaurito: !!corpo.esaurito,
-    vetrina: !!corpo.vetrina,
   };
   if (corpo.ingrediente) campi.ingrediente = corpo.ingrediente;
   return campi;

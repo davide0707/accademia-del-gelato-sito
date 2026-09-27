@@ -1,6 +1,6 @@
 /**
- * Il catalogo gusti (42 in circolo più la vetrina in prima schermata) e i
- * tre prezzi sopra al catalogo, caricati da Sanity invece che scritti a
+ * Il catalogo gusti (con i conteggi sulle card delle linee in home) e i
+ * prezzi sopra al catalogo, caricati da Sanity invece che scritti a
  * mano in due punti dell'HTML da tenere sincronizzati a memoria — prima
  * capitava che un gusto cambiasse in un posto e non nell'altro.
  *
@@ -177,10 +177,32 @@ function ribindaInterazioni() {
   riaggiornaConteggioFiltro();
 }
 
+function testoConteggio(n, lingua) {
+  if (lingua === 'en') return `${n} flavor${n === 1 ? '' : 's'}`;
+  return `${n} gust${n === 1 ? 'o' : 'i'}`;
+}
+
+// I numeri sulle card delle linee in home e il totale sotto: contati sui
+// gusti davvero pubblicati, così seguono da soli quello che Roberto
+// aggiunge o toglie. Una linea ancora vuota dice "In arrivo" invece di "0".
+function aggiornaConteggiLinee() {
+  if (!ultimiGustiRenderizzati) return;
+  const lingua = linguaAttuale();
+  document.querySelectorAll('[data-conteggio-linea]').forEach((el) => {
+    const linea = el.dataset.conteggioLinea;
+    const n = ultimiGustiRenderizzati.filter((g) => (g.categorie || []).includes(linea)).length;
+    el.textContent = n > 0 ? testoConteggio(n, lingua) : (lingua === 'en' ? 'Coming soon' : 'In arrivo');
+  });
+  const totale = document.querySelector('[data-conteggio-totale]');
+  if (totale) {
+    const n = ultimiGustiRenderizzati.length;
+    totale.textContent = lingua === 'en' ? `${testoConteggio(n, lingua)} in rotation` : `${testoConteggio(n, lingua)} in rotazione`;
+  }
+}
+
 function renderizzaGusti(gusti) {
   const griglia = document.getElementById('gustiGriglia');
   if (!griglia) return;
-  const vetrina = document.querySelector('.gusti-vetrina');
 
   ultimiGustiRenderizzati = gusti;
   const ordinati = [...gusti].sort((a, b) => (a.ordine ?? 999) - (b.ordine ?? 999));
@@ -188,11 +210,7 @@ function renderizzaGusti(gusti) {
   griglia.innerHTML = '';
   ordinati.forEach((g) => griglia.appendChild(creaCard(g)));
 
-  if (vetrina) {
-    vetrina.innerHTML = '';
-    ordinati.filter((g) => g.vetrina).forEach((g) => vetrina.appendChild(creaCard(g)));
-  }
-
+  aggiornaConteggiLinee();
   ribindaInterazioni();
 }
 
@@ -230,11 +248,12 @@ async function caricaEtichetteGusto() {
   }
 }
 
-/** Catalogo gusti: vetrina homepage + griglia completa nel catalogo a schermo intero. */
+/** Catalogo gusti: conteggi sulle card delle linee in home + griglia completa nel catalogo a schermo intero. */
 export async function initGustiCatalogo() {
   const griglia = document.getElementById('gustiGriglia');
   if (!griglia) return;
 
+  document.addEventListener('ag:lingua', aggiornaConteggiLinee);
   caricaEtichetteGusto();
 
   let datiIniziali = GUSTI_EMERGENZA;
@@ -251,7 +270,7 @@ export async function initGustiCatalogo() {
 
   try {
     const query = encodeURIComponent(
-      `*[_type == "gusto"] | order(ordine asc){nome, descrizione, "fotoUrl": foto.asset->url, categorie, linea, ingrediente, badge, soloCoppetta, esaurito, vetrina, ordine}`
+      `*[_type == "gusto"] | order(ordine asc){nome, descrizione, "fotoUrl": foto.asset->url, categorie, linea, ingrediente, badge, soloCoppetta, esaurito, ordine}`
     );
     const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
     const risposta = await fetch(url);

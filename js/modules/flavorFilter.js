@@ -12,17 +12,34 @@
 
 let grid = null;
 let countEl = null;
+let vuotoEl = null;
+let filterBar = null;
 
 function leggiCards() {
   return grid ? Array.from(grid.querySelectorAll('.gusto-card')) : [];
 }
 
 function updateCount(visible) {
+  if (vuotoEl) vuotoEl.hidden = visible > 0;
   if (!countEl) return;
   const inglese = document.body.dataset.lang === 'en';
   countEl.textContent = inglese
     ? `${visible} flavor${visible === 1 ? '' : 's'}`
     : `${visible} gust${visible === 1 ? 'o' : 'i'}`;
+}
+
+// Segna come attiva la pillola del filtro scelto e, se la barra scorre di
+// lato (telefono), la porta in vista.
+function evidenziaPillola(filtro) {
+  if (!filterBar) return;
+  filterBar.querySelectorAll('[data-filtro]').forEach((b) => {
+    const attivo = b.dataset.filtro === filtro;
+    b.classList.toggle('is-active', attivo);
+    b.setAttribute('aria-selected', String(attivo));
+    if (attivo && filterBar.scrollWidth > filterBar.clientWidth) {
+      filterBar.scrollLeft = b.offsetLeft - (filterBar.clientWidth - b.offsetWidth) / 2;
+    }
+  });
 }
 
 function applyFilter(filtro) {
@@ -111,9 +128,10 @@ function applyFilter(filtro) {
 }
 
 export function initFlavorFilter() {
-  const filterBar = document.querySelector('[data-flavor-filter]');
+  filterBar = document.querySelector('[data-flavor-filter]');
   grid = document.getElementById('gustiGriglia');
   countEl = document.querySelector('[data-flavor-count]');
+  vuotoEl = document.querySelector('[data-gusti-vuoto]');
   if (!filterBar || !grid) return;
 
   const buttons = Array.from(filterBar.querySelectorAll('[data-filtro]'));
@@ -121,17 +139,40 @@ export function initFlavorFilter() {
   const Flip = window.Flip;
   if (gsap && Flip) gsap.registerPlugin(Flip);
 
+  // La barra dei filtri resta ferma in cima mentre si scorrono i gusti
+  // (position: sticky): quando è "appoggiata" in cima prende un'ombra, così
+  // si capisce che le card le passano sotto.
+  const scrollArea = filterBar.closest('.menu-gusti__scroll');
+  const aggiornaBarraFerma = () => {
+    const ferma = scrollArea.scrollTop > 0
+      && filterBar.getBoundingClientRect().top <= scrollArea.getBoundingClientRect().top + 1;
+    filterBar.classList.toggle('is-ferma', ferma);
+  };
+  scrollArea?.addEventListener('scroll', aggiornaBarraFerma, { passive: true });
+
   buttons.forEach((btn) => {
     btn.addEventListener('click', () => {
-      buttons.forEach((b) => {
-        b.classList.remove('is-active');
-        b.setAttribute('aria-selected', 'false');
-      });
-      btn.classList.add('is-active');
-      btn.setAttribute('aria-selected', 'true');
+      evidenziaPillola(btn.dataset.filtro);
+      // Cambiando categoria a metà elenco, le card nuove partirebbero sopra
+      // o sotto quello che si sta guardando: si torna all'inizio dei gusti,
+      // subito sotto la barra.
+      if (scrollArea && filterBar.classList.contains('is-ferma')) {
+        scrollArea.scrollTop = Math.max(0, countEl ? countEl.offsetTop - filterBar.offsetHeight : 0);
+      }
       applyFilter(btn.dataset.filtro);
     });
   });
+
+  document.addEventListener('ag:lingua', riaggiornaConteggioFiltro);
+}
+
+/**
+ * Sceglie un filtro senza animazione — per il catalogo aperto dalle card
+ * delle linee in home, che deve comparire già filtrato.
+ */
+export function selezionaFiltro(filtro) {
+  evidenziaPillola(filtro);
+  riaggiornaConteggioFiltro();
 }
 
 /**

@@ -632,39 +632,69 @@
         <li><span class="prezzi-ticket__nome" data-i18n="ticket-granita-nome">Granita piccola</span><span class="prezzi-ticket__dettaglio" data-i18n="ticket-granita-dett">siciliana, artigianale</span><span class="prezzi-ticket__prezzo">~3,50 €</span></li>
       </ul>
 
-      <div class="gusti-vetrina" data-reveal>
-        <article class="gusto-card" data-categorie="creme" data-linea="creme" data-ingrediente="pistacchio">
-          <div class="gusto-card__visivo" aria-hidden="true"></div>
-          <p class="gusto-card__eyebrow" data-i18n="eyebrow-creme">Linea Creme</p>
-          <h3 class="gusto-card__nome">Pistacchio Spagna</h3>
-          <p class="gusto-card__desc">Pasta pura al 100%: verde tenue naturale, mai colorato, sapore che resta.</p>
-        </article>
+      <!-- Una card per linea: apre il catalogo già filtrato su quella
+           categoria (js/modules/menuGusti.js). Il numero di gusti lo scrive
+           js/modules/gustiCatalogo.js, contando quelli pubblicati da Roberto. -->
+      <div class="gusti-linee" role="group" aria-label="Scegli una categoria di gusti">
+        <button type="button" class="linea-card" data-reveal data-apri-linea="creme" data-evento="Linea gusti: Crema">
+          <span class="linea-card__visivo" aria-hidden="true"></span>
+          <span class="linea-card__freccia" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="linea-card__testo">
+            <span class="linea-card__conteggio" data-conteggio-linea="creme"></span>
+            <span class="linea-card__nome" data-i18n="linea-creme-nome">Gusti Crema</span>
+            <span class="linea-card__desc" data-i18n="linea-creme-desc">I classici della tradizione</span>
+          </span>
+        </button>
 
-        <article class="gusto-card" data-categorie="frutta vegani" data-linea="frutta" data-ingrediente="frutti-rossi">
-          <div class="gusto-card__visivo" aria-hidden="true"></div>
-          <p class="gusto-card__eyebrow" data-i18n="eyebrow-frutta-vegano">Frutta · Vegano</p>
-          <h3 class="gusto-card__nome">Fragola Candonga <span class="badge badge--vegano">Vegano</span></h3>
-          <p class="gusto-card__desc">Varietà pregiata, dolcezza intensa: il sapore della fragola come dovrebbe essere.</p>
-        </article>
+        <button type="button" class="linea-card" data-reveal data-apri-linea="frutta" data-evento="Linea gusti: Frutta">
+          <span class="linea-card__visivo" aria-hidden="true"></span>
+          <span class="linea-card__freccia" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="linea-card__testo">
+            <span class="linea-card__conteggio" data-conteggio-linea="frutta"></span>
+            <span class="linea-card__nome" data-i18n="linea-frutta-nome">Gusti alla Frutta</span>
+            <span class="linea-card__desc" data-i18n="linea-frutta-desc">I nostri sorbetti</span>
+          </span>
+        </button>
 
-        <article class="gusto-card" data-categorie="creme" data-linea="creme" data-ingrediente="vaniglia-crema" data-badge="novita">
-          <div class="gusto-card__visivo" aria-hidden="true"></div>
-          <p class="gusto-card__eyebrow" data-i18n="eyebrow-creme">Linea Creme</p>
-          <h3 class="gusto-card__nome">Cassata Siciliana <span class="badge badge--novita">Novità</span></h3>
-          <p class="gusto-card__desc">Ricotta, canditi e un ricordo di Pan di Spagna: la Sicilia in una coppetta.</p>
-        </article>
+        <button type="button" class="linea-card" data-reveal data-apri-linea="vegani" data-evento="Linea gusti: Vegan">
+          <span class="linea-card__visivo" aria-hidden="true"></span>
+          <span class="linea-card__freccia" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="linea-card__testo">
+            <span class="linea-card__conteggio" data-conteggio-linea="vegani"></span>
+            <span class="linea-card__nome" data-i18n="linea-vegani-nome">Gusti Vegan</span>
+            <span class="linea-card__desc" data-i18n="linea-vegani-desc">Linea Puro</span>
+          </span>
+        </button>
 
-        <article class="gusto-card" data-categorie="puro-zero" data-linea="puro-zero" data-ingrediente="agrumi" data-badge="novita">
-          <div class="gusto-card__visivo" aria-hidden="true"></div>
-          <p class="gusto-card__eyebrow" data-i18n="eyebrow-purozero">Puro Zero</p>
-          <h3 class="gusto-card__nome">Limone di Sorrento <span class="badge badge--novita">Novità</span></h3>
-          <p class="gusto-card__desc">Il profumo degli agrumi costieri, in versione totalmente priva di zuccheri.</p>
-          <div class="gusto-card__badges">
-            <span class="badge badge--senzaglutine">Senza Glutine</span>
-            <span class="badge badge--senzazucchero">Senza Zucchero</span>
-            <span class="badge badge--cheto">Chetogenico</span>
-          </div>
-        </article>
+        <button type="button" class="linea-card" data-reveal data-apri-linea="naturalmente-senza" data-evento="Linea gusti: Naturalmente Senza">
+          <span class="linea-card__visivo" aria-hidden="true"></span>
+          <span class="linea-card__freccia" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="linea-card__testo">
+            <span class="linea-card__conteggio" data-conteggio-linea="naturalmente-senza"></span>
+            <span class="linea-card__nome" data-i18n="linea-naturalmentesenza-nome">Naturalmente Senza</span>
+            <span class="linea-card__desc" data-i18n="linea-naturalmentesenza-desc">No zucchero · No glutine</span>
+          </span>
+        </button>
+
+        <button type="button" class="linea-card" data-reveal data-apri-linea="puro-zero" data-evento="Linea gusti: Puro Zero Vegan">
+          <span class="linea-card__visivo" aria-hidden="true"></span>
+          <span class="linea-card__freccia" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="linea-card__testo">
+            <span class="linea-card__conteggio" data-conteggio-linea="puro-zero"></span>
+            <span class="linea-card__nome" data-i18n="linea-purozero-nome">Puro Zero Vegan</span>
+            <span class="linea-card__desc" data-i18n="linea-purozero-desc">No glutine · No latte · No zucchero</span>
+          </span>
+        </button>
+
+        <button type="button" class="linea-card" data-reveal data-apri-linea="granite" data-evento="Linea gusti: Granite">
+          <span class="linea-card__visivo" aria-hidden="true"></span>
+          <span class="linea-card__freccia" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="linea-card__testo">
+            <span class="linea-card__conteggio" data-conteggio-linea="granite"></span>
+            <span class="linea-card__nome" data-i18n="linea-granite-nome">Granite Siciliane</span>
+            <span class="linea-card__desc" data-i18n="linea-granite-desc">Artigianali, ricetta siciliana</span>
+          </span>
+        </button>
       </div>
 
       <div class="gusti-cta" data-reveal>
@@ -675,7 +705,7 @@
             <span data-i18n="cta-deliveroo">Ordina su Deliveroo</span>
           </a>
         </div>
-        <p class="gusti-cta__nota" data-i18n="gusti-cta-nota">42 gusti in rotazione — creme, frutta, vegani, senza zucchero e granite</p>
+        <p class="gusti-cta__nota" data-conteggio-totale></p>
       </div>
     </div>
   </section>
@@ -702,15 +732,16 @@
 
         <div class="gusti-filtri" role="tablist" aria-label="Filtra i gusti per categoria" data-flavor-filter>
         <button role="tab" aria-selected="true" aria-controls="gustiGriglia" class="filtro-pill is-active" data-filtro="tutti" data-i18n="filtro-tutti">Tutti</button>
-        <button role="tab" aria-selected="false" aria-controls="gustiGriglia" class="filtro-pill" data-filtro="creme" data-i18n="filtro-creme">Creme</button>
+        <button role="tab" aria-selected="false" aria-controls="gustiGriglia" class="filtro-pill" data-filtro="creme" data-i18n="filtro-creme">Crema</button>
         <button role="tab" aria-selected="false" aria-controls="gustiGriglia" class="filtro-pill" data-filtro="frutta" data-i18n="filtro-frutta">Frutta</button>
-        <button role="tab" aria-selected="false" aria-controls="gustiGriglia" class="filtro-pill" data-filtro="vegani" data-i18n="filtro-vegani">Vegani</button>
+        <button role="tab" aria-selected="false" aria-controls="gustiGriglia" class="filtro-pill" data-filtro="vegani" data-i18n="filtro-vegani">Vegan</button>
         <button role="tab" aria-selected="false" aria-controls="gustiGriglia" class="filtro-pill" data-filtro="naturalmente-senza" data-i18n="filtro-naturalmentesenza">Naturalmente Senza</button>
-        <button role="tab" aria-selected="false" aria-controls="gustiGriglia" class="filtro-pill" data-filtro="puro-zero" data-i18n="filtro-purozero">Puro Zero</button>
-        <button role="tab" aria-selected="false" aria-controls="gustiGriglia" class="filtro-pill" data-filtro="granite" data-i18n="filtro-granite">Granite</button>
+        <button role="tab" aria-selected="false" aria-controls="gustiGriglia" class="filtro-pill" data-filtro="puro-zero" data-i18n="filtro-purozero">Puro Zero Vegan</button>
+        <button role="tab" aria-selected="false" aria-controls="gustiGriglia" class="filtro-pill" data-filtro="granite" data-i18n="filtro-granite">Granite Siciliane</button>
       </div>
 
-        <p class="gusti-conteggio" data-flavor-count aria-live="polite" data-i18n="gusti-conteggio-42">42 gusti</p>
+        <p class="gusti-conteggio" data-flavor-count aria-live="polite"></p>
+        <p class="gusti-vuoto" data-gusti-vuoto hidden data-i18n="gusti-vuoto">In questo momento non ci sono gusti in questa categoria: torna a trovarci presto.</p>
 
         <div class="gusti-griglia" id="gustiGriglia">
 

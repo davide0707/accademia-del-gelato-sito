@@ -45,16 +45,28 @@ const I18N = {
   'ticket-granita-dett': { it: 'siciliana, artigianale', en: 'Sicilian, artisanal' },
   'gusti-scopri-tutti': { it: 'Scopri tutti i gusti', en: 'See all flavors' },
   'cta-deliveroo': { it: 'Ordina su Deliveroo', en: 'Order on Deliveroo' },
-  'gusti-cta-nota': { it: '42 gusti in rotazione — creme, frutta, vegani, senza zucchero e granite', en: '42 flavors in rotation — creams, fruit, vegan, sugar-free and granitas' },
+  // card delle linee in home, una per categoria
+  'linea-creme-nome': { it: 'Gusti Crema', en: 'Cream Flavors' },
+  'linea-creme-desc': { it: 'I classici della tradizione', en: 'The timeless classics' },
+  'linea-frutta-nome': { it: 'Gusti alla Frutta', en: 'Fruit Flavors' },
+  'linea-frutta-desc': { it: 'I nostri sorbetti', en: 'Our sorbets' },
+  'linea-vegani-nome': { it: 'Gusti Vegan', en: 'Vegan Flavors' },
+  'linea-vegani-desc': { it: 'Linea Puro', en: 'Puro Line' },
+  'linea-naturalmentesenza-nome': { it: 'Naturalmente Senza', en: 'Naturally Free-From' },
+  'linea-naturalmentesenza-desc': { it: 'No zucchero · No glutine', en: 'No sugar · No gluten' },
+  'linea-purozero-nome': { it: 'Puro Zero Vegan', en: 'Puro Zero Vegan' },
+  'linea-purozero-desc': { it: 'No glutine · No latte · No zucchero', en: 'No gluten · No dairy · No sugar' },
+  'linea-granite-nome': { it: 'Granite Siciliane', en: 'Sicilian Granitas' },
+  'linea-granite-desc': { it: 'Artigianali, ricetta siciliana', en: 'Artisanal, Sicilian recipe' },
   'gusti-eyebrow-completo': { it: 'Il catalogo completo', en: 'The Full Catalog' },
   'filtro-tutti': { it: 'Tutti', en: 'All' },
-  'filtro-creme': { it: 'Creme', en: 'Creams' },
+  'filtro-creme': { it: 'Crema', en: 'Cream' },
   'filtro-frutta': { it: 'Frutta', en: 'Fruit' },
-  'filtro-vegani': { it: 'Vegani', en: 'Vegan' },
+  'filtro-vegani': { it: 'Vegan', en: 'Vegan' },
   'filtro-naturalmentesenza': { it: 'Naturalmente Senza', en: 'Naturally Free-From' },
-  'filtro-purozero': { it: 'Puro Zero', en: 'Puro Zero' },
-  'filtro-granite': { it: 'Granite', en: 'Granitas' },
-  'gusti-conteggio-42': { it: '42 gusti', en: '42 flavors' },
+  'filtro-purozero': { it: 'Puro Zero Vegan', en: 'Puro Zero Vegan' },
+  'filtro-granite': { it: 'Granite Siciliane', en: 'Sicilian Granitas' },
+  'gusti-vuoto': { it: 'In questo momento non ci sono gusti in questa categoria: torna a trovarci presto.', en: 'There are no flavors in this category right now: come back and see us soon.' },
   'mappa-cta': { it: 'Apri in Google Maps', en: 'Open in Google Maps' },
   'contatti-eyebrow': { it: 'Vieni a trovarci', en: 'Come visit us' },
   'orari-caption': { it: 'Orari di apertura', en: 'Opening Hours' },
@@ -147,6 +159,10 @@ function applicaLingua(lingua) {
   // contatore reso visibile solo ora dal toggle potrebbe restare a 0
   // perché il suo trigger risale a quando l'elemento era display:none
   window.ScrollTrigger?.refresh();
+
+  // Testi calcolati al volo (conteggi dei gusti): chi li scrive ascolta
+  // questo evento per riscriverli nella lingua nuova.
+  document.dispatchEvent(new CustomEvent('ag:lingua', { detail: { lingua } }));
 }
 
 /**
