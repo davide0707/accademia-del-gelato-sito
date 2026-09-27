@@ -1172,6 +1172,13 @@
       popolaCampiEtichette('etichette-badge', RIFERIMENTO_BADGE, dati.badge);
     }
 
+    // Popola sempre almeno con i valori di default: se Roberto non ha mai
+    // personalizzato nulla (nessun documento salvato su Sanity), i campi
+    // devono mostrare comunque le etichette già in uso, non restare vuoti.
+    popolaCampiEtichette('etichette-linee', RIFERIMENTO_LINEE, []);
+    popolaCampiEtichette('etichette-ingredienti', RIFERIMENTO_INGREDIENTI, []);
+    popolaCampiEtichette('etichette-badge', RIFERIMENTO_BADGE, []);
+
     if (!forza) {
       const dallaCache = leggiCache(CACHE_ETICHETTE);
       if (dallaCache) {
