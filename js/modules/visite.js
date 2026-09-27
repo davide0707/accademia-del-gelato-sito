@@ -2,16 +2,22 @@ import { prefersReducedMotion } from './accessibility.js';
 
 /**
  * Contatore delle visite nella prima schermata, chiesto da Roberto: il
- * totale vero del sito, letto dal contatore pubblico di GoatCounter (lo
- * stesso servizio delle statistiche, gelateria.goatcounter.com) e riletto
- * ogni minuto finché la pagina resta aperta e in primo piano.
+ * totale vero del sito secondo GoatCounter (lo stesso servizio delle
+ * statistiche, gelateria.goatcounter.com), riletto ogni minuto finché la
+ * pagina resta aperta e in primo piano.
  *
- * Il contatore pubblico va acceso nelle impostazioni di GoatCounter
- * ("Allow adding visitor counts on your website"): finché è spento, o se
- * non risponde, il riquadro resta nascosto — mai un numero finto o uno 0.
+ * Due fonti, in ordine:
+ * 1. /api/visite (functions/api/visite.js): legge l'API di GoatCounter con
+ *    la chiave privata, aggiornata entro un minuto circa;
+ * 2. se quella non risponde, il contatore pubblico di GoatCounter — sempre
+ *    vero, ma tenuto in memoria da loro fino a 4 ore (va acceso nelle
+ *    impostazioni: "Allow adding visitor counts on your website").
+ * Se non risponde nessuna delle due, il riquadro resta nascosto — mai un
+ * numero finto o uno 0.
  */
 
-const URL_CONTATORE = 'https://gelateria.goatcounter.com/counter/TOTAL.json';
+const URL_VISITE = '/api/visite';
+const URL_CONTATORE_PUBBLICO = 'https://gelateria.goatcounter.com/counter/TOTAL.json';
 const OGNI_MS = 60 * 1000;
 const DURATA_ANIMAZIONE_MS = 1400;
 
@@ -54,20 +60,27 @@ function portaA(obiettivo) {
   animazione = requestAnimationFrame(passo);
 }
 
-async function aggiorna() {
+// Il contatore pubblico lo restituisce già formattato ("12,345" o
+// "12 345"), la nostra funzione come numero: in entrambi i casi restano
+// solo le cifre.
+async function leggiDa(url) {
   try {
-    const risposta = await fetch(URL_CONTATORE, { cache: 'no-store' });
-    if (!risposta.ok) return;
+    const risposta = await fetch(url, { cache: 'no-store' });
+    if (!risposta.ok) return null;
     const dati = await risposta.json();
-    // GoatCounter lo restituisce già formattato ("12,345" o "12 345"):
-    // restano solo le cifre
     const totale = parseInt(String(dati.count ?? '').replace(/\D/g, ''), 10);
-    if (!Number.isFinite(totale) || totale <= 0) return;
-    riquadro.hidden = false;
-    portaA(totale);
+    return Number.isFinite(totale) && totale > 0 ? totale : null;
   } catch (e) {
-    /* contatore spento o rete assente: il riquadro resta com'è */
+    return null;
   }
+}
+
+async function aggiorna() {
+  const totale = (await leggiDa(URL_VISITE)) ?? (await leggiDa(URL_CONTATORE_PUBBLICO));
+  // nessuna delle due fonti risponde: il riquadro resta com'è
+  if (totale === null) return;
+  riquadro.hidden = false;
+  portaA(totale);
 }
 
 export function initVisite() {
