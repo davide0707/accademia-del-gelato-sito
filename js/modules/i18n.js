@@ -51,7 +51,7 @@ const I18N = {
   'linea-frutta-nome': { it: 'Gusti alla Frutta', en: 'Fruit Flavors' },
   'linea-frutta-desc': { it: 'I nostri sorbetti', en: 'Our sorbets' },
   'linea-vegani-nome': { it: 'Gusti Vegan', en: 'Vegan Flavors' },
-  'linea-vegani-desc': { it: 'No glutine · No latte', en: 'No gluten · No dairy' },
+  'linea-vegani-desc': { it: 'No latte', en: 'No dairy' },
   // ­ = trattino facoltativo: va a capo lì solo se non c'è spazio
   'linea-naturalmentesenza-nome': { it: 'Natural­mente Senza', en: 'Naturally Free-From' },
   'linea-naturalmentesenza-desc': { it: 'No zucchero · No glutine', en: 'No sugar · No gluten' },
