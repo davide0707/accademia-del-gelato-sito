@@ -864,24 +864,55 @@
     });
   })();
 
-  async function caricaOrari() {
+  const CACHE_ORARI = 'ag_roberto_orari';
+  const AZIONI_ORARI = 'ag_roberto_orari_azioni';
+  const ID_ORARI = 'orari-apertura';
+  let codaAzioniOrari = leggiCache(AZIONI_ORARI) || [];
+
+  function popolaFormOrari(dati) {
+    GIORNI_ORARI.forEach((g) => {
+      const voce = dati?.[g.chiave];
+      $(`orario-${g.chiave}-apertura`).value = voce?.apertura || '';
+      $(`orario-${g.chiave}-chiusura`).value = voce?.chiusura || '';
+    });
+    $('orari-nota').value = dati?.nota || '';
+  }
+
+  // Documento singolo (un solo orario, non un elenco): stesso meccanismo
+  // di coda/riapplicazione usato per gusti/prezzi/blog, qui su una
+  // "collezione" fittizia di un solo elemento a id fisso — così anche gli
+  // orari sopravvivono a una ricarica della pagina invece di mostrare di
+  // nuovo i valori vecchi finché Sanity non ha propagato il salvataggio.
+  async function caricaOrari({ forza = false } = {}) {
     erroreOrari.classList.remove('visibile');
     successoOrari.classList.remove('visibile');
+
+    if (!forza) {
+      const dallaCache = leggiCache(CACHE_ORARI);
+      if (dallaCache) {
+        const base = [{ _id: ID_ORARI, ...dallaCache }];
+        const [riapplicato] = riapplicaAzioni(base, codaAzioniOrari);
+        popolaFormOrari(riapplicato);
+      }
+    }
+
     try {
-      const query = encodeURIComponent('*[_id == "orari-apertura"][0]');
+      const query = encodeURIComponent(`*[_id == "${ID_ORARI}"][0]`);
       const url = `https://${SANITY_PROJECT_ID}.apicdn.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
       const risposta = await fetch(url);
       if (!risposta.ok) throw new Error('risposta non ok');
       const { result } = await risposta.json();
-      GIORNI_ORARI.forEach((g) => {
-        const voce = result?.[g.chiave];
-        $(`orario-${g.chiave}-apertura`).value = voce?.apertura || '';
-        $(`orario-${g.chiave}-chiusura`).value = voce?.chiusura || '';
-      });
-      $('orari-nota').value = result?.nota || '';
+      if (result) scriviCache(CACHE_ORARI, result);
+      const base = result ? [{ _id: ID_ORARI, ...result }] : [];
+      const [riapplicato] = riapplicaAzioni(base, codaAzioniOrari);
+      popolaFormOrari(riapplicato);
     } catch (e) {
-      erroreOrari.textContent = 'Non riesco a caricare gli orari attuali. Riprova.';
-      erroreOrari.classList.add('visibile');
+      if (!leggiCache(CACHE_ORARI)) {
+        erroreOrari.textContent = 'Non riesco a caricare gli orari attuali. Riprova.';
+        erroreOrari.classList.add('visibile');
+      }
+      // se avevamo già popolato dalla cache, restano quei valori: un fetch
+      // fallito non deve svuotare un modulo già compilato correttamente
     }
   }
 
@@ -924,6 +955,10 @@
       }
       const dati = await risposta.json().catch(() => ({}));
       if (!risposta.ok) throw new Error(dati.errore || 'Errore sconosciuto');
+
+      const { pin, ...datiOrari } = corpo;
+      registraAzione(codaAzioniOrari, AZIONI_ORARI, { tipo: 'scrivi', voce: { _id: ID_ORARI, ...datiOrari } });
+
       successoOrari.classList.add('visibile');
     } catch (e) {
       erroreOrari.textContent = e.message || 'Non sono riuscito a salvare. Riprova.';
