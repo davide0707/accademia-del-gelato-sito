@@ -549,8 +549,6 @@ section {
   transition: background var(--dur-fast) var(--ease-soft), color var(--dur-fast) var(--ease-soft), transform var(--dur-fast) var(--ease-soft);
 }
 
-.nav__whatsapp svg { width: 18px; height: 18px; }
-
 .nav__whatsapp:hover {
   background: var(--rosso-accademia);
   color: var(--crema);
@@ -1407,6 +1405,45 @@ section {
   margin-inline: auto;
 }
 
+/* L'attestato VEGANOK al posto della grafica decorativa: un documento
+   verticale (formato A4), quindi niente quadrato — prende le proporzioni
+   dell'immagine. Angoli appena arrotondati e ombra profonda, come un foglio
+   appoggiato sul fondo bordeaux; al passaggio del mouse si solleva un poco,
+   perché si può aprire a grandezza piena. */
+.senza-zucchero__attestato {
+  aspect-ratio: auto;
+  max-width: 340px;
+  margin-block: 0;
+  /* sopra il motivo a maioliche (.sfondo-maiolica-decorativo, che copre
+     tutto il sito): sul bianco del foglio si vedeva in trasparenza come una
+     filigrana, e un attestato deve restare pulito e leggibile */
+  position: relative;
+  z-index: calc(var(--z-sfondo-decorativo) + 1);
+}
+
+.senza-zucchero__attestato a {
+  display: block;
+  border-radius: var(--radius-md);
+  transition: transform var(--dur-base) var(--ease-premium);
+}
+
+.senza-zucchero__attestato img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xl);
+}
+
+.senza-zucchero__attestato a:focus-visible {
+  outline: 2px solid var(--oro-chiaro);
+  outline-offset: 4px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .senza-zucchero__attestato a:hover { transform: translateY(-4px); }
+}
+
 /* ------------------------------- ACCOGLIENZA --------------------------------- */
 
 .accoglienza {
@@ -1603,8 +1640,6 @@ section {
   color: var(--crema);
   border: 1.5px solid rgb(248 241 228 / 35%);
 }
-
-.cta-finale__whatsapp svg { width: 18px; height: 18px; }
 
 .cta-finale__whatsapp:hover {
   border-color: var(--crema);
@@ -2049,8 +2084,6 @@ body.menu-aperto .nav__toggle-linea {
   color: var(--crema);
   border: 1.5px solid rgb(248 241 228 / 35%);
 }
-
-.menu-mobile__whatsapp svg { width: 18px; height: 18px; }
 
 .menu-mobile__whatsapp:hover {
   border-color: var(--crema);
@@ -2931,8 +2964,6 @@ body.menu-aperto .nav__toggle-linea {
   margin-top: var(--space-2);
 }
 
-.contatti__whatsapp svg { width: 19px; height: 19px; }
-
 .contatti__whatsapp:hover { opacity: 1; color: var(--rosso-accademia); }
 
 /* ------------------------------------- MAPPA STILIZZATA ---------------------------------- */
@@ -3005,6 +3036,15 @@ body.menu-aperto .nav__toggle-linea {
 .footer__link-deliveroo img { flex: none; }
 
 .btn__icona-deliveroo { flex: none; }
+
+/* Simbolo ufficiale di WhatsApp (verde, fondo trasparente) in tutti i
+   pulsanti per scriverci: assets/logo/whatsapp-simbolo.png, ritagliato dal
+   logo completo che ci ha dato Roberto (assets/logo/whatsapp-logo.png). */
+.icona-whatsapp {
+  flex: none;
+  width: 20px;
+  height: 20px;
+}
 
 .footer__social {
   flex-direction: row !important;
