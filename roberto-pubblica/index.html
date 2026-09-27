@@ -1119,10 +1119,17 @@
   costruisciCampiEtichette('etichette-ingredienti', RIFERIMENTO_INGREDIENTI);
   costruisciCampiEtichette('etichette-badge', RIFERIMENTO_BADGE);
 
-  function popolaCampiEtichette(contenitoreId, riferimenti, lista) {
+  // r.nome (da RIFERIMENTO_*) è solo l'etichetta del campo, fissa apposta
+  // per orientare Roberto — NON il valore da scrivere nell'input: quello
+  // deve essere l'etichetta davvero in uso ora (elencoDefault, cioè
+  // LINEE_GUSTO/INGREDIENTI_GUSTO/BADGE_GUSTO), altrimenti senza ancora
+  // nessuna personalizzazione salvata il campo mostrerebbe il nome breve
+  // di riferimento invece del testo attuale.
+  function popolaCampiEtichette(contenitoreId, riferimenti, lista, elencoDefault) {
     const mappa = Object.fromEntries((lista || []).map((v) => [v.valore, v.etichetta]));
+    const mappaDefault = Object.fromEntries(elencoDefault.map((v) => [v.valore, v.etichetta]));
     riferimenti.forEach((r) => {
-      $(`etichetta-${contenitoreId}-${r.valore}`).value = mappa[r.valore] || r.nome;
+      $(`etichetta-${contenitoreId}-${r.valore}`).value = mappa[r.valore] || mappaDefault[r.valore] || r.nome;
     });
   }
 
@@ -1167,17 +1174,17 @@
 
     function applicaOvunque(dati) {
       applicaEtichetteAlModulo(dati);
-      popolaCampiEtichette('etichette-linee', RIFERIMENTO_LINEE, dati.linee);
-      popolaCampiEtichette('etichette-ingredienti', RIFERIMENTO_INGREDIENTI, dati.ingredienti);
-      popolaCampiEtichette('etichette-badge', RIFERIMENTO_BADGE, dati.badge);
+      popolaCampiEtichette('etichette-linee', RIFERIMENTO_LINEE, dati.linee, LINEE_GUSTO);
+      popolaCampiEtichette('etichette-ingredienti', RIFERIMENTO_INGREDIENTI, dati.ingredienti, INGREDIENTI_GUSTO);
+      popolaCampiEtichette('etichette-badge', RIFERIMENTO_BADGE, dati.badge, BADGE_GUSTO);
     }
 
     // Popola sempre almeno con i valori di default: se Roberto non ha mai
     // personalizzato nulla (nessun documento salvato su Sanity), i campi
     // devono mostrare comunque le etichette già in uso, non restare vuoti.
-    popolaCampiEtichette('etichette-linee', RIFERIMENTO_LINEE, []);
-    popolaCampiEtichette('etichette-ingredienti', RIFERIMENTO_INGREDIENTI, []);
-    popolaCampiEtichette('etichette-badge', RIFERIMENTO_BADGE, []);
+    popolaCampiEtichette('etichette-linee', RIFERIMENTO_LINEE, [], LINEE_GUSTO);
+    popolaCampiEtichette('etichette-ingredienti', RIFERIMENTO_INGREDIENTI, [], INGREDIENTI_GUSTO);
+    popolaCampiEtichette('etichette-badge', RIFERIMENTO_BADGE, [], BADGE_GUSTO);
 
     if (!forza) {
       const dallaCache = leggiCache(CACHE_ETICHETTE);
