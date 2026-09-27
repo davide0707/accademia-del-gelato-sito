@@ -74,23 +74,117 @@
     text-align: right;
   }
 
+  /* Orari: su telefono il giorno sta sopra e i due orari sotto, affiancati
+     (in riga con il giorno non ci starebbero); da 520px tutto su una riga. */
+  #orari-righe { display: flex; flex-direction: column; gap: 14px; }
   .orario-riga {
     display: flex;
-    align-items: center;
-    gap: 10px;
+    flex-direction: column;
+    gap: 6px;
   }
   .orario-riga__giorno {
-    width: 78px;
-    flex-shrink: 0;
     font-size: 14px;
     font-weight: 600;
   }
-  .orario-riga input[type="text"] {
-    padding: 10px 8px;
-    text-align: center;
+  .orario-riga__campi {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
   .orario-riga__separatore { opacity: 0.4; flex-shrink: 0; }
-  #orari-righe { display: flex; flex-direction: column; gap: 10px; }
+  @media (min-width: 520px) {
+    .orario-riga { flex-direction: row; align-items: center; gap: 12px; }
+    .orario-riga__giorno { width: 90px; flex-shrink: 0; }
+    .orario-riga__campi { flex: 1; }
+  }
+
+  /* Campo orario "premium": bordo sfumato bordeaux, cifre grandi, orologio
+     che segna l'ora scelta (--clock-emoji, impostato dallo script). */
+  .premium-time-container {
+    flex: 1;
+    min-width: 0;
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    border-radius: 20px;
+    padding: 2px;
+    background-image: linear-gradient(135deg, rgba(140, 40, 55, 0.4), rgba(140, 40, 55, 0.1), rgba(140, 40, 55, 0.3));
+    box-shadow: 0 4px 15px rgba(140, 40, 55, 0.05);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  /* il passaggio del mouse non esiste sul telefono: stesso effetto quando
+     il campo è toccato (focus) */
+  .premium-time-container:hover,
+  .premium-time-container:focus-within {
+    transform: translateY(-2px);
+    background-image: linear-gradient(135deg, #8c2837, #C6A468);
+    box-shadow: 0 10px 25px rgba(140, 40, 55, 0.2);
+  }
+  /* interno avorio e non trasparente: così il gradiente resta un bordo e,
+     quando diventa pieno, non copre le cifre scure */
+  .premium-inner-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background: var(--avorio);
+    border-radius: 18px;
+    padding-right: 12px;
+  }
+  .premium-time-input {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    padding: 12px 8px 12px 14px;
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    color: #4a151b;
+    background: transparent;
+    border: none;
+    text-align: center;
+    letter-spacing: 1px;
+    cursor: pointer;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    z-index: 2;
+  }
+  .premium-time-input::-webkit-date-and-time-value { text-align: center; }
+  .premium-inner-box::after {
+    content: var(--clock-emoji, '🕒');
+    font-size: 18px;
+    pointer-events: none;
+    z-index: 3;
+    opacity: 0.6;
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
+  }
+  .premium-time-container:focus-within .premium-inner-box::after {
+    transform: rotate(360deg) scale(1.2);
+    opacity: 1;
+  }
+  /* la freccia/icona del browser resta invisibile ma copre tutto il campo:
+     un tocco ovunque apre il selettore dell'ora */
+  .premium-time-input::-webkit-calendar-picker-indicator {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 4;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .premium-time-container,
+    .premium-inner-box::after { transition: none; }
+    .premium-time-container:hover,
+    .premium-time-container:focus-within { transform: none; }
+    .premium-time-container:focus-within .premium-inner-box::after { transform: none; }
+  }
   #etichette-linee, #etichette-badge { display: flex; flex-direction: column; gap: 12px; }
 
   select {
@@ -410,7 +504,7 @@
   <!-- SCHERMATA ORARI -->
   <section class="schermata" id="schermata-orari">
     <div class="modulo__header">
-      <button class="link-indietro" id="btn-orari-indietro" type="button">← Cambia blog</button>
+      <button class="link-indietro" id="btn-orari-indietro" type="button">← Cambia sezione</button>
     </div>
     <p class="modulo__titolo">Orari di apertura</p>
     <div id="orari-righe"><!-- 7 righe generate via JS --></div>
@@ -860,31 +954,76 @@
   const successoOrari = $('successo-orari');
   const btnSalvaOrari = $('btn-salva-orari');
 
+  // L'orologio accanto all'orario segna l'ora scelta: 🕐…🕛 per le ore
+  // piene, 🕜…🕧 per le mezz'ore (dai 30 minuti in su).
+  function aggiornaOrologio(input) {
+    const box = input.parentElement;
+    const m = /^(\d{2}):(\d{2})/.exec(input.value || '');
+    if (!m) {
+      box.style.removeProperty('--clock-emoji');
+      return;
+    }
+    const ore = Number(m[1]);
+    const minuti = Number(m[2]);
+    const indice = (ore % 12 || 12) - 1;
+    const codice = (minuti >= 30 ? 0x1F55C : 0x1F550) + indice;
+    box.style.setProperty('--clock-emoji', `"${String.fromCodePoint(codice)}"`);
+  }
+
+  function creaCampoOrario(id, etichetta) {
+    const contenitore = document.createElement('label');
+    contenitore.className = 'premium-time-container';
+    const box = document.createElement('span');
+    box.className = 'premium-inner-box';
+    const input = document.createElement('input');
+    input.type = 'time';
+    input.className = 'premium-time-input';
+    input.id = id;
+    input.setAttribute('aria-label', etichetta);
+    input.addEventListener('input', () => aggiornaOrologio(input));
+    box.appendChild(input);
+    contenitore.appendChild(box);
+    return contenitore;
+  }
+
   (function costruisciRigheOrari() {
     const contenitore = $('orari-righe');
     GIORNI_ORARI.forEach((g) => {
       const riga = document.createElement('div');
       riga.className = 'orario-riga';
-      const apertura = document.createElement('input');
-      apertura.type = 'text';
-      apertura.id = `orario-${g.chiave}-apertura`;
-      apertura.maxLength = 6;
-      apertura.placeholder = '10:00';
-      const chiusura = document.createElement('input');
-      chiusura.type = 'text';
-      chiusura.id = `orario-${g.chiave}-chiusura`;
-      chiusura.maxLength = 6;
-      chiusura.placeholder = '23:30';
       const nomeGiorno = document.createElement('span');
       nomeGiorno.className = 'orario-riga__giorno';
       nomeGiorno.textContent = g.nome;
+      const campi = document.createElement('div');
+      campi.className = 'orario-riga__campi';
       const separatore = document.createElement('span');
       separatore.className = 'orario-riga__separatore';
       separatore.textContent = '–';
-      riga.append(nomeGiorno, apertura, separatore, chiusura);
+      campi.append(
+        creaCampoOrario(`orario-${g.chiave}-apertura`, `${g.nome}, apertura`),
+        separatore,
+        creaCampoOrario(`orario-${g.chiave}-chiusura`, `${g.nome}, chiusura`),
+      );
+      riga.append(nomeGiorno, campi);
       contenitore.appendChild(riga);
     });
   })();
+
+  // Il selettore dell'ora non conosce "24:00": per la chiusura a
+  // mezzanotte Roberto sceglie 00:00, che si salva come "24:00" (il sito lo
+  // mostra così, e per Google lo converte già in 23:59). All'inverso,
+  // caricando "24:00" nel campo si mostra 00:00. "9:30" diventa "09:30";
+  // un valore che non è un orario (es. "1") lascia il campo vuoto, così
+  // salvando Roberto viene avvisato che manca.
+  function perCampoOrario(valore, chiusura) {
+    const m = /^(\d{1,2}):(\d{2})$/.exec((valore || '').trim());
+    if (!m) return '';
+    const testo = `${m[1].padStart(2, '0')}:${m[2]}`;
+    return chiusura && testo === '24:00' ? '00:00' : testo;
+  }
+  function daCampoOrario(valore, chiusura) {
+    return chiusura && valore === '00:00' ? '24:00' : valore;
+  }
 
   const CACHE_ORARI = 'ag_roberto_orari';
   const AZIONI_ORARI = 'ag_roberto_orari_azioni';
@@ -894,8 +1033,12 @@
   function popolaFormOrari(dati) {
     GIORNI_ORARI.forEach((g) => {
       const voce = dati?.[g.chiave];
-      $(`orario-${g.chiave}-apertura`).value = voce?.apertura || '';
-      $(`orario-${g.chiave}-chiusura`).value = voce?.chiusura || '';
+      const apertura = $(`orario-${g.chiave}-apertura`);
+      const chiusura = $(`orario-${g.chiave}-chiusura`);
+      apertura.value = perCampoOrario(voce?.apertura, false);
+      chiusura.value = perCampoOrario(voce?.chiusura, true);
+      aggiornaOrologio(apertura);
+      aggiornaOrologio(chiusura);
     });
     $('orari-nota').value = dati?.nota || '';
   }
@@ -950,8 +1093,8 @@
 
     const corpo = { pin: pinSalvato(), tipo: 'orari', nota: $('orari-nota').value.trim() };
     for (const g of GIORNI_ORARI) {
-      const apertura = $(`orario-${g.chiave}-apertura`).value.trim();
-      const chiusura = $(`orario-${g.chiave}-chiusura`).value.trim();
+      const apertura = daCampoOrario($(`orario-${g.chiave}-apertura`).value.trim(), false);
+      const chiusura = daCampoOrario($(`orario-${g.chiave}-chiusura`).value.trim(), true);
       if (!apertura || !chiusura) {
         erroreOrari.textContent = `Manca l'orario di ${g.nome}.`;
         erroreOrari.classList.add('visibile');
