@@ -898,7 +898,7 @@
 
     try {
       const query = encodeURIComponent(`*[_id == "${ID_ORARI}"][0]`);
-      const url = `https://${SANITY_PROJECT_ID}.apicdn.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
+      const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
       const risposta = await fetch(url);
       if (!risposta.ok) throw new Error('risposta non ok');
       const { result } = await risposta.json();
@@ -1079,7 +1079,7 @@
       const query = encodeURIComponent(
         '*[_type == "gusto"] | order(ordine asc){_id, nome, descrizione, linea, ingrediente, categorie, badge, soloCoppetta, esaurito, vetrina, "fotoUrl": foto.asset->url}'
       );
-      const url = `https://${SANITY_PROJECT_ID}.apicdn.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
+      const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
       const risposta = await fetch(url);
       if (!risposta.ok) throw new Error('risposta non ok');
       const { result } = await risposta.json();
@@ -1457,7 +1457,7 @@
     }
     try {
       const query = encodeURIComponent('*[_type == "vocePrezzo"] | order(ordine asc){_id, nome, dettaglio, prezzo}');
-      const url = `https://${SANITY_PROJECT_ID}.apicdn.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
+      const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
       const risposta = await fetch(url);
       if (!risposta.ok) throw new Error('risposta non ok');
       const { result } = await risposta.json();
@@ -1916,7 +1916,7 @@
       const query = encodeURIComponent(
         `*[_type == "${tipo}"] | order(pubblicatoIl desc){_id, titolo, testo, pubblicatoIl, "fotoUrl": foto.asset->url}`
       );
-      const url = `https://${SANITY_PROJECT_ID}.apicdn.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
+      const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
       const risposta = await fetch(url);
       if (!risposta.ok) throw new Error('risposta non ok');
       const { result } = await risposta.json();

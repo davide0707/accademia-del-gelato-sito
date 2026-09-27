@@ -183,7 +183,7 @@ export async function initHoursTable() {
 
   try {
     const query = encodeURIComponent(`*[_id == "${ID_ORARI}"][0]`);
-    const url = `https://${SANITY_PROJECT_ID}.apicdn.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
+    const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
     const risposta = await fetch(url);
     if (!risposta.ok) return;
     const { result } = await risposta.json();

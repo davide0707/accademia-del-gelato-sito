@@ -77,7 +77,7 @@ export async function initBlog(config) {
     const query = encodeURIComponent(
       `*[_type == "${config.tipo}"] | order(pubblicatoIl desc)[0]{titolo, testo, pubblicatoIl, "fotoUrl": foto.asset->url}`
     );
-    const url = `https://${SANITY_PROJECT_ID}.apicdn.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
+    const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
     const risposta = await fetch(url);
     if (!risposta.ok) return;
     const { result } = await risposta.json();
@@ -195,7 +195,7 @@ export function initArchivioBlog(config) {
       const query = encodeURIComponent(
         `*[_type == "${config.tipo}"] | order(pubblicatoIl desc){titolo, testo, pubblicatoIl, "fotoUrl": foto.asset->url}`
       );
-      const url = `https://${SANITY_PROJECT_ID}.apicdn.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
+      const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
       const risposta = await fetch(url);
       if (!risposta.ok) throw new Error('risposta non ok');
       const { result } = await risposta.json();

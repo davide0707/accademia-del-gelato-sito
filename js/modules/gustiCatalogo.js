@@ -185,7 +185,7 @@ export async function initGustiCatalogo() {
     const query = encodeURIComponent(
       `*[_type == "gusto"] | order(ordine asc){nome, descrizione, "fotoUrl": foto.asset->url, categorie, linea, ingrediente, badge, soloCoppetta, esaurito, vetrina, ordine}`
     );
-    const url = `https://${SANITY_PROJECT_ID}.apicdn.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
+    const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
     const risposta = await fetch(url);
     if (!risposta.ok) return;
     const { result } = await risposta.json();
@@ -254,7 +254,7 @@ export async function initPrezzi() {
 
   try {
     const query = encodeURIComponent('*[_type == "vocePrezzo"] | order(ordine asc){nome, dettaglio, prezzo, ordine}');
-    const url = `https://${SANITY_PROJECT_ID}.apicdn.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
+    const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
     const risposta = await fetch(url);
     if (!risposta.ok) return;
     const { result } = await risposta.json();
