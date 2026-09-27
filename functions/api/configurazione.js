@@ -36,10 +36,6 @@ const ID_ETICHETTE = 'etichette-gusto';
 const ETICHETTA_MAX = 80;
 
 const VALORI_LINEE = ['creme', 'frutta', 'vegani', 'naturalmente-senza', 'puro-zero', 'granite'];
-const VALORI_INGREDIENTI = [
-  'cioccolato', 'pistacchio', 'nocciola', 'vaniglia-crema', 'frutti-rossi',
-  'agrumi', 'tropicale', 'caffe-caramello', 'liquirizia', 'cocco', 'neutro',
-];
 const VALORI_BADGE = ['vegano', 'novita', 'senzaglutine', 'senzazucchero', 'cheto'];
 
 // Solo il testo è modificabile: ogni elenco deve avere esattamente gli
@@ -62,12 +58,10 @@ function validaListaEtichette(lista, valoriAmmessi, nomeLista) {
 }
 
 async function salvaEtichette(corpo, env) {
-  const { linee, ingredienti, badge } = corpo;
+  const { linee, badge } = corpo;
 
   const erroreLinee = validaListaEtichette(linee, VALORI_LINEE, 'Linee');
   if (erroreLinee) return json({ errore: erroreLinee }, 400);
-  const erroreIngredienti = validaListaEtichette(ingredienti, VALORI_INGREDIENTI, 'Ingredienti');
-  if (erroreIngredienti) return json({ errore: erroreIngredienti }, 400);
   const erroreBadge = validaListaEtichette(badge, VALORI_BADGE, 'Badge');
   if (erroreBadge) return json({ errore: erroreBadge }, 400);
 
@@ -77,7 +71,6 @@ async function salvaEtichette(corpo, env) {
       _id: ID_ETICHETTE,
       _type: 'etichetteGusto',
       linee: pulisci(linee),
-      ingredienti: pulisci(ingredienti),
       badge: pulisci(badge),
     },
   }]);

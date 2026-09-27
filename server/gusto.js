@@ -4,6 +4,10 @@ import { json, muta, nuovoId, leggiFoto, caricaFoto } from './comune.js';
 // (categorie, linea, ingrediente, badge) devono restare tra i valori che
 // il sito sa disegnare, altrimenti la card finirebbe senza colore o
 // animazione: stessi elenchi di sanity/schemaTypes/gusto.js.
+//
+// L'ingrediente (colore di sfondo della card) Roberto non lo sceglie più:
+// un gusto nuovo parte da "neutro", una modifica senza ingrediente lascia
+// quello che il gusto aveva già.
 
 const NOME_MAX = 60;
 const DESC_MAX = 160;
@@ -24,7 +28,7 @@ function validaGusto({ nome, descrizione, categorie, linea, ingrediente, badge }
   if (categorie.some((c) => !LINEE_VALIDE.includes(c))) return 'Categoria non valida';
 
   if (!linea || !LINEE_VALIDE.includes(linea)) return 'Linea non valida';
-  if (!ingrediente || !INGREDIENTI_VALIDI.includes(ingrediente)) return 'Ingrediente non valido';
+  if (ingrediente && !INGREDIENTI_VALIDI.includes(ingrediente)) return 'Ingrediente non valido';
 
   if (badge && (!Array.isArray(badge) || badge.some((b) => !BADGE_VALIDI.includes(b)))) return 'Badge non valido';
 
@@ -32,17 +36,18 @@ function validaGusto({ nome, descrizione, categorie, linea, ingrediente, badge }
 }
 
 function campiGusto(corpo) {
-  return {
+  const campi = {
     nome: corpo.nome.trim(),
     descrizione: corpo.descrizione.trim(),
     categorie: corpo.categorie,
     linea: corpo.linea,
-    ingrediente: corpo.ingrediente,
     badge: corpo.badge || [],
     soloCoppetta: !!corpo.soloCoppetta,
     esaurito: !!corpo.esaurito,
     vetrina: !!corpo.vetrina,
   };
+  if (corpo.ingrediente) campi.ingrediente = corpo.ingrediente;
+  return campi;
 }
 
 export async function pubblicaGusto(corpo, env) {
@@ -52,7 +57,7 @@ export async function pubblicaGusto(corpo, env) {
   const foto = leggiFoto(corpo.fotoBase64);
   if (foto?.errore) return json({ errore: foto.errore }, 400);
 
-  const doc = { _id: nuovoId(), _type: 'gusto', ...campiGusto(corpo) };
+  const doc = { _id: nuovoId(), _type: 'gusto', ingrediente: 'neutro', ...campiGusto(corpo) };
   if (typeof corpo.ordine === 'number') doc.ordine = corpo.ordine;
   if (foto) doc.foto = await caricaFoto(env, foto);
 

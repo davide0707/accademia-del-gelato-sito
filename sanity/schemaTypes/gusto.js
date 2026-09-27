@@ -82,10 +82,10 @@ export default defineType({
     defineField({
       name: 'ingrediente',
       title: 'Ingrediente principale',
-      description: 'Guida il colore/motivo di sfondo della card sul sito',
+      description: 'Guida il colore/motivo di sfondo della card sul sito. Roberto non lo sceglie da roberto-pubblica: i gusti nuovi partono da "Neutro".',
       type: 'string',
       options: { list: INGREDIENTI },
-      validation: (Rule) => Rule.required(),
+      initialValue: 'neutro',
     }),
     defineField({
       name: 'badge',

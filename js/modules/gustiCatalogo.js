@@ -29,7 +29,7 @@ const CACHE_KEY_ETICHETTE = 'ag_etichette_gusto';
 // roberto-pubblica (solo il testo — i valori restano fissi, vedi
 // css/main.css per come guidano colori/animazioni). Finché Roberto non
 // personalizza nulla, restano mappe vuote e si usano i default qui sotto.
-let etichetteCorrenti = { linee: {}, ingredienti: {}, badge: {} };
+let etichetteCorrenti = { linee: {}, badge: {} };
 // Riferimento all'ultimo elenco gusti renderizzato: se le etichette
 // personalizzate arrivano DOPO i gusti (richieste in parallelo, ordine di
 // risposta non garantito), serve per ridisegnare le card con le etichette
@@ -103,7 +103,7 @@ function creaCard(gusto) {
   card.className = gusto.esaurito ? 'gusto-card is-esaurito' : 'gusto-card';
   card.dataset.categorie = (gusto.categorie || []).join(' ');
   card.dataset.linea = gusto.linea;
-  card.dataset.ingrediente = gusto.ingrediente;
+  card.dataset.ingrediente = gusto.ingrediente || 'neutro';
 
   const visivo = document.createElement('div');
   visivo.className = 'gusto-card__visivo';
@@ -220,7 +220,6 @@ async function caricaEtichetteGusto() {
     if (!result) return;
     const mappe = {
       linee: Object.fromEntries((result.linee || []).map((v) => [v.valore, v.etichetta])),
-      ingredienti: Object.fromEntries((result.ingredienti || []).map((v) => [v.valore, v.etichetta])),
       badge: Object.fromEntries((result.badge || []).map((v) => [v.valore, v.etichetta])),
     };
     etichetteCorrenti = mappe;

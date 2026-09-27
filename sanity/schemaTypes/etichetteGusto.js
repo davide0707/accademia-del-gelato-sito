@@ -12,7 +12,7 @@ function campoEtichetta() {
 }
 
 /**
- * Documento singolo: le etichette italiane di Linea, Ingrediente e Badge,
+ * Documento singolo: le etichette italiane di Linea e Badge,
  * modificabili da Roberto — solo il testo, non l'elenco dei valori
  * ammessi, che resta fisso (guida colori/animazioni delle card sul sito,
  * vedi css/main.css e js/modules/scrollReveal.js). Se non esiste ancora,
@@ -21,11 +21,10 @@ function campoEtichetta() {
  */
 export default defineType({
   name: 'etichetteGusto',
-  title: 'Etichette gusti (Linea, Ingrediente, Badge)',
+  title: 'Etichette gusti (Linea, Badge)',
   type: 'document',
   fields: [
     defineField({ name: 'linee', title: 'Linee', type: 'array', of: [campoEtichetta()] }),
-    defineField({ name: 'ingredienti', title: 'Ingredienti', type: 'array', of: [campoEtichetta()] }),
     defineField({ name: 'badge', title: 'Badge', type: 'array', of: [campoEtichetta()] }),
   ],
   preview: {

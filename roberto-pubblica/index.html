@@ -91,7 +91,7 @@
   }
   .orario-riga__separatore { opacity: 0.4; flex-shrink: 0; }
   #orari-righe { display: flex; flex-direction: column; gap: 10px; }
-  #etichette-linee, #etichette-ingredienti, #etichette-badge { display: flex; flex-direction: column; gap: 12px; }
+  #etichette-linee, #etichette-badge { display: flex; flex-direction: column; gap: 12px; }
 
   select {
     width: 100%;
@@ -404,7 +404,7 @@
     <button class="btn-primario hub__bottone" id="btn-orari" type="button">Orari di apertura</button>
     <button class="btn-primario hub__bottone" id="btn-gusti" type="button">Gusti del catalogo</button>
     <button class="btn-primario hub__bottone" id="btn-prezzi" type="button">Prezzi</button>
-    <button class="btn-primario hub__bottone" id="btn-etichette" type="button">Etichette (Linea, Ingrediente, Badge)</button>
+    <button class="btn-primario hub__bottone" id="btn-etichette" type="button">Etichette (Linea, Badge)</button>
   </section>
 
   <!-- SCHERMATA ORARI -->
@@ -475,11 +475,6 @@
     </div>
 
     <div>
-      <label for="gusto-ingrediente">Ingrediente principale</label>
-      <select id="gusto-ingrediente"></select>
-    </div>
-
-    <div>
       <label>Categorie (filtro) <span class="label-facoltativo">— una o più</span></label>
       <div class="scelte-multiple" id="gusto-categorie"></div>
     </div>
@@ -511,11 +506,6 @@
     <div>
       <p class="modulo__titolo">Linea</p>
       <div id="etichette-linee"></div>
-    </div>
-
-    <div>
-      <p class="modulo__titolo">Ingrediente principale</p>
-      <div id="etichette-ingredienti"></div>
     </div>
 
     <div>
@@ -1006,6 +996,8 @@
   // Stesse liste a scelta fissa usate dallo schema Sanity (sanity/schemaTypes/gusto.js)
   // e dalla validazione server (server/gusto.js): i valori
   // devono restare identici, altrimenti il sito non saprebbe come disegnare la card.
+  // L'ingrediente (colore di sfondo della card) qui non si sceglie: ci
+  // pensa il server, vedi server/gusto.js.
   const LINEE_GUSTO = [
     { valore: 'creme', etichetta: 'Gelati alle Creme' },
     { valore: 'frutta', etichetta: 'Gelati alla Frutta ("Sorbetto")' },
@@ -1013,19 +1005,6 @@
     { valore: 'naturalmente-senza', etichetta: 'Naturalmente Senza — No Zucchero, No Glutine' },
     { valore: 'puro-zero', etichetta: 'Puro Zero — No Glutine, No Latte, No Zucchero (Vegano)' },
     { valore: 'granite', etichetta: 'Granite' },
-  ];
-  const INGREDIENTI_GUSTO = [
-    { valore: 'cioccolato', etichetta: 'Cioccolato' },
-    { valore: 'pistacchio', etichetta: 'Pistacchio' },
-    { valore: 'nocciola', etichetta: 'Nocciola' },
-    { valore: 'vaniglia-crema', etichetta: 'Vaniglia/Crema' },
-    { valore: 'frutti-rossi', etichetta: 'Frutti Rossi' },
-    { valore: 'agrumi', etichetta: 'Agrumi' },
-    { valore: 'tropicale', etichetta: 'Tropicale' },
-    { valore: 'caffe-caramello', etichetta: 'Caffè/Caramello' },
-    { valore: 'liquirizia', etichetta: 'Liquirizia' },
-    { valore: 'cocco', etichetta: 'Cocco' },
-    { valore: 'neutro', etichetta: 'Neutro' },
   ];
   const BADGE_GUSTO = [
     { valore: 'vegano', etichetta: 'Vegano' },
@@ -1047,13 +1026,6 @@
       opt.value = l.valore;
       opt.textContent = l.etichetta;
       selLinea.appendChild(opt);
-    });
-    const selIngrediente = $('gusto-ingrediente');
-    INGREDIENTI_GUSTO.forEach((i) => {
-      const opt = document.createElement('option');
-      opt.value = i.valore;
-      opt.textContent = i.etichetta;
-      selIngrediente.appendChild(opt);
     });
     const contCategorie = $('gusto-categorie');
     LINEE_GUSTO.forEach((l) => {
@@ -1077,7 +1049,7 @@
     });
   })();
 
-  // ---- Etichette (Linea, Ingrediente, Badge): solo il testo è
+  // ---- Etichette (Linea, Badge): solo il testo è
   // modificabile da Roberto, l'elenco dei valori resta fisso (guida
   // colori/animazioni delle card, vedi css/main.css) ----
   const CACHE_ETICHETTE = 'ag_roberto_etichette';
@@ -1096,7 +1068,6 @@
     { valore: 'puro-zero', nome: 'Puro Zero' },
     { valore: 'granite', nome: 'Granite' },
   ];
-  const RIFERIMENTO_INGREDIENTI = INGREDIENTI_GUSTO.map((i) => ({ valore: i.valore, nome: i.etichetta }));
   const RIFERIMENTO_BADGE = BADGE_GUSTO.map((b) => ({ valore: b.valore, nome: b.etichetta }));
 
   function costruisciCampiEtichette(contenitoreId, riferimenti) {
@@ -1116,13 +1087,12 @@
     });
   }
   costruisciCampiEtichette('etichette-linee', RIFERIMENTO_LINEE);
-  costruisciCampiEtichette('etichette-ingredienti', RIFERIMENTO_INGREDIENTI);
   costruisciCampiEtichette('etichette-badge', RIFERIMENTO_BADGE);
 
   // r.nome (da RIFERIMENTO_*) è solo l'etichetta del campo, fissa apposta
   // per orientare Roberto — NON il valore da scrivere nell'input: quello
   // deve essere l'etichetta davvero in uso ora (elencoDefault, cioè
-  // LINEE_GUSTO/INGREDIENTI_GUSTO/BADGE_GUSTO), altrimenti senza ancora
+  // LINEE_GUSTO/BADGE_GUSTO), altrimenti senza ancora
   // nessuna personalizzazione salvata il campo mostrerebbe il nome breve
   // di riferimento invece del testo attuale.
   function popolaCampiEtichette(contenitoreId, riferimenti, lista, elencoDefault) {
@@ -1136,19 +1106,14 @@
   // Applica le etichette caricate anche ai menu/pill già costruiti nel
   // modulo "Nuovo gusto" (select/pill create una sola volta all'avvio con
   // i testi di default): aggiorna il testo visibile senza doverli
-  // ricreare, e aggiorna anche gli array LINEE_GUSTO/INGREDIENTI_GUSTO/
-  // BADGE_GUSTO così il sottotitolo della lista gusti (etichettaLinea)
-  // resta coerente.
+  // ricreare, e aggiorna anche gli array LINEE_GUSTO/BADGE_GUSTO così il
+  // sottotitolo della lista gusti (etichettaLinea) resta coerente.
   function applicaEtichetteAlModulo(dati) {
     const mappaLinee = Object.fromEntries((dati.linee || []).map((v) => [v.valore, v.etichetta]));
-    const mappaIngredienti = Object.fromEntries((dati.ingredienti || []).map((v) => [v.valore, v.etichetta]));
     const mappaBadge = Object.fromEntries((dati.badge || []).map((v) => [v.valore, v.etichetta]));
 
     Array.from($('gusto-linea').options).forEach((opt) => {
       if (mappaLinee[opt.value]) opt.textContent = mappaLinee[opt.value];
-    });
-    Array.from($('gusto-ingrediente').options).forEach((opt) => {
-      if (mappaIngredienti[opt.value]) opt.textContent = mappaIngredienti[opt.value];
     });
     $('gusto-categorie').querySelectorAll('.scelta-pill').forEach((pill) => {
       const valore = pill.querySelector('input')?.value;
@@ -1160,7 +1125,6 @@
     });
 
     LINEE_GUSTO.forEach((l) => { if (mappaLinee[l.valore]) l.etichetta = mappaLinee[l.valore]; });
-    INGREDIENTI_GUSTO.forEach((i) => { if (mappaIngredienti[i.valore]) i.etichetta = mappaIngredienti[i.valore]; });
     BADGE_GUSTO.forEach((b) => { if (mappaBadge[b.valore]) b.etichetta = mappaBadge[b.valore]; });
   }
 
@@ -1175,7 +1139,6 @@
     function applicaOvunque(dati) {
       applicaEtichetteAlModulo(dati);
       popolaCampiEtichette('etichette-linee', RIFERIMENTO_LINEE, dati.linee, LINEE_GUSTO);
-      popolaCampiEtichette('etichette-ingredienti', RIFERIMENTO_INGREDIENTI, dati.ingredienti, INGREDIENTI_GUSTO);
       popolaCampiEtichette('etichette-badge', RIFERIMENTO_BADGE, dati.badge, BADGE_GUSTO);
     }
 
@@ -1183,7 +1146,6 @@
     // personalizzato nulla (nessun documento salvato su Sanity), i campi
     // devono mostrare comunque le etichette già in uso, non restare vuoti.
     popolaCampiEtichette('etichette-linee', RIFERIMENTO_LINEE, [], LINEE_GUSTO);
-    popolaCampiEtichette('etichette-ingredienti', RIFERIMENTO_INGREDIENTI, [], INGREDIENTI_GUSTO);
     popolaCampiEtichette('etichette-badge', RIFERIMENTO_BADGE, [], BADGE_GUSTO);
 
     if (!forza) {
@@ -1234,7 +1196,6 @@
       pin: pinSalvato(),
       tipo: 'etichette',
       linee: leggiCampiEtichette('etichette-linee', RIFERIMENTO_LINEE),
-      ingredienti: leggiCampiEtichette('etichette-ingredienti', RIFERIMENTO_INGREDIENTI),
       badge: leggiCampiEtichette('etichette-badge', RIFERIMENTO_BADGE),
     };
 
@@ -1309,7 +1270,7 @@
     }
     try {
       const query = encodeURIComponent(
-        '*[_type == "gusto"] | order(ordine asc){_id, nome, descrizione, linea, ingrediente, categorie, badge, soloCoppetta, esaurito, vetrina, "fotoUrl": foto.asset->url}'
+        '*[_type == "gusto"] | order(ordine asc){_id, nome, descrizione, linea, categorie, badge, soloCoppetta, esaurito, vetrina, "fotoUrl": foto.asset->url}'
       );
       const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
       const risposta = await fetch(url);
@@ -1458,7 +1419,6 @@
   const gustoFotoAnteprima = $('gusto-foto-anteprima');
   const gustoBtnRimuoviFoto = $('gusto-btn-rimuovi-foto');
   const gustoLinea = $('gusto-linea');
-  const gustoIngrediente = $('gusto-ingrediente');
   const gustoSoloCoppetta = $('gusto-solocoppetta');
   const gustoEsaurito = $('gusto-esaurito');
   const gustoVetrina = $('gusto-vetrina');
@@ -1490,7 +1450,6 @@
     gustoFotoAnteprima.src = '';
     gustoBtnRimuoviFoto.classList.remove('visibile');
     gustoLinea.selectedIndex = 0;
-    gustoIngrediente.selectedIndex = 0;
     $('gusto-categorie').querySelectorAll('input[type=checkbox]').forEach((cb) => { cb.checked = false; });
     $('gusto-badge').querySelectorAll('input[type=checkbox]').forEach((cb) => { cb.checked = false; });
     gustoSoloCoppetta.checked = false;
@@ -1523,7 +1482,6 @@
     }
 
     gustoLinea.value = gusto.linea || 'creme';
-    gustoIngrediente.value = gusto.ingrediente || 'cioccolato';
     $('gusto-categorie').querySelectorAll('input[type=checkbox]').forEach((cb) => {
       cb.checked = (gusto.categorie || []).includes(cb.value);
     });
@@ -1593,7 +1551,6 @@
         descrizione,
         categorie,
         linea: gustoLinea.value,
-        ingrediente: gustoIngrediente.value,
         badge,
         soloCoppetta: gustoSoloCoppetta.checked,
         esaurito: gustoEsaurito.checked,
@@ -1637,7 +1594,6 @@
         descrizione: corpo.descrizione,
         categorie: corpo.categorie,
         linea: corpo.linea,
-        ingrediente: corpo.ingrediente,
         badge: corpo.badge,
         soloCoppetta: corpo.soloCoppetta,
         esaurito: corpo.esaurito,
