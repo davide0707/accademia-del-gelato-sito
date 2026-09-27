@@ -636,6 +636,15 @@
   // corrisponde a blogAttivo (vedi sceglieBlog).
   let postiCorrenti = null;
   let postiCorrentiBlog = null;
+  // Due blog, due cache/code separate su localStorage — indicizzate per
+  // tipo Sanity (aggiornamento/falsoMito) così restano distinte anche se
+  // Roberto passa dall'uno all'altro nella stessa sessione.
+  function chiaveCacheBlog(tipo) { return `ag_roberto_blog_${tipo}`; }
+  function chiaveAzioniBlog(tipo) { return `ag_roberto_blog_${tipo}_azioni`; }
+  const codeAzioniBlog = {
+    aggiornamento: leggiCache(chiaveAzioniBlog('aggiornamento')) || [],
+    falsoMito: leggiCache(chiaveAzioniBlog('falsoMito')) || [],
+  };
 
   const $ = (id) => document.getElementById(id);
   const schermate = {
@@ -674,6 +683,60 @@
   function urlAnteprimaFoto(url, larghezza) {
     if (!url) return '';
     return url.startsWith('data:') ? url : `${url}?w=${larghezza}&auto=format&fit=max`;
+  }
+
+  // La sola memoria JS (gustiCorrenti/prezziCorrenti/postiCorrenti) non
+  // basta: sparisce a ogni ricarica della pagina, facendo ripartire da un
+  // fetch che può ancora essere in ritardo — esattamente il problema
+  // segnalato ("la modifica va via quando si riavvia la pagina"). Ogni
+  // elenco viene quindi salvato anche su localStorage (sopravvive alla
+  // ricarica), insieme a una coda delle scritture recenti fatte da questa
+  // pagina: quando arriva un fetch, quella coda viene riapplicata sopra il
+  // risultato, così un salvataggio recentissimo non "sparisce di nuovo" se
+  // Sanity non ha ancora fatto in tempo a propagarlo. Passata la finestra
+  // di sicurezza, la coda si svuota da sola e si torna a fidarsi solo del
+  // server.
+  const FINESTRA_RIAPPLICAZIONE_MS = 2 * 60 * 1000;
+
+  function leggiCache(chiave) {
+    try {
+      const grezzo = localStorage.getItem(chiave);
+      return grezzo ? JSON.parse(grezzo) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function scriviCache(chiave, valore) {
+    try {
+      localStorage.setItem(chiave, JSON.stringify(valore));
+    } catch (e) {
+      /* storage pieno/non disponibile: non è critico, si continua senza */
+    }
+  }
+
+  function registraAzione(coda, chiaveCoda, azione) {
+    coda.push({ ...azione, quando: Date.now() });
+    scriviCache(chiaveCoda, coda);
+  }
+
+  function riapplicaAzioni(elenco, coda) {
+    const ora = Date.now();
+    const valide = coda.filter((a) => ora - a.quando < FINESTRA_RIAPPLICAZIONE_MS);
+    coda.length = 0;
+    coda.push(...valide);
+
+    let risultato = elenco.slice();
+    valide.forEach((azione) => {
+      if (azione.tipo === 'elimina') {
+        risultato = risultato.filter((v) => v._id !== azione.id);
+      } else {
+        const idx = risultato.findIndex((v) => v._id === azione.voce._id);
+        if (idx !== -1) risultato[idx] = azione.voce;
+        else risultato.unshift(azione.voce);
+      }
+    });
+    return risultato;
   }
 
   // ---- Schermata PIN ----
@@ -950,9 +1013,12 @@
   const listaGustiEl = $('gusti-lista');
   const erroreGustiLista = $('errore-gusti-lista');
   const campoCercaGusti = $('gusti-cerca');
+  const CACHE_GUSTI = 'ag_roberto_gusti';
+  const AZIONI_GUSTI = 'ag_roberto_gusti_azioni';
   // null finché non caricato almeno una volta in questa sessione; da lì in
   // poi tenuto sincronizzato otticamente da ogni pubblica/modifica/cancella
   let gustiCorrenti = null;
+  let codaAzioniGusti = leggiCache(AZIONI_GUSTI) || [];
 
   async function caricaGustiLista({ forza = false } = {}) {
     if (!forza && gustiCorrenti) {
@@ -960,8 +1026,20 @@
       renderizzaGustiLista(gustiCorrenti);
       return;
     }
-    erroreGustiLista.classList.remove('visibile');
-    listaGustiEl.innerHTML = '<p class="gestione__caricamento">Carico…</p>';
+    if (!forza) {
+      // ricarica di pagina o prima apertura in sessione: mostra subito
+      // l'ultima versione salvata (con le scritture recenti riapplicate
+      // sopra), poi verifica in background — mai un lampeggio di
+      // caricamento se abbiamo già qualcosa da mostrare
+      const dallaCache = leggiCache(CACHE_GUSTI);
+      if (dallaCache) {
+        gustiCorrenti = riapplicaAzioni(dallaCache, codaAzioniGusti);
+        renderizzaGustiLista(gustiCorrenti);
+      } else {
+        erroreGustiLista.classList.remove('visibile');
+        listaGustiEl.innerHTML = '<p class="gestione__caricamento">Carico…</p>';
+      }
+    }
     try {
       const query = encodeURIComponent(
         '*[_type == "gusto"] | order(ordine asc){_id, nome, descrizione, linea, ingrediente, categorie, badge, soloCoppetta, esaurito, vetrina, "fotoUrl": foto.asset->url}'
@@ -970,12 +1048,18 @@
       const risposta = await fetch(url);
       if (!risposta.ok) throw new Error('risposta non ok');
       const { result } = await risposta.json();
-      gustiCorrenti = result || [];
+      scriviCache(CACHE_GUSTI, result || []);
+      gustiCorrenti = riapplicaAzioni(result || [], codaAzioniGusti);
       renderizzaGustiLista(gustiCorrenti);
+      erroreGustiLista.classList.remove('visibile');
     } catch (e) {
-      listaGustiEl.innerHTML = '';
-      erroreGustiLista.textContent = 'Non riesco a caricare i gusti. Riprova.';
-      erroreGustiLista.classList.add('visibile');
+      if (!gustiCorrenti) {
+        listaGustiEl.innerHTML = '';
+        erroreGustiLista.textContent = 'Non riesco a caricare i gusti. Riprova.';
+        erroreGustiLista.classList.add('visibile');
+      }
+      // se avevamo già qualcosa in vista (cache/sessione), resta lì: un
+      // fetch fallito non deve far sparire quello che si vedeva già
     }
   }
 
@@ -1071,6 +1155,7 @@
       const dati = await risposta.json().catch(() => ({}));
       if (!risposta.ok) throw new Error(dati.errore || 'Errore sconosciuto');
 
+      registraAzione(codaAzioniGusti, AZIONI_GUSTI, { tipo: 'elimina', id });
       if (gustiCorrenti) gustiCorrenti = gustiCorrenti.filter((g) => g._id !== id);
       voceEl.remove();
       if (!listaGustiEl.querySelector('.gestione__voce')) {
@@ -1293,6 +1378,7 @@
         fotoUrl: fotoUrlOttimistico,
       };
 
+      registraAzione(codaAzioniGusti, AZIONI_GUSTI, { tipo: 'scrivi', voce: voceOttimistica });
       if (gustiCorrenti) {
         const idx = gustiCorrenti.findIndex((g) => g._id === voceOttimistica._id);
         if (idx !== -1) gustiCorrenti[idx] = voceOttimistica;
@@ -1314,27 +1400,42 @@
   // ---- Prezzi: elenco (listino libero, non più 3 voci fisse) ----
   const listaPrezziEl = $('prezzi-lista');
   const errorePrezziLista = $('errore-prezzi-lista');
+  const CACHE_PREZZI = 'ag_roberto_prezzi';
+  const AZIONI_PREZZI = 'ag_roberto_prezzi_azioni';
   let prezziCorrenti = null;
+  let codaAzioniPrezzi = leggiCache(AZIONI_PREZZI) || [];
 
   async function caricaPrezziLista({ forza = false } = {}) {
     if (!forza && prezziCorrenti) {
       renderizzaPrezziLista(prezziCorrenti);
       return;
     }
-    errorePrezziLista.classList.remove('visibile');
-    listaPrezziEl.innerHTML = '<p class="gestione__caricamento">Carico…</p>';
+    if (!forza) {
+      const dallaCache = leggiCache(CACHE_PREZZI);
+      if (dallaCache) {
+        prezziCorrenti = riapplicaAzioni(dallaCache, codaAzioniPrezzi);
+        renderizzaPrezziLista(prezziCorrenti);
+      } else {
+        errorePrezziLista.classList.remove('visibile');
+        listaPrezziEl.innerHTML = '<p class="gestione__caricamento">Carico…</p>';
+      }
+    }
     try {
       const query = encodeURIComponent('*[_type == "vocePrezzo"] | order(ordine asc){_id, nome, dettaglio, prezzo}');
       const url = `https://${SANITY_PROJECT_ID}.apicdn.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
       const risposta = await fetch(url);
       if (!risposta.ok) throw new Error('risposta non ok');
       const { result } = await risposta.json();
-      prezziCorrenti = result || [];
+      scriviCache(CACHE_PREZZI, result || []);
+      prezziCorrenti = riapplicaAzioni(result || [], codaAzioniPrezzi);
       renderizzaPrezziLista(prezziCorrenti);
+      errorePrezziLista.classList.remove('visibile');
     } catch (e) {
-      listaPrezziEl.innerHTML = '';
-      errorePrezziLista.textContent = 'Non riesco a caricare i prezzi. Riprova.';
-      errorePrezziLista.classList.add('visibile');
+      if (!prezziCorrenti) {
+        listaPrezziEl.innerHTML = '';
+        errorePrezziLista.textContent = 'Non riesco a caricare i prezzi. Riprova.';
+        errorePrezziLista.classList.add('visibile');
+      }
     }
   }
 
@@ -1401,6 +1502,7 @@
       const dati = await risposta.json().catch(() => ({}));
       if (!risposta.ok) throw new Error(dati.errore || 'Errore sconosciuto');
 
+      registraAzione(codaAzioniPrezzi, AZIONI_PREZZI, { tipo: 'elimina', id });
       if (prezziCorrenti) prezziCorrenti = prezziCorrenti.filter((v) => v._id !== id);
       rigaEl.remove();
       if (!listaPrezziEl.querySelector('.gestione__voce')) {
@@ -1503,6 +1605,7 @@
         dettaglio,
         prezzo,
       };
+      registraAzione(codaAzioniPrezzi, AZIONI_PREZZI, { tipo: 'scrivi', voce: voceOttimistica });
       if (prezziCorrenti) {
         const idx = prezziCorrenti.findIndex((v) => v._id === voceOttimistica._id);
         if (idx !== -1) prezziCorrenti[idx] = voceOttimistica;
@@ -1563,7 +1666,7 @@
   }
 
   function apriModifica(post) {
-    postInModifica = { id: post._id, fotoUrlEsistente: post.fotoUrl || null };
+    postInModifica = { id: post._id, fotoUrlEsistente: post.fotoUrl || null, pubblicatoIl: post.pubblicatoIl || null };
     rimuoviFotoRichiesto = false;
     fotoCompressaDataUrl = null;
     campoFoto.value = '';
@@ -1712,24 +1815,21 @@
       // Aggiornamento ottimistico dell'elenco "Gestisci" di questo blog,
       // anche se non è la schermata su cui ci si trova ora: quando Roberto
       // la aprirà, la troverà già corretta invece di rileggerla da Sanity.
+      // Registrato anche su localStorage (registraAzione), così sopravvive
+      // pure a una ricarica della pagina.
       const fotoUrlOttimistico = rimuoviFotoRichiesto
         ? null
         : (fotoCompressaDataUrl || (postInModifica ? postInModifica.fotoUrlEsistente : null));
+      const postOttimistico = inModifica
+        ? { _id: postInModifica.id, titolo, testo, fotoUrl: fotoUrlOttimistico, pubblicatoIl: postInModifica.pubblicatoIl || new Date().toISOString() }
+        : { _id: dati.id, titolo, testo, fotoUrl: fotoUrlOttimistico, pubblicatoIl: new Date().toISOString() };
+
+      const tipoBlogAttivo = BLOG[blogAttivo].tipo;
+      registraAzione(codeAzioniBlog[tipoBlogAttivo], chiaveAzioniBlog(tipoBlogAttivo), { tipo: 'scrivi', voce: postOttimistico });
       if (postiCorrentiBlog === blogAttivo && postiCorrenti) {
-        if (inModifica) {
-          const idx = postiCorrenti.findIndex((p) => p._id === postInModifica.id);
-          if (idx !== -1) {
-            postiCorrenti[idx] = { ...postiCorrenti[idx], titolo, testo, fotoUrl: fotoUrlOttimistico };
-          }
-        } else {
-          postiCorrenti.unshift({
-            _id: dati.id,
-            titolo,
-            testo,
-            fotoUrl: fotoUrlOttimistico,
-            pubblicatoIl: new Date().toISOString(),
-          });
-        }
+        const idx = postiCorrenti.findIndex((p) => p._id === postOttimistico._id);
+        if (idx !== -1) postiCorrenti[idx] = postOttimistico;
+        else postiCorrenti.unshift(postOttimistico);
       }
 
       resetModuloANuovo();
@@ -1761,27 +1861,41 @@
   }
 
   async function caricaGestione({ forza = false } = {}) {
+    const tipo = BLOG[blogAttivo].tipo;
     if (!forza && postiCorrentiBlog === blogAttivo && postiCorrenti) {
       renderizzaGestione(postiCorrenti);
       return;
     }
-    erroreGestione.classList.remove('visibile');
-    listaGestione.innerHTML = '<p class="gestione__caricamento">Carico…</p>';
+    if (!forza) {
+      const dallaCache = leggiCache(chiaveCacheBlog(tipo));
+      if (dallaCache) {
+        postiCorrenti = riapplicaAzioni(dallaCache, codeAzioniBlog[tipo]);
+        postiCorrentiBlog = blogAttivo;
+        renderizzaGestione(postiCorrenti);
+      } else {
+        erroreGestione.classList.remove('visibile');
+        listaGestione.innerHTML = '<p class="gestione__caricamento">Carico…</p>';
+      }
+    }
     try {
       const query = encodeURIComponent(
-        `*[_type == "${BLOG[blogAttivo].tipo}"] | order(pubblicatoIl desc){_id, titolo, testo, pubblicatoIl, "fotoUrl": foto.asset->url}`
+        `*[_type == "${tipo}"] | order(pubblicatoIl desc){_id, titolo, testo, pubblicatoIl, "fotoUrl": foto.asset->url}`
       );
       const url = `https://${SANITY_PROJECT_ID}.apicdn.sanity.io/v2024-01-01/data/query/${SANITY_DATASET}?query=${query}`;
       const risposta = await fetch(url);
       if (!risposta.ok) throw new Error('risposta non ok');
       const { result } = await risposta.json();
-      postiCorrenti = result || [];
+      scriviCache(chiaveCacheBlog(tipo), result || []);
+      postiCorrenti = riapplicaAzioni(result || [], codeAzioniBlog[tipo]);
       postiCorrentiBlog = blogAttivo;
       renderizzaGestione(postiCorrenti);
+      erroreGestione.classList.remove('visibile');
     } catch (e) {
-      listaGestione.innerHTML = '';
-      erroreGestione.textContent = 'Non riesco a caricare gli aggiornamenti. Riprova.';
-      erroreGestione.classList.add('visibile');
+      if (!(postiCorrentiBlog === blogAttivo && postiCorrenti)) {
+        listaGestione.innerHTML = '';
+        erroreGestione.textContent = 'Non riesco a caricare gli aggiornamenti. Riprova.';
+        erroreGestione.classList.add('visibile');
+      }
     }
   }
 
@@ -1877,6 +1991,7 @@
       const dati = await risposta.json().catch(() => ({}));
       if (!risposta.ok) throw new Error(dati.errore || 'Errore sconosciuto');
 
+      registraAzione(codeAzioniBlog[BLOG[blogAttivo].tipo], chiaveAzioniBlog(BLOG[blogAttivo].tipo), { tipo: 'elimina', id });
       if (postiCorrentiBlog === blogAttivo && postiCorrenti) {
         postiCorrenti = postiCorrenti.filter((p) => p._id !== id);
       }
