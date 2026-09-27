@@ -53,6 +53,12 @@ img, picture, svg, video, canvas {
   max-width: 100%;
 }
 
+/* Senza, un'immagine con width/height nell'HTML ristretta da max-width
+   resterebbe alta quanto dice l'attributo: stirata in verticale. */
+img {
+  height: auto;
+}
+
 input, button, textarea, select {
   font: inherit;
   color: inherit;
@@ -1412,7 +1418,7 @@ section {
    perché si può aprire a grandezza piena. */
 .senza-zucchero__attestato {
   aspect-ratio: auto;
-  max-width: 340px;
+  max-width: clamp(210px, 150px + 12vw, 280px);
   margin-block: 0;
   /* sopra il motivo a maioliche (.sfondo-maiolica-decorativo, che copre
      tutto il sito): sul bianco del foglio si vedeva in trasparenza come una
@@ -1433,6 +1439,16 @@ section {
   height: auto;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-xl);
+}
+
+.senza-zucchero__attestato figcaption {
+  margin-top: var(--space-4);
+  text-align: center;
+  font-size: var(--fs-eyebrow);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-eyebrow);
+  font-weight: var(--fw-semibold);
+  color: var(--oro-chiaro);
 }
 
 .senza-zucchero__attestato a:focus-visible {
@@ -2941,18 +2957,6 @@ body.menu-aperto .nav__toggle-linea {
   opacity: 0.6;
 }
 
-.contatti__telefono {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-family: var(--font-display);
-  font-size: var(--fs-h5);
-  color: var(--rosso-accademia);
-  margin-top: var(--space-2);
-}
-
-.contatti__telefono svg { width: 22px; height: 22px; }
-
 .contatti__whatsapp {
   display: inline-flex;
   align-items: center;
@@ -3003,8 +3007,6 @@ body.menu-aperto .nav__toggle-linea {
   transform-origin: center;
   animation: mappa-pulse 2.6s var(--ease-soft) infinite;
 }
-
-.contatti__telefono:hover { color: var(--rosso-accent); }
 
 .contatti__titolo { margin-top: var(--space-1); }
 .contatti__sottotitolo { opacity: 0.7; font-size: var(--fs-body-sm); }

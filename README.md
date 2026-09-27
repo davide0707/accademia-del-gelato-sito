@@ -148,7 +148,7 @@ La sezione "I nostri gusti" in home mostra sei **card delle linee** (`.gusti-lin
 
 Il sito è ospitato su **Cloudflare Pages** (`https://accademia-del-gelato.pages.dev`), collegato al repository GitHub: ogni push su `main` viene pubblicato in automatico. Nessun passo di build (Framework preset: None, build command vuoto, output directory: la radice del progetto).
 
-- **Pagine, CSS, JS, immagini**: file statici, serviti così come sono.
+- **Pagine, CSS, JS, immagini**: file statici, serviti così come sono. In `index.html` e `privacy.html` il foglio di stile e `js/main.js` hanno un numero di versione (`css/main.css?v=…`): **va cambiato ogni volta che cambia il CSS o il JS**, così un browser con in memoria i file vecchi non li mischia con la pagina nuova (succedeva: pagina nuova + stile vecchio = immagini giganti e stirate).
 - **Funzioni che salvano i contenuti di Roberto**: in `functions/api/` (Cloudflare Pages Functions — ogni file è un indirizzo, es. `functions/api/pubblica.js` → `/api/pubblica`). Il codice comune (controllo PIN, scrittura su Sanity, caricamento foto) sta in `server/`, fuori da `functions/` apposta. Parlano con Sanity via HTTP, senza dipendenze da installare.
 - **Variabili nel pannello Cloudflare** (Settings → Variables and Secrets): `ROBERTO_PIN`, `SANITY_PROJECT_ID`, `SANITY_DATASET`, `SANITY_WRITE_TOKEN`. PIN e token come secret, mai nel codice.
 - **Sanity accetta letture dal browser solo dagli indirizzi autorizzati** (sanity.io/manage → API → CORS origins, senza credentials): se cambia l'indirizzo del sito va aggiunto lì, altrimenti catalogo, prezzi, orari e blog non si caricano.

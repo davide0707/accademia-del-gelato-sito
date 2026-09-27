@@ -30,7 +30,9 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap"></noscript>
 
-<link rel="stylesheet" href="css/main.css">
+<!-- ?v= da cambiare quando cambia il CSS: un browser con in memoria il
+     foglio di stile vecchio non può mischiarlo con la pagina nuova -->
+<link rel="stylesheet" href="css/main.css?v=20260928a">
 
 <!-- GoatCounter: tracciamento senza cookie, nessun banner di consenso
      necessario, gratuito per sempre. Il codice sito (qui "gelateria") è
@@ -126,7 +128,7 @@
     </nav>
 
     <div class="nav__contatti">
-      <a href="tel:+390401014316" class="btn btn--ghost nav__cta" data-evento="Chiama">340 101 4316</a>
+      <a href="tel:+393401014316" class="btn btn--ghost nav__cta" data-evento="Chiama">340 101 4316</a>
       <a href="https://wa.me/393401014316?text=Ciao!%20Vorrei%20avere%20informazioni%20su%20Accademia%20del%20Gelato" target="_blank" rel="noopener" class="nav__whatsapp" aria-label="Scrivici su WhatsApp" data-evento="WhatsApp">
         <img class="icona-whatsapp" src="assets/logo/whatsapp-simbolo.png" alt="" width="20" height="20">
       </a>
@@ -155,7 +157,7 @@
     </ul>
   </nav>
   <div class="menu-mobile__footer">
-    <a href="tel:+390401014316" class="btn btn--primario" data-i18n="menu-chiama" data-evento="Chiama">Chiama 340 101 4316</a>
+    <a href="tel:+393401014316" class="btn btn--primario" data-i18n="menu-chiama" data-evento="Chiama">Chiama 340 101 4316</a>
     <a href="https://wa.me/393401014316?text=Ciao!%20Vorrei%20avere%20informazioni%20su%20Accademia%20del%20Gelato" target="_blank" rel="noopener" class="btn menu-mobile__whatsapp" data-evento="WhatsApp">
       <img class="icona-whatsapp" src="assets/logo/whatsapp-simbolo.png" alt="" width="20" height="20">
       <span data-i18n="menu-whatsapp">Scrivici su WhatsApp</span>
@@ -1200,6 +1202,7 @@
         <a href="assets/img/riconoscimenti/attestato-veganok.webp" target="_blank" rel="noopener" aria-label="Apri l'attestato VEGANOK a grandezza piena">
           <img src="assets/img/riconoscimenti/attestato-veganok.webp" alt="Attestato di accreditamento VEGANOK di Accademia del Gelato, Via Savorgnana 16A, Udine" width="1000" height="1414" loading="lazy">
         </a>
+        <figcaption data-i18n="attestato-didascalia">Attività accreditata VEGANOK</figcaption>
       </figure>
     </div>
   </section>
@@ -1510,10 +1513,6 @@
         <h2 class="contatti__titolo">Via Savorgnana, 16</h2>
         <p class="contatti__sottotitolo">Piazza Girolamo Venerio · 33100 Udine (UD) · Friuli-Venezia Giulia</p>
 
-        <a href="tel:+390401014316" class="contatti__telefono" data-evento="Chiama">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 3h3l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v3a2 2 0 0 1-2 2C10.5 19 5 13.5 5 6a2 2 0 0 1 1-3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
-          340 101 4316
-        </a>
         <a href="https://wa.me/393401014316?text=Ciao!%20Vorrei%20avere%20informazioni%20su%20Accademia%20del%20Gelato" target="_blank" rel="noopener" class="contatti__whatsapp" data-evento="WhatsApp">
           <img class="icona-whatsapp" src="assets/logo/whatsapp-simbolo.png" alt="" width="20" height="20">
           <span data-i18n="menu-whatsapp">Scrivici su WhatsApp</span>
@@ -1581,7 +1580,7 @@
     <div class="footer__colonna">
       <h3 data-i18n="footer-contatti">Contatti</h3>
       <ul>
-        <li><a href="tel:+390401014316" data-evento="Chiama">340 101 4316</a></li>
+        <li><a href="tel:+393401014316" data-evento="Chiama">340 101 4316</a></li>
         <li><a href="https://wa.me/393401014316?text=Ciao!%20Vorrei%20avere%20informazioni%20su%20Accademia%20del%20Gelato" target="_blank" rel="noopener" data-evento="WhatsApp">WhatsApp</a></li>
         <li>Via Savorgnana, 16 — 33100 Udine (UD)</li>
         <li>Piazza Girolamo Venerio</li>
@@ -1630,6 +1629,6 @@
   </a>
 </div>
 
-<script type="module" src="js/main.js"></script>
+<script type="module" src="js/main.js?v=20260928a"></script>
 </body>
 </html>

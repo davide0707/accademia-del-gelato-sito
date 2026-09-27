@@ -68,6 +68,7 @@ const I18N = {
   'filtro-purozero': { it: 'Puro Zero Vegan', en: 'Puro Zero Vegan' },
   'filtro-granite': { it: 'Granite Siciliane', en: 'Sicilian Granitas' },
   'gusti-vuoto': { it: 'In questo momento non ci sono gusti in questa categoria: torna a trovarci presto.', en: 'There are no flavors in this category right now: come back and see us soon.' },
+  'attestato-didascalia': { it: 'Attività accreditata VEGANOK', en: 'VEGANOK accredited business' },
   'mappa-cta': { it: 'Apri in Google Maps', en: 'Open in Google Maps' },
   'contatti-eyebrow': { it: 'Vieni a trovarci', en: 'Come visit us' },
   'orari-caption': { it: 'Orari di apertura', en: 'Opening Hours' },
