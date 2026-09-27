@@ -1,7 +1,7 @@
 import { gestisci, json, muta, nuovoId, cancellaDocumento } from '../../server/comune.js';
 
 // Listino prezzi: crea, modifica o cancella una voce, secondo il campo
-// "azione" della richiesta (stesso formato che usava la versione su Vercel).
+// "azione" della richiesta.
 
 const NOME_MAX = 60;
 const DETTAGLIO_MAX = 80;

@@ -33,7 +33,7 @@ function campoGiorno(name, title) {
 /**
  * Documento singolo (singleton): un solo "orari" esiste mai su Sanity,
  * sempre con lo stesso _id fisso ("orari-apertura") — vedi
- * js/modules/hoursTable.js e api/modifica-orari.js.
+ * js/modules/hoursTable.js e functions/api/configurazione.js.
  */
 export default defineType({
   name: 'orari',

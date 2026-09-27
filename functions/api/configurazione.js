@@ -1,9 +1,8 @@
 import { gestisci, json, muta } from '../../server/comune.js';
 
 // Documenti singoli di configurazione — orari di apertura ed etichette dei
-// gusti — distinti dal campo "tipo" della richiesta (stesso formato che
-// usava la versione su Vercel). Sempre lo stesso _id fisso: createOrReplace
-// scrive la prima volta e sovrascrive le successive.
+// gusti — distinti dal campo "tipo" della richiesta. Sempre lo stesso _id
+// fisso: createOrReplace scrive la prima volta e sovrascrive le successive.
 
 const ID_ORARI = 'orari-apertura';
 const GIORNI = ['lunedi', 'martedi', 'mercoledi', 'giovedi', 'venerdi', 'sabato', 'domenica'];

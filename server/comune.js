@@ -17,9 +17,9 @@ export function json(dati, status = 200, intestazioni = {}) {
   });
 }
 
-// Stessi controlli, nello stesso ordine, delle vecchie funzioni su Vercel:
-// solo POST, PIN configurato lato server, PIN corretto — solo allora il
-// gestore vero e proprio. Un errore imprevisto diventa un 500 con un
+// Controlli comuni a ogni funzione, in quest'ordine: solo POST, PIN
+// configurato lato server, PIN corretto — solo allora il gestore vero e
+// proprio. Un errore imprevisto diventa un 500 con un
 // messaggio leggibile per Roberto, il dettaglio tecnico va nei log.
 export function gestisci(gestore, messaggioErrore) {
   return async ({ request, env }) => {

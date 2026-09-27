@@ -146,6 +146,12 @@ La sezione "I nostri gusti" in home mostra solo una **vetrina** di 4 gusti (`.gu
 
 ## 9. Deploy
 
-Il sito è puramente statico: qualunque host di file statici funziona senza configurazione aggiuntiva — Netlify, Vercel, Cloudflare Pages, GitHub Pages, o anche un semplice hosting FTP tradizionale. Basta caricare la cartella così com'è; non serve alcun passo di build.
+Il sito è ospitato su **Cloudflare Pages** (`https://accademia-del-gelato.pages.dev`), collegato al repository GitHub: ogni push su `main` viene pubblicato in automatico. Nessun passo di build (Framework preset: None, build command vuoto, output directory: la radice del progetto).
 
-**Da fare al primo deploy con dominio definitivo**: `sitemap.xml` e `robots.txt` (nella root del progetto) contengono il segnaposto `https://IL-TUO-DOMINIO.it/` al posto dell'indirizzo reale — sostituirlo in entrambi i file prima di sottomettere il sito a Google Search Console, altrimenti la sitemap non verrà riconosciuta come appartenente al dominio.
+- **Pagine, CSS, JS, immagini**: file statici, serviti così come sono.
+- **Funzioni che salvano i contenuti di Roberto**: in `functions/api/` (Cloudflare Pages Functions — ogni file è un indirizzo, es. `functions/api/pubblica.js` → `/api/pubblica`). Il codice comune (controllo PIN, scrittura su Sanity, caricamento foto) sta in `server/`, fuori da `functions/` apposta. Parlano con Sanity via HTTP, senza dipendenze da installare.
+- **Variabili nel pannello Cloudflare** (Settings → Variables and Secrets): `ROBERTO_PIN`, `SANITY_PROJECT_ID`, `SANITY_DATASET`, `SANITY_WRITE_TOKEN`. PIN e token come secret, mai nel codice.
+- **Sanity accetta letture dal browser solo dagli indirizzi autorizzati** (sanity.io/manage → API → CORS origins, senza credentials): se cambia l'indirizzo del sito va aggiunto lì, altrimenti catalogo, prezzi, orari e blog non si caricano.
+- Il vecchio indirizzo `accademia-del-gelato-sito.vercel.app` rimanda automaticamente al nuovo (`vercel.json`), finché il progetto Vercel resta attivo.
+
+**Con un dominio proprio**: aggiungerlo in Cloudflare (scheda Custom domains) e nei CORS di Sanity, poi aggiornare l'indirizzo in `index.html` (canonical, Open Graph, dati strutturati), `privacy.html`, `sitemap.xml` e `robots.txt`.
