@@ -470,7 +470,7 @@
     </div>
 
     <div>
-      <label for="gusto-linea">Linea</label>
+      <label for="gusto-linea">Linea <span class="label-facoltativo">— la scritta sopra il nome, sulla card</span></label>
       <select id="gusto-linea"></select>
     </div>
 
@@ -1438,6 +1438,19 @@
   }
   gustoNome.addEventListener('input', aggiornaContatoriGusto);
   gustoDescrizione.addEventListener('input', aggiornaContatoriGusto);
+
+  // Linea e Categorie hanno le stesse voci: la Linea è la scritta sopra il
+  // nome sulla card, le Categorie i filtri in cui compare. Le teniamo
+  // allineate, altrimenti basta un tocco sbagliato sul menu per avere un
+  // gusto tra le Creme con scritto "Gelati alla Frutta" sulla card.
+  $('gusto-categorie').addEventListener('change', () => {
+    const scelte = Array.from($('gusto-categorie').querySelectorAll('input:checked')).map((cb) => cb.value);
+    if (scelte.length > 0 && !scelte.includes(gustoLinea.value)) gustoLinea.value = scelte[0];
+  });
+  gustoLinea.addEventListener('change', () => {
+    const categoria = $('gusto-categorie').querySelector(`input[value="${gustoLinea.value}"]`);
+    if (categoria) categoria.checked = true;
+  });
 
   function resetGustoModuloANuovo() {
     gustoInModifica = null;
