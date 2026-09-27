@@ -6,18 +6,17 @@ import { prefersReducedMotion } from './accessibility.js';
  * statistiche, gelateria.goatcounter.com), riletto ogni minuto finché la
  * pagina resta aperta e in primo piano.
  *
- * Due fonti, in ordine:
- * 1. /api/visite (functions/api/visite.js): legge l'API di GoatCounter con
- *    la chiave privata, aggiornata entro un minuto circa;
- * 2. se quella non risponde, il contatore pubblico di GoatCounter — sempre
- *    vero, ma tenuto in memoria da loro fino a 4 ore (va acceso nelle
- *    impostazioni: "Allow adding visitor counts on your website").
- * Se non risponde nessuna delle due, il riquadro resta nascosto — mai un
- * numero finto o uno 0.
+ * Il numero arriva da /api/visite (functions/api/visite.js), che legge
+ * l'API di GoatCounter con la chiave privata: aggiornato entro un minuto
+ * circa, e senza i clic sui pulsanti che il sito registra come eventi.
+ * Niente contatore pubblico di GoatCounter come riserva: è in memoria fino
+ * a 4 ore e conta anche i clic, quindi a ogni intoppo il numero sarebbe
+ * saltato avanti e indietro. Se la funzione non risponde, resta l'ultimo
+ * numero mostrato (o, alla prima apertura, il riquadro resta nascosto) —
+ * mai un numero finto o uno 0.
  */
 
 const URL_VISITE = '/api/visite';
-const URL_CONTATORE_PUBBLICO = 'https://gelateria.goatcounter.com/counter/TOTAL.json';
 const OGNI_MS = 60 * 1000;
 const DURATA_ANIMAZIONE_MS = 1400;
 
@@ -60,27 +59,17 @@ function portaA(obiettivo) {
   animazione = requestAnimationFrame(passo);
 }
 
-// Il contatore pubblico lo restituisce già formattato ("12,345" o
-// "12 345"), la nostra funzione come numero: in entrambi i casi restano
-// solo le cifre.
-async function leggiDa(url) {
-  try {
-    const risposta = await fetch(url, { cache: 'no-store' });
-    if (!risposta.ok) return null;
-    const dati = await risposta.json();
-    const totale = parseInt(String(dati.count ?? '').replace(/\D/g, ''), 10);
-    return Number.isFinite(totale) && totale > 0 ? totale : null;
-  } catch (e) {
-    return null;
-  }
-}
-
 async function aggiorna() {
-  const totale = (await leggiDa(URL_VISITE)) ?? (await leggiDa(URL_CONTATORE_PUBBLICO));
-  // nessuna delle due fonti risponde: il riquadro resta com'è
-  if (totale === null) return;
-  riquadro.hidden = false;
-  portaA(totale);
+  try {
+    const risposta = await fetch(URL_VISITE, { cache: 'no-store' });
+    if (!risposta.ok) return;
+    const { count } = await risposta.json();
+    if (!Number.isFinite(count) || count <= 0) return;
+    riquadro.hidden = false;
+    portaA(count);
+  } catch (e) {
+    /* funzione irraggiungibile o rete assente: il riquadro resta com'è */
+  }
 }
 
 export function initVisite() {
