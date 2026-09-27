@@ -32,7 +32,7 @@
 
 <!-- ?v= da cambiare quando cambia il CSS: un browser con in memoria il
      foglio di stile vecchio non può mischiarlo con la pagina nuova -->
-<link rel="stylesheet" href="css/main.css?v=20260928a">
+<link rel="stylesheet" href="css/main.css?v=20260928b">
 
 <!-- GoatCounter: tracciamento senza cookie, nessun banner di consenso
      necessario, gratuito per sempre. Il codice sito (qui "gelateria") è
@@ -213,6 +213,13 @@
       <div class="hero__badge-rating hero__badge-rating--riconoscimento" data-reveal data-lc="en">
         <span>Two Cones, <strong>Gambero Rosso</strong> — Gelaterie d'Italia since 2026</span>
       </div>
+      <!-- Visite al sito: il totale vero di GoatCounter, aggiornato ogni
+           minuto da js/modules/visite.js. Nascosto finché il numero non
+           arriva; il testo (italiano/inglese) lo scrive lo script. -->
+      <p class="hero__badge-rating hero__visite" data-visite hidden>
+        <span class="hero__visite-punto" aria-hidden="true"></span>
+        <span data-visite-testo></span>
+      </p>
 
       <!-- "Ti racconto il mio gelato": il blog personale di Roberto (nome
            definitivo, deciso da lui). Gli aggiornamenti che scrive restano
@@ -1629,6 +1636,6 @@
   </a>
 </div>
 
-<script type="module" src="js/main.js?v=20260928a"></script>
+<script type="module" src="js/main.js?v=20260928b"></script>
 </body>
 </html>

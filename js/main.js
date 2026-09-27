@@ -16,6 +16,7 @@ import { initSpazioRoberto, initArchivioRoberto } from './modules/spazioRoberto.
 import { initFalsiMiti, initArchivioFalsiMiti } from './modules/falsiMiti.js';
 import { initGustiCatalogo, initPrezzi } from './modules/gustiCatalogo.js';
 import { initAnalytics } from './modules/analytics.js';
+import { initVisite } from './modules/visite.js';
 
 function initFloatingCta() {
   const cta = document.getElementById('floatingCta');
@@ -59,3 +60,4 @@ initArchivioFalsiMiti();
 initFloatingCta();
 initFooterYear();
 initAnalytics();
+initVisite();

@@ -142,6 +142,8 @@ Tutti i testi sono scritti direttamente in `index.html` (nessun CMS/template): c
 
 La sezione "I nostri gusti" in home mostra sei **card delle linee** (`.gusti-linee`, dentro `<section id="gusti">`: Crema, Frutta, Vegan, Naturalmente Senza, Puro Zero Vegan, Granite Siciliane) più il pulsante "Scopri tutti i gusti". Ogni card apre il catalogo completo — `<div class="menu-gusti" id="menuGusti">`, un modale a schermo intero gestito da `js/modules/menuGusti.js` — già filtrato sulla sua categoria (`data-apri-linea` = valore del filtro); lì la barra dei filtri resta ferma in cima mentre si scorre, per cambiare categoria. I gusti e il numero scritto su ogni card arrivano da Sanity (`js/modules/gustiCatalogo.js`): li gestisce Roberto da `roberto-pubblica`, niente da toccare nell'HTML.
 
+In prima schermata, accanto alle pillole di Google e Gambero Rosso, c'è il **contatore delle visite** (`js/modules/visite.js`): il totale vero del sito letto dal contatore pubblico di GoatCounter (`https://gelateria.goatcounter.com/counter/TOTAL.json`), riletto ogni minuto. Funziona solo se in GoatCounter (Settings) è attiva l'opzione *"Allow adding visitor counts on your website"*; se è spenta o non risponde, la pillola resta nascosta.
+
 ---
 
 ## 9. Deploy
