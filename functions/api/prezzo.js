@@ -15,7 +15,7 @@ function validaVocePrezzo({ nome, dettaglio, prezzo }) {
 }
 
 async function gestisciPrezzo(corpo, env) {
-  if (corpo.azione === 'cancella') return cancellaDocumento(corpo, env);
+  if (corpo.azione === 'cancella') return cancellaDocumento('vocePrezzo')(corpo, env);
 
   const errore = validaVocePrezzo(corpo);
   if (errore) return json({ errore }, 400);

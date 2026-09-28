@@ -17,10 +17,64 @@ export function json(dati, status = 200, intestazioni = {}) {
   });
 }
 
+// ---- Accesso di Roberto: PIN e gettone a scadenza ----
+// Il PIN serve solo per entrare: la pagina di Roberto riceve in cambio un
+// gettone valido GETTONE_GIORNI giorni e salva quello, mai il PIN. Il
+// gettone è firmato (HMAC) con il PIN stesso come chiave: se il PIN cambia,
+// tutti i gettoni già emessi smettono di funzionare da soli.
+const GETTONE_GIORNI = 30;
+const codifica = new TextEncoder();
+
+function base64url(buffer) {
+  let binario = '';
+  new Uint8Array(buffer).forEach((b) => { binario += String.fromCharCode(b); });
+  return btoa(binario).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+// Confronto a tempo costante: la durata non dice quanti caratteri sono giusti.
+function ugualiATempoCostante(a, b) {
+  if (a.byteLength !== b.byteLength) return false;
+  if (crypto.subtle.timingSafeEqual) return crypto.subtle.timingSafeEqual(a, b);
+  const x = new Uint8Array(a);
+  const y = new Uint8Array(b);
+  let diff = 0;
+  for (let i = 0; i < x.length; i += 1) diff |= x[i] ^ y[i];
+  return diff === 0;
+}
+
+async function firma(env, testo) {
+  const chiave = await crypto.subtle.importKey(
+    'raw', codifica.encode(env.ROBERTO_PIN), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'],
+  );
+  return crypto.subtle.sign('HMAC', chiave, codifica.encode(testo));
+}
+
+async function pinCorretto(env, pin) {
+  if (typeof pin !== 'string' || !pin) return false;
+  const [a, b] = await Promise.all([
+    crypto.subtle.digest('SHA-256', codifica.encode(pin)),
+    crypto.subtle.digest('SHA-256', codifica.encode(env.ROBERTO_PIN)),
+  ]);
+  return ugualiATempoCostante(a, b);
+}
+
+export async function creaGettone(env) {
+  const scadenza = Date.now() + GETTONE_GIORNI * 24 * 60 * 60 * 1000;
+  return `${scadenza}.${base64url(await firma(env, `roberto:${scadenza}`))}`;
+}
+
+async function gettoneValido(env, gettone) {
+  if (typeof gettone !== 'string') return false;
+  const [scadenza, firmaRicevuta] = gettone.split('.');
+  if (!/^\d+$/.test(scadenza || '') || Number(scadenza) < Date.now() || !firmaRicevuta) return false;
+  const attesa = base64url(await firma(env, `roberto:${scadenza}`));
+  return ugualiATempoCostante(codifica.encode(attesa).buffer, codifica.encode(firmaRicevuta).buffer);
+}
+
 // Controlli comuni a ogni funzione, in quest'ordine: solo POST, PIN
-// configurato lato server, PIN corretto — solo allora il gestore vero e
-// proprio. Un errore imprevisto diventa un 500 con un
-// messaggio leggibile per Roberto, il dettaglio tecnico va nei log.
+// configurato lato server, PIN o gettone validi — solo allora il gestore
+// vero e proprio. Un errore imprevisto diventa un 500 con un messaggio
+// leggibile per Roberto, il dettaglio tecnico va nei log.
 export function gestisci(gestore, messaggioErrore) {
   return async ({ request, env }) => {
     if (request.method !== 'POST') {
@@ -38,7 +92,10 @@ export function gestisci(gestore, messaggioErrore) {
       console.error('ROBERTO_PIN non configurato');
       return json({ errore: 'Configurazione mancante lato server' }, 500);
     }
-    if (corpo.pin !== env.ROBERTO_PIN) {
+    // il PIN resta accettato anche fuori dall'accesso, per le pagine di
+    // Roberto già aperte con la versione precedente (che mandano il PIN)
+    const autorizzato = (await gettoneValido(env, corpo.token)) || (await pinCorretto(env, corpo.pin));
+    if (!autorizzato) {
       return json({ errore: 'PIN errato' }, 401);
     }
 
@@ -59,8 +116,9 @@ function dataset(env) {
   return env.SANITY_DATASET || 'production';
 }
 
-export async function muta(env, mutazioni) {
-  const risposta = await fetch(`${urlBase(env)}/data/mutate/${dataset(env)}`, {
+export async function muta(env, mutazioni, { restituisciId = false } = {}) {
+  const parametri = restituisciId ? '?returnIds=true' : '';
+  const risposta = await fetch(`${urlBase(env)}/data/mutate/${dataset(env)}${parametri}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -123,11 +181,22 @@ export async function caricaFoto(env, foto) {
   return { _type: 'image', asset: { _type: 'reference', _ref: document._id } };
 }
 
-export async function cancellaDocumento(corpo, env) {
-  const { id } = corpo;
-  if (!id || typeof id !== 'string' || !id.trim()) {
-    return json({ errore: 'ID mancante' }, 400);
-  }
-  await muta(env, [{ delete: { id: id.trim() } }]);
-  return json({ ok: true });
+// Cancella solo se il documento è davvero del tipo che quella funzione
+// gestisce: dalla cancellazione di un post non si può eliminare un gusto,
+// gli orari o le etichette. La cancellazione "per query" di Sanity lo fa
+// in un colpo solo; se non ha trovato niente da cancellare, 404.
+export function cancellaDocumento(tipo) {
+  return async (corpo, env) => {
+    const { id } = corpo;
+    if (!id || typeof id !== 'string' || !id.trim()) {
+      return json({ errore: 'ID mancante' }, 400);
+    }
+    const esito = await muta(env, [{
+      delete: { query: '*[_id == $id && _type == $tipo]', params: { id: id.trim(), tipo } },
+    }], { restituisciId: true });
+    if (!esito.results || esito.results.length === 0) {
+      return json({ errore: 'Elemento non trovato' }, 404);
+    }
+    return json({ ok: true });
+  };
 }

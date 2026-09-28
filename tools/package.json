@@ -1,0 +1,13 @@
+{
+  "name": "accademia-del-gelato-strumenti",
+  "private": true,
+  "description": "Strumenti di controllo del sito (non fanno parte del sito pubblicato): vedi README, sezione Controlli.",
+  "type": "module",
+  "scripts": {
+    "controlla": "node controlla.mjs",
+    "prova": "node smoke.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}

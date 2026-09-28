@@ -25,14 +25,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- Google Fonts caricato senza bloccare il rendering: media="print" lo esclude
-     dal critical path, onload lo riattiva. noscript copre chi ha JS disattivo. -->
+     dal critical path, js/avvio.js lo attiva appena caricato (niente onload
+     scritto qui: la Content-Security-Policy in _headers non lo ammette).
+     noscript copre chi ha JS disattivo. -->
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" media="print" data-font-asincrono>
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap"></noscript>
+<script src="/js/avvio.js?v=14c0cf2b10"></script>
 
 <!-- ?v= da cambiare quando cambia il CSS: un browser con in memoria il
      foglio di stile vecchio non può mischiarlo con la pagina nuova -->
-<link rel="stylesheet" href="css/main.css?v=20260928d">
+<link rel="stylesheet" href="css/main.css?v=14c0cf2b10">
 
 <!-- GoatCounter: tracciamento senza cookie, nessun banner di consenso
      necessario, gratuito per sempre. Il codice sito (qui "gelateria") è
@@ -40,15 +43,20 @@
      qui. Gli eventi custom (data-evento più sotto nella pagina) passano
      da js/modules/analytics.js, che controlla al momento del click se lo
      script è disponibile: se bloccato da un adblock il clic funziona lo
-     stesso, semplicemente non viene registrato. -->
-<script data-goatcounter="https://gelateria.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+     stesso, semplicemente non viene registrato. count.v4.js è la versione
+     fissa dello script: l'impronta integrity garantisce che sia proprio
+     quella (se cambiasse, il browser non la eseguirebbe). -->
+<script data-goatcounter="https://gelateria.goatcounter.com/count" async src="https://gc.zgo.at/count.v4.js" crossorigin="anonymous" integrity="sha384-nRw6qfbWyJha9LhsOtSb2YJDyZdKvvCFh0fJYlkquSFjUxp9FVNugbfy8q1jdxI+"></script>
 
-<!-- GSAP + plugin (Flip, ScrollTrigger, SplitText — tutti gratuiti dal 2025) + Lenis smooth scroll -->
-<script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Flip.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+<!-- GSAP + plugin (Flip, ScrollTrigger, SplitText — tutti gratuiti dal 2025) + Lenis smooth scroll.
+     Versioni fisse con impronta integrity: se il file sul CDN venisse
+     alterato, il browser si rifiuterebbe di eseguirlo. Cambiando versione,
+     va ricalcolata l'impronta (vedi README, sezione Deploy). -->
+<script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" crossorigin="anonymous" integrity="sha384-HOvlOYPIs/zjoIkWUGXkVmXsjr8GuZLV+Q+rcPwmJOVZVpvTSXQChiN4t9Euv9Vc"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" crossorigin="anonymous" integrity="sha384-P8VzCVnT9NBUkMrpcIZrJbA7EBjJvh/fJS6PmP+4nLIM284DtsImIv8D0fFjIkeh"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js" crossorigin="anonymous" integrity="sha384-xb96EMJeax+NLXMC88ZBa1xAeAW+kn+horHh/zFlbMLG2UPWhMJJSlv7fi57hS+Q"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Flip.min.js" crossorigin="anonymous" integrity="sha384-lg3+EgIwmxYq9YD4ix279pdUEasqmOS17fF+2mI/NEg6JHkawYaWYpJ6nKZenPOy"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js" crossorigin="anonymous" integrity="sha384-tKsJDT6PlUI0pSBt9/sBKJluKgA19/a6mBrDsZaXotLB4ZYfMGM6xt6/WgGpYhTm"></script>
 
 <script type="application/ld+json" id="datiStrutturati">
 {
@@ -1107,22 +1115,22 @@
         <h3 class="esperienze__titolo">Da gustare anche</h3>
         <div class="esperienze__griglia">
           <article class="esperienza-card">
-            <div class="esperienza-card__visivo" aria-hidden="true"><img class="esperienza-card__foto" src="assets/img/esperienze/coppette-da-passeggio.webp" alt="Coppette da passeggio" loading="lazy" onerror="this.remove()"></div>
+            <div class="esperienza-card__visivo" aria-hidden="true"><img class="esperienza-card__foto" src="assets/img/esperienze/coppette-da-passeggio.webp" alt="Coppette da passeggio" loading="lazy" data-rimuovi-se-manca></div>
             <h4>Coppette da passeggio</h4>
             <p>Anche in versione interamente vegana, per portare l'Accademia con voi in Piazza Venerio.</p>
           </article>
           <article class="esperienza-card">
-            <div class="esperienza-card__visivo" aria-hidden="true"><img class="esperienza-card__foto" src="assets/img/esperienze/frappe.webp" alt="Frappé" loading="lazy" onerror="this.remove()"></div>
+            <div class="esperienza-card__visivo" aria-hidden="true"><img class="esperienza-card__foto" src="assets/img/esperienze/frappe.webp" alt="Frappé" loading="lazy" data-rimuovi-se-manca></div>
             <h4>Frappé</h4>
             <p>Il nostro gelato frullato fino a diventare una bevanda densa e golosa.</p>
           </article>
           <article class="esperienza-card">
-            <div class="esperienza-card__visivo" aria-hidden="true"><img class="esperienza-card__foto" src="assets/img/esperienze/brioscia-siciliana-con-gelato.webp" alt="Brioscia siciliana con gelato" loading="lazy" onerror="this.remove()"></div>
+            <div class="esperienza-card__visivo" aria-hidden="true"><img class="esperienza-card__foto" src="assets/img/esperienze/brioscia-siciliana-con-gelato.webp" alt="Brioscia siciliana con gelato" loading="lazy" data-rimuovi-se-manca></div>
             <h4>Brioscia siciliana con gelato</h4>
             <p>Colazione o merenda: la tradizione siciliana della brioscia col tuppo, farcita a piacere.</p>
           </article>
           <article class="esperienza-card">
-            <div class="esperienza-card__visivo" aria-hidden="true"><img class="esperienza-card__foto" src="assets/img/esperienze/affogato-al-caffe.webp" alt="Affogato al caffè" loading="lazy" onerror="this.remove()"></div>
+            <div class="esperienza-card__visivo" aria-hidden="true"><img class="esperienza-card__foto" src="assets/img/esperienze/affogato-al-caffe.webp" alt="Affogato al caffè" loading="lazy" data-rimuovi-se-manca></div>
             <h4>Affogato al caffè</h4>
             <p>Una pallina di fiordilatte o crema, sommersa da un espresso caldo appena estratto.</p>
           </article>
@@ -1311,7 +1319,7 @@
 
       <article class="zampa-card" data-reveal data-lc="it">
         <div class="zampa-card__visivo" aria-hidden="true">
-          <img class="zampa-card__foto" src="assets/img/varie/qua-la-zampa.png" alt="Qua la Zampa — gelato per cani" loading="lazy" onerror="this.remove()">
+          <img class="zampa-card__foto" src="assets/img/varie/qua-la-zampa.png" alt="Qua la Zampa — gelato per cani" loading="lazy" data-rimuovi-se-manca>
           <span class="zampa-card__badge">Stagionale</span>
         </div>
         <div class="zampa-card__testo">
@@ -1326,7 +1334,7 @@
       </article>
       <article class="zampa-card" data-reveal data-lc="en">
         <div class="zampa-card__visivo" aria-hidden="true">
-          <img class="zampa-card__foto" src="assets/img/varie/qua-la-zampa.png" alt="Qua la Zampa — gelato for dogs" loading="lazy" onerror="this.remove()">
+          <img class="zampa-card__foto" src="assets/img/varie/qua-la-zampa.png" alt="Qua la Zampa — gelato for dogs" loading="lazy" data-rimuovi-se-manca>
           <span class="zampa-card__badge">Seasonal</span>
         </div>
         <div class="zampa-card__testo">
@@ -1621,10 +1629,10 @@
   <div class="footer__filigrana" aria-hidden="true" data-lc="en">The natural Italian gelato · The natural Italian gelato · The natural Italian gelato</div>
 
   <div class="container footer__legale" data-lc="it">
-    <p>© <span data-anno-corrente>2026</span> Accademia del Gelato — Artemisia srl, P.IVA 03197260304. Tutti i diritti riservati. — <a href="privacy.html">Privacy</a></p>
+    <p>© <span data-anno-corrente>2026</span> Accademia del Gelato — Artemisia srl, P.IVA 03197260304. Tutti i diritti riservati. — <a href="/privacy">Privacy</a></p>
   </div>
   <div class="container footer__legale" data-lc="en">
-    <p>© <span data-anno-corrente>2026</span> Accademia del Gelato — Artemisia srl, VAT IT03197260304. All rights reserved. — <a href="privacy.html">Privacy</a></p>
+    <p>© <span data-anno-corrente>2026</span> Accademia del Gelato — Artemisia srl, VAT IT03197260304. All rights reserved. — <a href="/privacy">Privacy</a></p>
   </div>
 </footer>
 
@@ -1636,6 +1644,6 @@
   </a>
 </div>
 
-<script type="module" src="js/main.js?v=20260928d"></script>
+<script type="module" src="js/main.js?v=14c0cf2b10"></script>
 </body>
 </html>

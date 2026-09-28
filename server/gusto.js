@@ -1,9 +1,10 @@
 import { json, muta, nuovoId, leggiFoto, caricaFoto } from './comune.js';
+import { LINEE, INGREDIENTI, BADGE } from './valori.js';
 
 // Aggiunta e modifica di un gusto del catalogo. I campi a scelta fissa
 // (categorie, linea, ingrediente, badge) devono restare tra i valori che
 // il sito sa disegnare, altrimenti la card finirebbe senza colore o
-// animazione: stessi elenchi di sanity/schemaTypes/gusto.js.
+// animazione: gli elenchi stanno in server/valori.js.
 //
 // L'ingrediente (colore di sfondo della card) Roberto non lo sceglie più:
 // un gusto nuovo parte da "neutro", una modifica senza ingrediente lascia
@@ -12,25 +13,18 @@ import { json, muta, nuovoId, leggiFoto, caricaFoto } from './comune.js';
 const NOME_MAX = 60;
 const DESC_MAX = 160;
 
-const LINEE_VALIDE = ['creme', 'frutta', 'vegani', 'naturalmente-senza', 'puro-zero', 'granite'];
-const INGREDIENTI_VALIDI = [
-  'cioccolato', 'pistacchio', 'nocciola', 'vaniglia-crema', 'frutti-rossi',
-  'agrumi', 'tropicale', 'caffe-caramello', 'liquirizia', 'cocco', 'neutro',
-];
-const BADGE_VALIDI = ['vegano', 'novita', 'senzaglutine', 'senzazucchero', 'cheto'];
-
 function validaGusto({ nome, descrizione, categorie, linea, ingrediente, badge }) {
   if (!nome || !descrizione) return 'Nome e descrizione sono obbligatori';
   if (nome.trim().length === 0 || nome.length > NOME_MAX) return `Il nome deve avere tra 1 e ${NOME_MAX} caratteri`;
   if (descrizione.trim().length === 0 || descrizione.length > DESC_MAX) return `La descrizione deve avere tra 1 e ${DESC_MAX} caratteri`;
 
   if (!Array.isArray(categorie) || categorie.length === 0) return 'Serve almeno una categoria';
-  if (categorie.some((c) => !LINEE_VALIDE.includes(c))) return 'Categoria non valida';
+  if (categorie.some((c) => !LINEE.includes(c))) return 'Categoria non valida';
 
-  if (!linea || !LINEE_VALIDE.includes(linea)) return 'Linea non valida';
-  if (ingrediente && !INGREDIENTI_VALIDI.includes(ingrediente)) return 'Ingrediente non valido';
+  if (!linea || !LINEE.includes(linea)) return 'Linea non valida';
+  if (ingrediente && !INGREDIENTI.includes(ingrediente)) return 'Ingrediente non valido';
 
-  if (badge && (!Array.isArray(badge) || badge.some((b) => !BADGE_VALIDI.includes(b)))) return 'Badge non valido';
+  if (badge && (!Array.isArray(badge) || badge.some((b) => !BADGE.includes(b)))) return 'Badge non valido';
 
   return null;
 }

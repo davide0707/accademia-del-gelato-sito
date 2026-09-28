@@ -26,6 +26,16 @@ function initFloatingCta() {
   onScroll();
 }
 
+// Foto facoltative (esperienze, Qua la zampa): se il file manca, via
+// l'immagine invece dell'icona di immagine rotta. Prima era un onerror
+// scritto nell'HTML, che la Content-Security-Policy (_headers) non ammette.
+function initImmaginiFacoltative() {
+  document.querySelectorAll('img[data-rimuovi-se-manca]').forEach((img) => {
+    if (img.complete && img.naturalWidth === 0) img.remove();
+    else img.addEventListener('error', () => img.remove(), { once: true });
+  });
+}
+
 function initFooterYear() {
   const el = document.querySelector('[data-anno-corrente]');
   if (el) el.textContent = String(new Date().getFullYear());
@@ -58,6 +68,7 @@ initArchivioRoberto();
 initFalsiMiti();
 initArchivioFalsiMiti();
 initFloatingCta();
+initImmaginiFacoltative();
 initFooterYear();
 initAnalytics();
 initVisite();

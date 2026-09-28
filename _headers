@@ -1,0 +1,22 @@
+# Intestazioni HTTP di sicurezza, lette da Cloudflare Pages per ogni pagina
+# e file statico del sito (non per le risposte delle funzioni in
+# functions/, che sono solo dati JSON).
+#
+# Content-Security-Policy: da dove il browser può caricare cosa.
+#   - script: solo dal sito, da jsDelivr (GSAP, Lenis) e da GoatCounter —
+#     nessuno script scritto dentro l'HTML (per questo esistono js/avvio.js,
+#     js/privacy.js e roberto-pubblica/app.js);
+#   - dati: il sito stesso (/api), Sanity (catalogo, prezzi, orari, blog) e
+#     GoatCounter (statistiche);
+#   - immagini: il sito, le foto su Sanity, le anteprime delle foto che
+#     Roberto sta caricando (data:/blob:) e il contatore di GoatCounter;
+#   - frame-ancestors 'none' (e X-Frame-Options per i browser vecchi):
+#     nessun altro sito può mostrare queste pagine dentro una cornice, in
+#     particolare la pagina di Roberto (protezione dal clickjacking).
+# Aggiungendo un servizio esterno nuovo (es. una mappa incorporata) va
+# aggiunta qui la sua origine, altrimenti il browser lo blocca.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://gc.zgo.at; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://cdn.sanity.io https://gelateria.goatcounter.com; connect-src 'self' https://jskwy1n7.api.sanity.io https://gelateria.goatcounter.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Strict-Transport-Security: max-age=31536000

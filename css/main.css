@@ -1481,16 +1481,19 @@ section {
   .servizi-griglia { grid-template-columns: repeat(5, 1fr); }
 }
 
+/* minmax(0, …) invece di 1fr: con 1fr la colonna non scende sotto la
+   larghezza del contenuto più lungo che non va a capo, e a 320 px il
+   badge "Disponibilità stagionale in negozio" usciva dalla card tagliato. */
 .zampa-card {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-8);
   overflow: hidden;
 }
 
 @media (min-width: 800px) {
   .zampa-card {
-    grid-template-columns: 0.8fr 1.2fr;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
     align-items: stretch;
   }
 }
@@ -1508,7 +1511,7 @@ section {
   justify-content: center;
 }
 
-.zampa-card__testo .badge { margin-top: var(--space-4); align-self: flex-start; }
+.zampa-card__testo .badge { margin-top: var(--space-4); align-self: flex-start; white-space: normal; }
 
 /* -------------------------------- RECENSIONI ----------------------------------- */
 

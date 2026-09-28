@@ -9,6 +9,7 @@
 <meta name="theme-color" content="#6E1E2A">
 <link rel="icon" type="image/png" href="assets/logo/favicon.png">
 <link rel="canonical" href="https://accademia-del-gelato.pages.dev/privacy">
+<script src="/js/avvio.js?v=14c0cf2b10"></script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +17,7 @@
 
 <!-- ?v= da cambiare quando cambia il CSS: un browser con in memoria il
      foglio di stile vecchio non può mischiarlo con la pagina nuova -->
-<link rel="stylesheet" href="css/main.css?v=20260928d">
+<link rel="stylesheet" href="css/main.css?v=14c0cf2b10">
 
 <style>
   /* main.css nasconde il cursore di sistema e lo sostituisce con quello
@@ -111,7 +112,7 @@
 
 <main class="privacy-pagina">
   <div class="privacy-intestazione">
-    <a class="privacy-torna" href="index.html">&larr; <span data-lc="it">Torna al sito</span><span data-lc="en">Back to the site</span></a>
+    <a class="privacy-torna" href="/">&larr; <span data-lc="it">Torna al sito</span><span data-lc="en">Back to the site</span></a>
     <button type="button" class="nav__lingua" data-lang-toggle aria-label="Switch to English">EN</button>
   </div>
 
@@ -212,45 +213,7 @@
   </div>
 </main>
 
-<script>
-  // Pagina indipendente dal resto del sito (niente GSAP/motion), ma condivide
-  // la stessa chiave di localStorage del toggle lingua principale: chi ha già
-  // scelto l'inglese sul sito lo ritrova anche qui, senza dover ricliccare.
-  // Non riusa js/modules/i18n.js perché quel modulo aggiorna anche titolo e
-  // meta description con i testi della HOMEPAGE — qui servono quelli propri
-  // di questa pagina.
-  (function () {
-    var STORAGE_KEY = 'ag_lingua';
-    var META = {
-      it: { title: 'Privacy — Accademia del Gelato', description: 'Informativa privacy di Accademia del Gelato: quali dati raccogliamo tramite il sito e come li usiamo.' },
-      en: { title: 'Privacy — Accademia del Gelato', description: 'Accademia del Gelato privacy notice: what data we collect through the site and how we use it.' },
-    };
-
-    function applicaLingua(lingua) {
-      document.documentElement.lang = lingua;
-      document.body.dataset.lang = lingua;
-      document.title = META[lingua].title;
-      var meta = document.querySelector('meta[name="description"]');
-      if (meta) meta.setAttribute('content', META[lingua].description);
-      try { localStorage.setItem(STORAGE_KEY, lingua); } catch (e) { /* storage non disponibile */ }
-
-      document.querySelectorAll('[data-lang-toggle]').forEach(function (btn) {
-        btn.textContent = lingua === 'it' ? 'EN' : 'IT';
-        btn.setAttribute('aria-label', lingua === 'it' ? 'Switch to English' : "Passa all'italiano");
-      });
-    }
-
-    var salvata = null;
-    try { salvata = localStorage.getItem(STORAGE_KEY); } catch (e) { /* ignorato */ }
-    applicaLingua(salvata === 'en' ? 'en' : 'it');
-
-    document.querySelectorAll('[data-lang-toggle]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        applicaLingua(document.body.dataset.lang === 'it' ? 'en' : 'it');
-      });
-    });
-  })();
-</script>
+<script src="js/privacy.js?v=14c0cf2b10"></script>
 
 </body>
 </html>

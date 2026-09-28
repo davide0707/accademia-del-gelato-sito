@@ -1,4 +1,5 @@
 import { gestisci, json, muta } from '../../server/comune.js';
+import { LINEE, BADGE } from '../../server/valori.js';
 
 // Documenti singoli di configurazione — orari di apertura ed etichette dei
 // gusti — distinti dal campo "tipo" della richiesta. Sempre lo stesso _id
@@ -35,9 +36,6 @@ async function salvaOrari(corpo, env) {
 const ID_ETICHETTE = 'etichette-gusto';
 const ETICHETTA_MAX = 80;
 
-const VALORI_LINEE = ['creme', 'frutta', 'vegani', 'naturalmente-senza', 'puro-zero', 'granite'];
-const VALORI_BADGE = ['vegano', 'novita', 'senzaglutine', 'senzazucchero', 'cheto'];
-
 // Solo il testo è modificabile: ogni elenco deve avere esattamente gli
 // stessi valori di quello atteso, nello stesso numero.
 function validaListaEtichette(lista, valoriAmmessi, nomeLista) {
@@ -60,9 +58,9 @@ function validaListaEtichette(lista, valoriAmmessi, nomeLista) {
 async function salvaEtichette(corpo, env) {
   const { linee, badge } = corpo;
 
-  const erroreLinee = validaListaEtichette(linee, VALORI_LINEE, 'Linee');
+  const erroreLinee = validaListaEtichette(linee, LINEE, 'Linee');
   if (erroreLinee) return json({ errore: erroreLinee }, 400);
-  const erroreBadge = validaListaEtichette(badge, VALORI_BADGE, 'Badge');
+  const erroreBadge = validaListaEtichette(badge, BADGE, 'Badge');
   if (erroreBadge) return json({ errore: erroreBadge }, 400);
 
   const pulisci = (lista) => lista.map((v) => ({ valore: v.valore, etichetta: v.etichetta.trim() }));

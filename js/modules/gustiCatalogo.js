@@ -117,7 +117,13 @@ function creaCard(gusto) {
     foto.loading = 'lazy';
     foto.alt = gusto.nome;
     foto.addEventListener('error', () => foto.remove());
-    foto.src = `${gusto.fotoUrl}?w=700&auto=format&fit=max&q=80`;
+    // Il catalogo chiuso è nascosto (visibility:hidden) ma resta fisso sullo
+    // schermo, quindi loading="lazy" da solo non basta: il browser
+    // scaricherebbe subito tutte le foto. Finché il catalogo è chiuso
+    // l'indirizzo resta in data-src, e menuGusti.js lo attiva all'apertura.
+    const url = `${gusto.fotoUrl}?w=700&auto=format&fit=max&q=80`;
+    if (document.getElementById('menuGusti')?.classList.contains('is-open')) foto.src = url;
+    else foto.dataset.src = url;
     visivo.appendChild(foto);
   }
 

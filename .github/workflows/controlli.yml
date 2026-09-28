@@ -1,0 +1,35 @@
+# Controlli automatici a ogni push su main e a ogni pull request: gli stessi
+# che si possono lanciare a mano (vedi README, sezione Controlli). Non
+# pubblicano niente: la pubblicazione la fa Cloudflare Pages da sola.
+name: Controlli
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  controlli:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Sintassi, liste dei valori, versione dei file
+        run: node tools/controlla.mjs
+
+      - name: Installa Playwright
+        working-directory: tools
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      # porta 3333: l'unica, oltre al sito vero, da cui Sanity accetta letture
+      - name: Prova il sito in un browser
+        run: |
+          python3 -m http.server 3333 --bind 127.0.0.1 &
+          sleep 2
+          node tools/smoke.mjs http://localhost:3333

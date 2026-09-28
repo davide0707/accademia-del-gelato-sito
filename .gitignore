@@ -7,3 +7,9 @@ Thumbs.db
 
 # build output locale dello Studio Sanity, se generato
 sanity/dist/
+
+# File originali forniti (immagini a piena risoluzione): nel sito ci sono le
+# loro copie ottimizzate, questi restano solo sul computer
+assets/img/riconoscimenti/ATTESTATO*
+assets/img/social/*-originale.*
+assets/logo/whatsapp-logo.png

@@ -21,6 +21,12 @@ export function initMenuGusti() {
 
   function apri(filtro) {
     elementoAttivante = document.activeElement;
+    // le foto dei gusti partono solo adesso (vedi creaCard in
+    // gustiCatalogo.js); loading="lazy" rimanda comunque quelle più in basso
+    menu.querySelectorAll('img[data-src]').forEach((img) => {
+      img.src = img.dataset.src;
+      img.removeAttribute('data-src');
+    });
     selezionaFiltro(filtro);
 
     // Da una linea si arriva dritti ai gusti, con la barra dei filtri in

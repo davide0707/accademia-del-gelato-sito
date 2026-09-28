@@ -6,17 +6,13 @@ Sito vetrina per **Accademia del Gelato di Sorrentino Roberto** (Via Savorgnana 
 
 ## 1. Aprire il sito in locale
 
-Il JavaScript è organizzato in moduli ES (`<script type="module">`), che i browser **non** eseguono se apri `index.html` direttamente da filesystem (`file://`) — serve un vero server HTTP locale. Due opzioni equivalenti, dalla cartella del progetto:
+Il JavaScript è organizzato in moduli ES (`<script type="module">`), che i browser **non** eseguono se apri `index.html` direttamente da filesystem (`file://`) — serve un vero server HTTP locale, **sulla porta 3333**: è l'unico indirizzo locale da cui Sanity accetta letture (vedi Deploy → CORS), con altre porte catalogo, prezzi, orari e blog restano quelli di riserva. Dalla cartella del progetto:
 
 ```bash
-# Node (se hai npx disponibile)
-npx serve .
-
-# oppure Python
-python -m http.server 5500
+python -m http.server 3333
 ```
 
-Poi apri l'URL che il comando stampa (es. `http://localhost:5500`).
+Poi apri `http://localhost:3333`. Due differenze rispetto al sito pubblicato: il server di Python non conosce gli indirizzi senza `.html` (la privacy in locale è `/privacy.html`) e non esegue le funzioni in `functions/` né applica `_headers` e `404.html`. Per avere tutto come online serve `npx wrangler pages dev .` (scarica wrangler di Cloudflare).
 
 ---
 
@@ -24,36 +20,31 @@ Poi apri l'URL che il comando stampa (es. `http://localhost:5500`).
 
 ```
 ACCADEMIA GELATO/
-├── index.html
+├── index.html            la homepage
+├── privacy.html          informativa privacy (script in js/privacy.js)
+├── 404.html              pagina per gli indirizzi che non esistono
+├── _headers              intestazioni di sicurezza (Content-Security-Policy…), vedi Deploy
+├── robots.txt, sitemap.xml
 ├── css/
 │   └── main.css          unico foglio di stile (vedi nota sotto)
 ├── js/
-│   ├── main.js           entry point, orchestra i moduli in ordine
-│   └── modules/
-│       ├── accessibility.js   prefers-reduced-motion, hover-capable, focus trap
-│       ├── preloader.js       timing di uscita del preloader
-│       ├── smoothScroll.js    Lenis + integrazione ScrollTrigger
-│       ├── nav.js             sticky nav, indicatore sezione attiva, menu mobile
-│       ├── menuGusti.js       apre/chiude il menu gusti a schermo intero
-│       ├── scrollReveal.js    split-text hero, reveal a cascata, parallax, tilt card, line-draw icone
-│       ├── flavorFilter.js    filtro gusti con transizione FLIP (GSAP Flip)
-│       ├── heroCanvas.js      accento Canvas 2D animato in hero
-│       ├── cursor.js          cursore custom (solo desktop hover-capable)
-│       ├── magneticButton.js  bottone magnetico della CTA finale
-│       ├── reviewsMarquee.js  pausa marquee recensioni (hover/focus/viewport)
-│       ├── counters.js        contatori numerici animati
-│       └── hoursTable.js      evidenzia il giorno corrente in tabella orari
+│   ├── avvio.js          primo script di ogni pagina: rimanda al sito vero, attiva i font
+│   ├── privacy.js        cambio lingua della pagina privacy
+│   ├── main.js           entry point della homepage, orchestra i moduli in ordine
+│   └── modules/          un modulo per funzione (catalogo gusti, filtri, blog di
+│                         Roberto, orari, contatore visite, lingua, animazioni…)
+├── roberto-pubblica/     pagina con cui Roberto gestisce il sito (index.html,
+│                         stile.css, app.js) — protetta da PIN, non indicizzata
+├── functions/api/        funzioni Cloudflare: salvano i contenuti di Roberto su Sanity
+├── server/               codice comune alle funzioni (PIN, Sanity, foto, valori ammessi)
+├── sanity/               schema dei contenuti per Sanity Studio (progetto a parte)
+├── tools/                controlli del progetto (vedi sezione 10), non pubblicati come sito
 └── assets/
-    ├── icons/            copie sorgente delle icone SVG usate inline in index.html
-    ├── logo/
-    │   └── logo-gelato.png   logo ufficiale — usato come favicon e come marchio del preloader
-    └── img/
-        ├── gusti/        illustrazioni dei 42 gusti — vedi Sezione 4
-        ├── esperienze/   illustrazioni delle 4 card "Da gustare anche"
-        └── varie/        illustrazione "Qua la Zampa"
+    ├── logo/             logo del negozio (preloader), favicon, icone Deliveroo/WhatsApp
+    └── img/              riconoscimenti, esperienze, "Qua la Zampa", maiolica, anteprima social
 ```
 
-**Logo ufficiale**: `assets/logo/logo-gelato.png` è referenziato in due punti — il favicon (`<link rel="icon">` nell'`<head>`) e il preloader (`.preloader__logo` in `index.html`, con l'animazione di comparsa in `css/animations.css`). Per sostituirlo con una versione aggiornata, basta sovrascrivere questo file mantenendo lo stesso nome: nessun altro file da toccare.
+**Logo ufficiale**: `assets/logo/accademia-logo-badge.webp` è il marchio del preloader (`.preloader__logo` in `index.html`); il favicon è `assets/logo/favicon.png`. Per sostituirli basta sovrascrivere i file mantenendo lo stesso nome.
 
 **`css/main.css`**: un tempo erano 7 file separati (reset, tokens, base, layout, components, animations, utilities), ognuno caricato con un proprio `<link>` — 7 richieste di rete che bloccano il render prima che la pagina mostri qualcosa, misurate a ~750ms di First Contentful Paint su rete lenta. Sono stati uniti in un solo file per eliminare quel costo. Dentro `main.css` restano gli stessi separatori di sezione (`/* ===== reset.css ===== */` ecc.) nello stesso ordine di prima — per trovare gli stili di un componente, cerca con Ctrl+F il nome della sezione o della classe.
 
@@ -72,7 +63,8 @@ Non essendo disponibili foto reali, ogni punto dove andrebbe una fotografia usa 
 
 Punti attualmente placeholder:
 - **Sezione "Il Brand"** (`.media-placeholder--brand`) — foto del laboratorio/bancone.
-- **Sezione "Linee speciali senza zucchero"** (`.media-placeholder--senzazucchero`) — foto di una coppetta Puro Zero.
+
+La sezione "Linee speciali" non ha più il placeholder: mostra l'attestato VEGANOK (`assets/img/riconoscimenti/attestato-veganok.webp`).
 
 La mappa in "Dove Siamo" **non** è un placeholder da sostituire: è un'illustrazione SVG disegnata su misura (streets stilizzate, Piazza Girolamo Venerio, marker animato) per restare coerente con la palette del sito senza dipendere da una chiave API Google Maps. Il pulsante "Apri in Google Maps" sotto la mappa porta alla mappa reale per indicazioni stradali vere. Per aggiornarla (es. cambio indirizzo) modifica direttamente i `<path>`/`<text>` dentro `.mappa-stilizzata` in `index.html`.
 
@@ -96,7 +88,7 @@ Ogni card in `#gustiGriglia` porta due attributi `data-*` indipendenti che pilot
 - **`data-linea`** — controlla il tipo di movimento hover (ampiezza tilt, durata, easing — vedi `LINEA_HOVER` in `js/modules/scrollReveal.js`) e alcuni dettagli di stile della card (bordo, ombra). Valori: `creme` (vellutato/lento), `frutta` (elastico), `vegani` (soft-lift + glow oro), `naturalmente-senza` (bordo che si accende), `puro-zero` (preciso/rapido), `granite` (shimmer).
 - **`data-categorie`** — indipendente dai due sopra: elenco (separato da spazio) delle pillole di filtro a cui il gusto appartiene, es. `data-categorie="frutta vegani"`. È quello che legge `flavorFilter.js`.
 
-Aggiungere un nuovo gusto = una nuova `<article class="gusto-card">` con questi tre attributi, eyebrow/nome/descrizione ed eventuali `<span class="badge badge--...">`. Nessun JS da toccare.
+Le card non si scrivono più a mano: le genera `js/modules/gustiCatalogo.js` dai gusti che Roberto pubblica su Sanity. Gli elenchi dei valori ammessi stanno in `server/valori.js` e sono ripetuti, per forza, nello schema di Sanity, nella pagina di Roberto, nel sito e nel CSS: `node tools/controlla.mjs` verifica che siano tutti uguali.
 
 ---
 
@@ -130,7 +122,7 @@ Testato con Lighthouse (Chrome headless, audit reale, non stimato, preset di def
 1. *Corretto lato codice*: fino a poco fa il sito caricava 7 file CSS separati (7 richieste bloccanti il render) e 42+4 foto gusti/esperienze in PNG a piena risoluzione (32MB totali) invece che ridimensionate. Sistemato: un solo `css/main.css`, foto convertite in WebP alla dimensione reale di visualizzazione (32MB → 1,4MB, -96%). Anche il preloader è stato disaccoppiato dall'evento `window.load` (che aspetta pure risorse non necessarie al primo render) a favore di `document.fonts.ready`, lo stesso segnale già usato dall'animazione del testo in hero.
 2. *Limite dell'ambiente di test, non del codice*: il server statico locale usato per questi controlli (uno script Node minimale, creato solo per il testing) non comprime le risposte (niente gzip/brotli — verificato: 0 byte risparmiati su `main.css`), non parla HTTP/2 e non ha cache edge. L'host di produzione (Cloudflare Pages) fa tutte e tre le cose automaticamente, senza bisogno di alcuna configurazione — il punteggio andrebbe ri-testato una volta online, sul dominio reale, per avere il numero definitivo.
 
-Il foglio di stile di Google Fonts resta caricato in modo non bloccante (pattern `media="print" + onload`).
+Il foglio di stile di Google Fonts resta caricato in modo non bloccante (`media="print"`, attivato da `js/avvio.js` appena caricato — non più con un `onload` scritto nell'HTML, che la Content-Security-Policy non ammette).
 
 `prefers-reduced-motion: reduce` disattiva Lenis, il canvas hero (un solo frame statico), i parallax e tutte le durate delle transizioni CSS (i token `--dur-*` si azzerano automaticamente in `tokens.css`), lasciando comunque tutti i contenuti pienamente visibili e leggibili.
 
@@ -138,7 +130,9 @@ Il foglio di stile di Google Fonts resta caricato in modo non bloccante (pattern
 
 ## 8. Modificare i contenuti
 
-Tutti i testi sono scritti direttamente in `index.html` (nessun CMS/template): cerca la sezione per `id` (es. `id="gusti"`, `id="senza-zucchero"`) e modifica il markup. Dati di contatto/orari/prezzi sono duplicati in tre punti — sezione "Dove Siamo", footer, e JSON-LD nell'`<head>` — aggiorna tutti e tre se cambiano.
+I contenuti che cambiano spesso — **gusti, prezzi, orari, i due blog ("Ti racconto il mio gelato", "Falsi miti") ed etichette delle linee** — stanno su **Sanity** e li modifica Roberto da `roberto-pubblica/` (accesso con PIN): nessun file da toccare. Il sito li legge dal browser a ogni visita; nell'HTML e in `js/modules/gustiCatalogo.js` resta solo una copia di riserva, mostrata se Sanity non risponde e a chi non esegue JavaScript.
+
+Il resto dei testi (storia, filosofia, riconoscimenti, accoglienza, recensioni, contatti) è scritto direttamente in `index.html`, in coppia italiano/inglese (`data-lc="it"` / `data-lc="en"`): cerca la sezione per `id` (es. `id="brand"`, `id="senza-zucchero"`) e modifica il markup.
 
 La sezione "I nostri gusti" in home mostra sei **card delle linee** (`.gusti-linee`, dentro `<section id="gusti">`: Crema, Frutta, Vegan, Naturalmente Senza, Puro Zero Vegan, Granite Siciliane) più il pulsante "Scopri tutti i gusti". Ogni card apre il catalogo completo — `<div class="menu-gusti" id="menuGusti">`, un modale a schermo intero gestito da `js/modules/menuGusti.js` — già filtrato sulla sua categoria (`data-apri-linea` = valore del filtro); lì la barra dei filtri resta ferma in cima mentre si scorre, per cambiare categoria. I gusti e il numero scritto su ogni card arrivano da Sanity (`js/modules/gustiCatalogo.js`): li gestisce Roberto da `roberto-pubblica`, niente da toccare nell'HTML.
 
@@ -150,9 +144,34 @@ In prima schermata, accanto alle pillole di Google e Gambero Rosso, c'è il **co
 
 Il sito è ospitato su **Cloudflare Pages** (`https://accademia-del-gelato.pages.dev`), collegato al repository GitHub: ogni push su `main` viene pubblicato in automatico. Nessun passo di build (Framework preset: None, build command vuoto, output directory: la radice del progetto).
 
-- **Pagine, CSS, JS, immagini**: file statici, serviti così come sono. In `index.html` e `privacy.html` il foglio di stile e `js/main.js` hanno un numero di versione (`css/main.css?v=…`): **va cambiato ogni volta che cambia il CSS o il JS**, così un browser con in memoria i file vecchi non li mischia con la pagina nuova (succedeva: pagina nuova + stile vecchio = immagini giganti e stirate).
-- **Funzioni che salvano i contenuti di Roberto**: in `functions/api/` (Cloudflare Pages Functions — ogni file è un indirizzo, es. `functions/api/pubblica.js` → `/api/pubblica`). Il codice comune (controllo PIN, scrittura su Sanity, caricamento foto) sta in `server/`, fuori da `functions/` apposta. Parlano con Sanity via HTTP, senza dipendenze da installare.
-- **Variabili nel pannello Cloudflare** (Settings → Variables and Secrets): `ROBERTO_PIN`, `SANITY_PROJECT_ID`, `SANITY_DATASET`, `SANITY_WRITE_TOKEN`. PIN e token come secret, mai nel codice.
-- **Sanity accetta letture dal browser solo dagli indirizzi autorizzati** (sanity.io/manage → API → CORS origins, senza credentials): se cambia l'indirizzo del sito va aggiunto lì, altrimenti catalogo, prezzi, orari e blog non si caricano.
+- **Pagine, CSS, JS, immagini**: file statici, serviti così come sono. Le pagine richiamano i propri CSS/JS con un numero di versione (`css/main.css?v=…`), così un browser con in memoria i file vecchi non li mischia con la pagina nuova (succedeva: pagina nuova + stile vecchio = immagini giganti e stirate). **Non si sceglie a mano**: dopo aver cambiato CSS o JS, `node tools/controlla.mjs --correggi` lo ricalcola dal contenuto dei file.
+- **Funzioni che salvano i contenuti di Roberto**: in `functions/api/` (Cloudflare Pages Functions — ogni file è un indirizzo, es. `functions/api/pubblica.js` → `/api/pubblica`). Il codice comune (accesso, scrittura su Sanity, caricamento foto, valori ammessi) sta in `server/`, fuori da `functions/` apposta. Parlano con Sanity via HTTP, senza dipendenze da installare.
+- **Accesso di Roberto**: il PIN serve solo a entrare; `/api/verifica-pin` restituisce un gettone firmato valido 30 giorni (rinnovato a ogni visita) e la pagina salva quello, mai il PIN. Cambiando `ROBERTO_PIN` tutti i gettoni già emessi smettono di valere. Le cancellazioni controllano il tipo di documento: dalla cancellazione di un post non si può eliminare un gusto, gli orari o le etichette.
+- **Variabili nel pannello Cloudflare** (Settings → Variables and Secrets): `ROBERTO_PIN`, `SANITY_PROJECT_ID`, `SANITY_DATASET`, `SANITY_WRITE_TOKEN`, `GOATCOUNTER_TOKEN`. PIN e token come secret, mai nel codice.
+- **Sanity accetta letture dal browser solo dagli indirizzi autorizzati** (sanity.io/manage → API → CORS origins, senza credentials): oggi il sito e `http://localhost:3333`. Se cambia l'indirizzo del sito va aggiunto lì, altrimenti catalogo, prezzi, orari e blog non si caricano.
+- **Intestazioni di sicurezza** in `_headers`: Content-Security-Policy (script solo dal sito, da jsDelivr e da GoatCounter, nessuno script scritto dentro l'HTML; dati e immagini solo dalle origini elencate), `frame-ancestors 'none'` + `X-Frame-Options: DENY` (nessun sito può mostrare queste pagine in una cornice). **Aggiungendo un servizio esterno** (una mappa incorporata, un altro CDN…) va aggiunta lì la sua origine, altrimenti il browser lo blocca.
+- **Script esterni con impronta di integrità** (`integrity="sha384-…"` in `index.html`): GSAP, Lenis e GoatCounter (`count.v4.js`, versione fissa). Cambiando versione di una libreria, l'impronta va ricalcolata: `curl -s URL | openssl dgst -sha384 -binary | openssl base64 -A`.
+- **Pagine inesistenti**: `404.html`, che Cloudflare Pages mostra da sola con il codice 404.
+- **Pubblicazioni vecchie**: ogni pubblicazione resta raggiungibile anche al suo indirizzo con un codice davanti (`70dc7d24.accademia-del-gelato.pages.dev`). Da ora in poi su quegli indirizzi le pagine rimandano al sito vero (`js/avvio.js`) e le funzioni rispondono 404 (`functions/api/_middleware.js`). Quelle pubblicate prima di questa modifica non hanno queste protezioni: si eliminano dal pannello (Workers & Pages → progetto → Deployments → ⋯ → Delete deployment).
 
 **Con un dominio proprio**: aggiungerlo in Cloudflare (scheda Custom domains) e nei CORS di Sanity, poi aggiornare l'indirizzo in `index.html` (canonical, Open Graph, dati strutturati), `privacy.html`, `sitemap.xml` e `robots.txt`.
+
+---
+
+## 10. Controlli
+
+Nella cartella `tools/`, separati dal sito:
+
+```bash
+# sintassi di tutti i JS, liste dei valori coerenti, numero di versione dei file
+node tools/controlla.mjs            # solo controllo (esce con errore se qualcosa non va)
+node tools/controlla.mjs --correggi # in più aggiorna il numero di versione ?v=
+
+# prova del sito in un browser vero (Playwright): prima, una volta sola,
+#   cd tools && npm install && npx playwright install chromium
+python -m http.server 3333            # in un altro terminale, dalla cartella del progetto
+node tools/smoke.mjs                  # sul server locale
+node tools/smoke.mjs https://accademia-del-gelato.pages.dev   # sul sito pubblicato (controlla anche 404 e intestazioni)
+```
+
+Gli stessi controlli partono da soli su GitHub a ogni push su `main` (`.github/workflows/controlli.yml`, scheda *Actions* del repository): non bloccano la pubblicazione su Cloudflare, ma segnalano subito se qualcosa si è rotto.
