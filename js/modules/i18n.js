@@ -111,13 +111,13 @@ const BADGE_CLASSI = {
 const META = {
   it: {
     title: 'Accademia del Gelato — Il Gelato Naturale Italiano | Udine',
-    description: 'Gelateria artigianale a Udine: gelato naturale preparato ogni mattina, senza conservanti. Due Coni Gambero Rosso dal 2026. Via Savorgnana 16.',
+    description: 'Gelateria artigianale a Udine: gelato naturale preparato ogni mattina, senza conservanti. Premiata anche da Gambero Rosso. Via Savorgnana 16.',
     ogTitle: 'Accademia del Gelato — Il Gelato Naturale Italiano',
     ogDescription: "Gelato artigianale naturale a Udine, preparato ogni mattina in laboratorio, senza conservanti né additivi. Via Savorgnana 16, Udine (UD).",
   },
   en: {
     title: 'Accademia del Gelato — Natural Italian Gelato | Udine',
-    description: 'Artisan gelato shop in Udine: natural gelato made fresh every morning, no preservatives. Two Cones, Gambero Rosso since 2026. Via Savorgnana 16.',
+    description: 'Artisan gelato shop in Udine: natural gelato made fresh every morning, no preservatives. Also recognized by Gambero Rosso. Via Savorgnana 16.',
     ogTitle: 'Accademia del Gelato — Natural Italian Gelato',
     ogDescription: 'Natural artisan gelato in Udine, made fresh every morning in our lab, no preservatives or additives. Via Savorgnana 16, Udine (UD).',
   },
