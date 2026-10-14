@@ -5,15 +5,16 @@ import { json, muta, nuovoId, leggiFoto, caricaFoto } from './comune.js';
 // Sanity, passato da chi chiama.
 
 const TITOLO_MAX = 60;
-const TESTO_MAX = 240;
 
+// Il testo non ha un limite di lunghezza (l'ha chiesto Roberto): il sito ne
+// mostra le prime righe e il resto con "Leggi tutto" (js/modules/blog.js).
 function validaPost({ titolo, testo }) {
   if (!titolo || !testo) return 'Titolo e testo sono obbligatori';
   if (titolo.trim().length === 0 || titolo.length > TITOLO_MAX) {
     return `Il titolo deve avere tra 1 e ${TITOLO_MAX} caratteri`;
   }
-  if (testo.trim().length === 0 || testo.length > TESTO_MAX) {
-    return `Il testo deve avere tra 1 e ${TESTO_MAX} caratteri`;
+  if (testo.trim().length === 0) {
+    return 'Il testo non può essere vuoto';
   }
   return null;
 }

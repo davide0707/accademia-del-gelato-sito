@@ -6,7 +6,6 @@
   // volta con un gettone e poi si cancella.
   const VECCHIO_PIN_KEY = 'ag_roberto_pin';
   const TITOLO_MAX = 60;
-  const TESTO_MAX = 240;
   const LATO_MAX_PX = 1600;
   const QUALITA_JPEG = 0.82;
   const SANITY_PROJECT_ID = 'jskwy1n7';
@@ -1295,7 +1294,6 @@
   const fotoAnteprima = $('foto-anteprima');
   const btnRimuoviFoto = $('btn-rimuovi-foto');
   const contatoreTitolo = $('contatore-titolo');
-  const contatoreTesto = $('contatore-testo');
   const erroreModulo = $('errore-modulo');
   const btnPubblica = $('btn-pubblica');
 
@@ -1304,11 +1302,20 @@
   let postInModifica = null;
   let rimuoviFotoRichiesto = false;
 
-  function aggiornaContatori() {
+  function aggiornaContatoreTitolo() {
     contatoreTitolo.textContent = `${campoTitolo.value.length} / ${TITOLO_MAX}`;
     contatoreTitolo.classList.toggle('limite', campoTitolo.value.length >= TITOLO_MAX);
-    contatoreTesto.textContent = `${campoTesto.value.length} / ${TESTO_MAX}`;
-    contatoreTesto.classList.toggle('limite', campoTesto.value.length >= TESTO_MAX);
+  }
+
+  // Il testo non ha limite di lunghezza, quindi niente contatore: invece di
+  // far scorrere Roberto dentro a un riquadro di tre righe, il riquadro si
+  // allunga mentre scrive. Solo in crescita (riaccorciarlo a ogni tasto
+  // farebbe saltare la pagina): torna alla misura di partenza svuotando
+  // style.height, quando nel modulo entra un post nuovo o un altro post.
+  function allungaCampoTesto() {
+    const bordi = campoTesto.offsetHeight - campoTesto.clientHeight;
+    const necessaria = campoTesto.scrollHeight + bordi;
+    if (necessaria > campoTesto.offsetHeight) campoTesto.style.height = `${necessaria}px`;
   }
 
   function resetModuloANuovo() {
@@ -1316,12 +1323,13 @@
     rimuoviFotoRichiesto = false;
     campoTitolo.value = '';
     campoTesto.value = '';
+    campoTesto.style.height = '';
     fotoCompressaDataUrl = null;
     campoFoto.value = '';
     fotoPicker.classList.remove('ha-foto');
     fotoAnteprima.src = '';
     btnRimuoviFoto.classList.remove('visibile');
-    aggiornaContatori();
+    aggiornaContatoreTitolo();
     moduloTitolo.textContent = 'Nuovo aggiornamento';
     btnPubblica.textContent = 'Pubblica';
     erroreModulo.classList.remove('visibile');
@@ -1335,7 +1343,8 @@
 
     campoTitolo.value = post.titolo || '';
     campoTesto.value = post.testo || '';
-    aggiornaContatori();
+    campoTesto.style.height = '';
+    aggiornaContatoreTitolo();
 
     if (post.fotoUrl) {
       fotoAnteprima.src = urlAnteprimaFoto(post.fotoUrl, 800);
@@ -1351,6 +1360,9 @@
     btnPubblica.textContent = 'Salva modifiche';
     erroreModulo.classList.remove('visibile');
     mostra('modulo');
+    // solo dopo mostra(): finché la schermata è nascosta il riquadro non ha
+    // misure, e un post lungo resterebbe chiuso in tre righe
+    allungaCampoTesto();
   }
 
   btnRimuoviFoto.addEventListener('click', () => {
@@ -1362,15 +1374,10 @@
     btnRimuoviFoto.classList.remove('visibile');
   });
 
-  campoTitolo.addEventListener('input', () => {
-    contatoreTitolo.textContent = `${campoTitolo.value.length} / ${TITOLO_MAX}`;
-    contatoreTitolo.classList.toggle('limite', campoTitolo.value.length >= TITOLO_MAX);
-  });
-
-  campoTesto.addEventListener('input', () => {
-    contatoreTesto.textContent = `${campoTesto.value.length} / ${TESTO_MAX}`;
-    contatoreTesto.classList.toggle('limite', campoTesto.value.length >= TESTO_MAX);
-  });
+  campoTitolo.addEventListener('input', aggiornaContatoreTitolo);
+  campoTesto.addEventListener('input', allungaCampoTesto);
+  // telefono ruotato in verticale: il testo va a capo più spesso
+  window.addEventListener('resize', allungaCampoTesto);
 
   function comprimiFoto(file) {
     return new Promise((resolve, reject) => {

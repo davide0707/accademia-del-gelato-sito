@@ -24,6 +24,8 @@ const I18N = {
   'archivio-cerca': { it: 'Cerca per argomento…', en: 'Search by topic…' },
   'archivio-miti-eyebrow': { it: 'Falsi miti del gelato', en: 'Gelato myths' },
   'archivio-miti-titolo': { it: 'Tutti i falsi miti', en: 'All gelato myths' },
+  'blog-leggi-tutto': { it: 'Leggi tutto', en: 'Read more' },
+  'blog-mostra-meno': { it: 'Mostra meno', en: 'Show less' },
   // etichette che compaiono decine di volte identiche sulle card gusto:
   // un dizionario condiviso invece di duplicare ogni card
   'eyebrow-creme': { it: 'Linea Creme', en: 'Cream Line' },

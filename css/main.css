@@ -2276,6 +2276,12 @@ body.menu-aperto .nav__toggle-linea {
     align-items: center;
     padding: var(--space-4);
   }
+
+  /* testo lungo aperto con "Leggi tutto": la foto resta in alto, accanto
+     all'inizio del testo, invece che a metà altezza */
+  .spazio-roberto--espansa {
+    align-items: flex-start;
+  }
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -2344,6 +2350,57 @@ body.menu-aperto .nav__toggle-linea {
   opacity: 0.8;
   margin: 0;
   line-height: 1.5;
+  /* gli a capo che Roberto scrive restano a capo */
+  white-space: pre-line;
+}
+
+/* Il testo dei post non ha limite di lunghezza: a card chiusa se ne vedono
+   le prime righe, con i puntini se continua. Si legge tutto con "Leggi
+   tutto" nella vetrina (js/modules/blog.js) o aprendo la card nell'archivio. */
+.spazio-roberto:not(.spazio-roberto--espansa, .archivio-roberto__card--espansa) .spazio-roberto__estratto {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  overflow: hidden;
+}
+
+/* "Leggi tutto" / "Mostra meno" della vetrina: compare solo se il testo è
+   tagliato. Stesso aspetto del link all'archivio qui sotto. */
+.spazio-roberto__leggi {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+  background: none;
+  border: none;
+  padding: var(--space-1) 0;
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  color: var(--rosso-accent);
+  cursor: pointer;
+}
+
+/* senza questa regola "display: flex" qui sopra batterebbe l'attributo
+   hidden e il pulsante resterebbe visibile anche a testo intero (stesso
+   motivo di .archivio-roberto .spazio-roberto[hidden] più sotto) */
+.spazio-roberto__leggi[hidden] {
+  display: none;
+}
+
+.spazio-roberto__leggi svg {
+  width: 14px;
+  height: 14px;
+  transition: transform var(--dur-fast) var(--ease-soft);
+}
+
+.spazio-roberto__leggi[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+.spazio-roberto__leggi[aria-expanded="true"] .spazio-roberto__leggi-apri,
+.spazio-roberto__leggi[aria-expanded="false"] .spazio-roberto__leggi-chiudi {
+  display: none;
 }
 
 .spazio-roberto__data {
@@ -2470,6 +2527,12 @@ body.menu-aperto .nav__toggle-linea {
 
 .archivio-roberto__card--espansa .spazio-roberto__estratto {
   opacity: 0.9;
+}
+
+/* nell'elenco le card chiuse restano più basse che nella vetrina: per
+   leggere tutto si apre la card */
+.archivio-roberto .spazio-roberto:not(.archivio-roberto__card--espansa) .spazio-roberto__estratto {
+  -webkit-line-clamp: 4;
 }
 
 .archivio-roberto__vuoto {

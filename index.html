@@ -31,11 +31,11 @@
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" media="print" data-font-asincrono>
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap"></noscript>
-<script src="/js/avvio.js?v=49c2aed842"></script>
+<script src="/js/avvio.js?v=4edce8c15f"></script>
 
 <!-- ?v= da cambiare quando cambia il CSS: un browser con in memoria il
      foglio di stile vecchio non può mischiarlo con la pagina nuova -->
-<link rel="stylesheet" href="css/main.css?v=49c2aed842">
+<link rel="stylesheet" href="css/main.css?v=4edce8c15f">
 
 <!-- GoatCounter: tracciamento senza cookie, nessun banner di consenso
      necessario, gratuito per sempre. Il codice sito (qui "gelateria") è
@@ -243,7 +243,12 @@
           <h2 class="spazio-roberto__eyebrow" data-lc="it">Ti racconto il mio gelato</h2>
           <h2 class="spazio-roberto__eyebrow" data-lc="en">Let me tell you about my gelato (in Italian)</h2>
           <h3 class="spazio-roberto__titolo" data-sr-titolo></h3>
-          <p class="spazio-roberto__estratto" data-sr-testo></p>
+          <p class="spazio-roberto__estratto" id="spazioRobertoTesto" data-sr-testo></p>
+          <button type="button" class="spazio-roberto__leggi" data-sr-leggi aria-expanded="false" aria-controls="spazioRobertoTesto" hidden>
+            <span class="spazio-roberto__leggi-apri" data-i18n="blog-leggi-tutto">Leggi tutto</span>
+            <span class="spazio-roberto__leggi-chiudi" data-i18n="blog-mostra-meno">Mostra meno</span>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
           <span class="spazio-roberto__data" data-sr-data hidden></span>
         </div>
       </article>
@@ -592,7 +597,12 @@
         </div>
         <div class="spazio-roberto__testo">
           <h3 class="spazio-roberto__titolo" data-sr-titolo></h3>
-          <p class="spazio-roberto__estratto" data-sr-testo></p>
+          <p class="spazio-roberto__estratto" id="falsiMitiTesto" data-sr-testo></p>
+          <button type="button" class="spazio-roberto__leggi" data-sr-leggi aria-expanded="false" aria-controls="falsiMitiTesto" hidden>
+            <span class="spazio-roberto__leggi-apri" data-i18n="blog-leggi-tutto">Leggi tutto</span>
+            <span class="spazio-roberto__leggi-chiudi" data-i18n="blog-mostra-meno">Mostra meno</span>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
           <span class="spazio-roberto__data" data-sr-data hidden></span>
         </div>
       </article>
@@ -1644,6 +1654,6 @@
   </a>
 </div>
 
-<script type="module" src="js/main.js?v=49c2aed842"></script>
+<script type="module" src="js/main.js?v=4edce8c15f"></script>
 </body>
 </html>

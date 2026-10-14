@@ -1,4 +1,5 @@
 import { trapFocus } from './accessibility.js';
+import { scrollToTarget } from './smoothScroll.js';
 
 // Infrastruttura Sanity condivisa da tutti i blog di Roberto — la lettura
 // pubblica passa dalla CDN, nessun token richiesto (scrivere invece passa
@@ -20,6 +21,50 @@ function formattaDataAssoluta(data) {
   return data.toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
+// Il testo di un post non ha limite di lunghezza: a card chiusa se ne
+// vedono le prime righe (CSS, .spazio-roberto__estratto) e "Leggi tutto"
+// compare solo se il testo è davvero tagliato. Dipende da quanto è lungo e
+// da quanto è larga la card, quindi si ricontrolla a ogni testo nuovo,
+// quando la card cambia larghezza (telefono ruotato, finestra ridimensionata)
+// e quando arrivano i font, che spostano gli a capo.
+function aggiornaLeggiTutto(radice) {
+  const testoEl = radice.querySelector('[data-sr-testo]');
+  const btn = radice.querySelector('[data-sr-leggi]');
+  if (!testoEl || !btn) return;
+  const espansa = btn.getAttribute('aria-expanded') === 'true';
+  // 1px di tolleranza: le altezze con i decimali si arrotondano in modo diverso
+  btn.hidden = !espansa && testoEl.scrollHeight - testoEl.clientHeight <= 1;
+}
+
+function espandi(radice, espansa) {
+  radice.classList.toggle('spazio-roberto--espansa', espansa);
+  radice.querySelector('[data-sr-leggi]')?.setAttribute('aria-expanded', String(espansa));
+}
+
+function initLeggiTutto(radice) {
+  const testoEl = radice.querySelector('[data-sr-testo]');
+  const btn = radice.querySelector('[data-sr-leggi]');
+  if (!testoEl || !btn) return;
+
+  btn.addEventListener('click', () => {
+    const espansa = btn.getAttribute('aria-expanded') !== 'true';
+    espandi(radice, espansa);
+    aggiornaLeggiTutto(radice);
+    // aprire o richiudere un testo lungo cambia l'altezza della pagina: i
+    // trigger delle animazioni più in basso vanno ricalcolati, come al
+    // cambio lingua (i18n.js)
+    window.ScrollTrigger?.refresh();
+    // richiudendo dopo aver letto fino in fondo, la card può finire sopra
+    // lo schermo: la si riporta in vista
+    if (!espansa && radice.getBoundingClientRect().top < 0) scrollToTarget(radice);
+  });
+
+  if ('ResizeObserver' in window) {
+    new ResizeObserver(() => aggiornaLeggiTutto(radice)).observe(testoEl);
+  }
+  document.fonts?.addEventListener?.('loadingdone', () => aggiornaLeggiTutto(radice));
+}
+
 function renderizza(config, post) {
   const radice = document.querySelector(config.radiceSelector);
   if (!radice) return;
@@ -30,7 +75,11 @@ function renderizza(config, post) {
   const dataEl = radice.querySelector('[data-sr-data]');
 
   if (titoloEl) titoloEl.textContent = post.titolo;
-  if (testoEl) testoEl.textContent = post.testo;
+  if (testoEl && testoEl.textContent !== post.testo) {
+    // un post diverso (es. quello in diretta al posto della cache) riparte chiuso
+    espandi(radice, false);
+    testoEl.textContent = post.testo;
+  }
 
   if (fotoEl && post.fotoUrl) {
     fotoEl.src = `${post.fotoUrl}?w=900&auto=format&fit=max`;
@@ -50,6 +99,8 @@ function renderizza(config, post) {
       dataEl.hidden = true;
     }
   }
+
+  aggiornaLeggiTutto(radice);
 }
 
 /**
@@ -63,6 +114,7 @@ function renderizza(config, post) {
 export async function initBlog(config) {
   const radice = document.querySelector(config.radiceSelector);
   if (!radice) return;
+  initLeggiTutto(radice);
 
   let contenutoIniziale = config.contenutoLancio;
   try {

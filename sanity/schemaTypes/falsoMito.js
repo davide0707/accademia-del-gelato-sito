@@ -3,8 +3,9 @@ import { defineField, defineType } from 'sanity';
 /**
  * Contenuto del secondo blog di Roberto, "Falsi miti del gelato" — stessa
  * forma di "aggiornamento" (il blog "Ti racconto il mio gelato"): titolo,
- * foto, testo breve. Tipo separato invece di riusare "aggiornamento" con un
- * campo extra per non toccare lo schema già in produzione con post veri.
+ * foto, testo senza limite di lunghezza. Tipo separato invece di riusare
+ * "aggiornamento" con un campo extra per non toccare lo schema già in
+ * produzione con post veri.
  */
 export default defineType({
   name: 'falsoMito',
@@ -27,8 +28,8 @@ export default defineType({
       name: 'testo',
       title: 'Testo',
       type: 'text',
-      rows: 3,
-      validation: (Rule) => Rule.required().max(240),
+      rows: 8,
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'pubblicatoIl',
