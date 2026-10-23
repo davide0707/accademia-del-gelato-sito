@@ -730,6 +730,24 @@ section {
 .brand__visivo {
   aspect-ratio: 4 / 5;
   width: 100%;
+  /* sopra il motivo a maioliche (.sfondo-maiolica-decorativo): sul bianco
+     della giacca da chef si vedeva in trasparenza come una filigrana, come
+     già sull'attestato VEGANOK. Lo z-index sta qui e non sulla foto: il
+     parallasse (data-parallax) trasforma questo riquadro, e uno z-index
+     della foto resterebbe chiuso al suo interno */
+  position: relative;
+  z-index: calc(var(--z-sfondo-decorativo) + 1);
+}
+
+/* foto già ritagliata 4:5 come il riquadro: "cover" serve solo a non
+   deformarla se il riquadro cambia proporzioni */
+.brand__foto {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
 }
 
 /* --------------------------- RICONOSCIMENTI --------------------------------- */
@@ -1208,10 +1226,14 @@ section {
   opacity: 0.75;
 }
 
+/* Su telefono due colonne, non una: con una sola ogni card occupava mezzo
+   schermo e i 43 gusti erano un nastro infinito di foto giganti. Fino a
+   1023 px le card hanno la foto quadrata (vedi .gusto-card più sotto),
+   da lì in su la fascia di 220 px del layout da PC. */
 .gusti-griglia {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-6);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
   /* contesto di posizionamento per GSAP Flip: senza, le card "assolute"
      durante la transizione si posizionano rispetto a un antenato più
      lontano (.menu-gusti__scroll), che include l'altezza di tutto quello
@@ -1221,12 +1243,12 @@ section {
   position: relative;
 }
 
-@media (min-width: 640px) {
-  .gusti-griglia { grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 768px) {
+  .gusti-griglia { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
 }
 
 @media (min-width: 1024px) {
-  .gusti-griglia { grid-template-columns: repeat(3, 1fr); }
+  .gusti-griglia { gap: var(--space-6); }
 }
 
 .gusti-nota {
@@ -1246,16 +1268,16 @@ section {
 
 .esperienze__griglia {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-6);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
 }
 
-@media (min-width: 640px) {
-  .esperienze__griglia { grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 768px) {
+  .esperienze__griglia { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); }
 }
 
 @media (min-width: 1024px) {
-  .esperienze__griglia { grid-template-columns: repeat(4, 1fr); }
+  .esperienze__griglia { gap: var(--space-6); }
 }
 
 /* ------------------------------- MENU GUSTI (modale) --------------------------- */
@@ -1501,6 +1523,21 @@ section {
 .zampa-card__visivo {
   min-height: 220px;
   position: relative;
+}
+
+/* Su telefono (una colonna) una fascia fissa di 220 px tagliava
+   l'illustrazione a metà della zampa: il riquadro prende quasi le sue
+   proporzioni e l'immagine resta ancorata in basso, dove la zampa entra
+   dal bordo (in alto c'è solo sfondo bianco). */
+@media (max-width: 799px) {
+  .zampa-card__visivo {
+    min-height: 0;
+    aspect-ratio: 5 / 4;
+  }
+
+  .zampa-card__foto {
+    object-position: 50% 100%;
+  }
 }
 
 .zampa-card__testo {
@@ -2565,63 +2602,6 @@ body.menu-aperto .nav__toggle-linea {
   background: linear-gradient(180deg, var(--rosso-accademia), transparent);
 }
 
-/* ---------------------------------- MEDIA PLACEHOLDER ------------------------------- */
-
-.media-placeholder {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  background: linear-gradient(155deg, var(--avorio) 0%, var(--beige-caldo) 55%, var(--oro-chiaro) 100%);
-  box-shadow: var(--shadow-xl);
-}
-
-.media-placeholder__forma {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(0px);
-}
-
-.media-placeholder__forma--coppetta {
-  width: 62%;
-  aspect-ratio: 1;
-  left: 50%;
-  top: 58%;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle at 35% 30%, var(--avorio), var(--rosso-accademia) 78%);
-  border-radius: 46% 46% 50% 50% / 40% 40% 60% 60%;
-  box-shadow: var(--shadow-lg);
-}
-
-.media-placeholder__forma--pallina {
-  width: 34%;
-  aspect-ratio: 1;
-  left: 50%;
-  top: 30%;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle at 32% 28%, var(--crema), var(--oro-tenue) 75%);
-  box-shadow: var(--shadow-md);
-}
-
-.media-placeholder__grana {
-  position: absolute;
-  inset: 0;
-  opacity: 0.08;
-  mix-blend-mode: multiply;
-  background-image:
-    radial-gradient(circle, var(--antracite) 0.6px, transparent 0.6px);
-  background-size: 6px 6px;
-}
-
-.media-placeholder--senzazucchero {
-  background: linear-gradient(160deg, var(--rosso-accent) 0%, var(--rosso-scuro) 100%);
-}
-
-.media-placeholder--senzazucchero .media-placeholder__forma--coppetta {
-  background: radial-gradient(circle at 35% 30%, var(--oro-chiaro), var(--rosso-scuro) 80%);
-}
-
 /* ------------------------------------- PILLAR ------------------------------------- */
 
 .pillar {
@@ -2783,6 +2763,44 @@ body.menu-aperto .nav__toggle-linea {
   margin-top: var(--space-4);
 }
 
+/* Telefono e tablet (griglia a 2-3 colonne): il riquadro della foto è
+   quadrato come le foto che carica Roberto (tutte 1600×1600), così la foto
+   lo riempie da bordo a bordo, senza fasce colorate ai lati né tagli; testo
+   e spazi più compatti per card strette. Da 1024 px resta il layout da PC. */
+@media (max-width: 1023px) {
+  .gusto-card {
+    padding: var(--space-3) var(--space-3) var(--space-4);
+    /* in percentuale si calcola sulla larghezza: spazio quadrato per la foto */
+    padding-top: calc(100% + var(--space-3));
+  }
+
+  .gusto-card__visivo {
+    bottom: auto;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .gusto-card__eyebrow {
+    letter-spacing: 0.08em;
+    margin-bottom: var(--space-1);
+  }
+
+  .gusto-card__nome {
+    font-size: var(--fs-body);
+    gap: var(--space-1);
+  }
+
+  .gusto-card__desc {
+    font-size: var(--fs-caption);
+    line-height: 1.45;
+  }
+
+  .gusto-card__badges {
+    gap: var(--space-1);
+    margin-top: var(--space-3);
+  }
+}
+
 /* Niente opacity sull'intera card: degraderebbe il contrasto di tutto il
    testo sotto la soglia AA. Il grayscale sulla sola fascia visiva, più il
    badge "Esaurito", bastano come segnale — il testo resta pienamente leggibile. */
@@ -2848,7 +2866,8 @@ body.menu-aperto .nav__toggle-linea {
   color: var(--crema);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
-  padding-top: calc(88px + var(--space-4));
+  /* in percentuale si calcola sulla larghezza: spazio quadrato per la foto */
+  padding-top: calc(100% + var(--space-4));
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow-md);
@@ -2860,10 +2879,12 @@ body.menu-aperto .nav__toggle-linea {
   box-shadow: var(--shadow-xl);
 }
 
+/* Foto intera e quadrata come i file (800×800): prima era una fascia alta
+   88 px, che ne mostrava solo una striscia a caso nel mezzo. */
 .esperienza-card__visivo {
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 88px;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
   background: radial-gradient(circle at 20% 30%, var(--oro-tenue), transparent 70%);
 }
@@ -2878,6 +2899,18 @@ body.menu-aperto .nav__toggle-linea {
 
 .esperienza-card h4 { color: var(--crema); font-size: var(--fs-h6); margin-bottom: var(--space-2); }
 .esperienza-card p { opacity: 0.85; font-size: var(--fs-body-sm); }
+
+/* card strette (2 colonne su telefono, 4 su tablet): spazi e testo più
+   compatti, come nelle card dei gusti */
+@media (max-width: 1023px) {
+  .esperienza-card {
+    padding: var(--space-3) var(--space-3) var(--space-4);
+    padding-top: calc(100% + var(--space-3));
+  }
+
+  .esperienza-card h4 { font-size: var(--fs-body); margin-bottom: var(--space-1); }
+  .esperienza-card p { font-size: var(--fs-caption); line-height: 1.45; }
+}
 
 /* -------------------------------------- SERVIZIO CARD -------------------------------- */
 

@@ -26,6 +26,7 @@ const I18N = {
   'archivio-miti-titolo': { it: 'Tutti i falsi miti', en: 'All gelato myths' },
   'blog-leggi-tutto': { it: 'Leggi tutto', en: 'Read more' },
   'blog-mostra-meno': { it: 'Mostra meno', en: 'Show less' },
+  'brand-foto': { it: "Una coppetta di gelato con il logo dell'Accademia del Gelato, in mano al gelatiere", en: 'A cup of gelato with the Accademia del Gelato logo, held by the gelato maker' },
   // etichette che compaiono decine di volte identiche sulle card gusto:
   // un dizionario condiviso invece di duplicare ogni card
   'eyebrow-creme': { it: 'Linea Creme', en: 'Cream Line' },
@@ -149,6 +150,11 @@ function applicaLingua(lingua) {
   document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
     const voce = I18N[el.dataset.i18nPlaceholder];
     if (voce) el.placeholder = voce[lingua];
+  });
+
+  document.querySelectorAll('[data-i18n-alt]').forEach((el) => {
+    const voce = I18N[el.dataset.i18nAlt];
+    if (voce) el.alt = voce[lingua];
   });
 
   Object.entries(BADGE_CLASSI).forEach(([classe, voce]) => {

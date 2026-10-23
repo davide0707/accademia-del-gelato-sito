@@ -46,6 +46,9 @@ export function initHeroCanvas() {
     canvas.width = Math.max(1, Math.round(width * scale));
     canvas.height = Math.max(1, Math.round(height * scale));
     ctx.setTransform(scale, 0, 0, scale, 0, 0);
+    // cambiare le misure svuota il canvas: senza animazione (movimento
+    // ridotto) nessun frame successivo lo ridisegnerebbe
+    if (prefersReducedMotion) drawFrame(0);
   }
 
   function drawFrame(time) {
@@ -77,7 +80,10 @@ export function initHeroCanvas() {
   }
 
   resize();
-  window.addEventListener('resize', resize);
+  // si misura l'hero, non la finestra: cambia altezza anche da solo (un post
+  // di Roberto aperto con "Leggi tutto"), e il canvas resterebbe stirato
+  if ('ResizeObserver' in window) new ResizeObserver(resize).observe(hero);
+  else window.addEventListener('resize', resize);
 
   if (prefersReducedMotion) {
     drawFrame(0);

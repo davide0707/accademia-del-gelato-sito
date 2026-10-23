@@ -52,23 +52,16 @@ Nessun bundler: il JS resta caricato come moduli separati. Se in futuro vorrai c
 
 ---
 
-## 3. Sostituire i placeholder immagine
+## 3. Foto al posto dei segnaposto
 
-Non essendo disponibili foto reali, ogni punto dove andrebbe una fotografia usa un elemento `.media-placeholder` (gradiente + forme organiche via CSS, nessuna immagine mancante o "rotta"). I punti da sostituire sono segnalati nell'HTML con un commento:
+All'inizio, non avendo foto reali, i punti dove andava una fotografia mostravano un segnaposto disegnato in CSS (`.media-placeholder`). Oggi non ne resta nessuno, e il loro CSS è stato tolto:
 
-```html
-<!-- SOSTITUIRE con foto reale: interno laboratorio / bancone gelateria -->
-<div class="media-placeholder media-placeholder--brand">...</div>
-```
-
-Punti attualmente placeholder:
-- **Sezione "Il Brand"** (`.media-placeholder--brand`) — foto del laboratorio/bancone.
-
-La sezione "Linee speciali" non ha più il placeholder: mostra l'attestato VEGANOK (`assets/img/riconoscimenti/attestato-veganok.webp`).
+- **Sezione "Il Brand"**: la coppetta dell'Accademia in mano al gelatiere (`assets/img/varie/gelato-coppetta.webp`, `.brand__foto`), con il testo alternativo in italiano e in inglese (`data-i18n-alt`, vedi `js/modules/i18n.js`).
+- **Sezione "Linee speciali"**: l'attestato VEGANOK (`assets/img/riconoscimenti/attestato-veganok.webp`).
 
 La mappa in "Dove Siamo" **non** è un placeholder da sostituire: è un'illustrazione SVG disegnata su misura (streets stilizzate, Piazza Girolamo Venerio, marker animato) per restare coerente con la palette del sito senza dipendere da una chiave API Google Maps. Il pulsante "Apri in Google Maps" sotto la mappa porta alla mappa reale per indicazioni stradali vere. Per aggiornarla (es. cambio indirizzo) modifica direttamente i `<path>`/`<text>` dentro `.mappa-stilizzata` in `index.html`.
 
-Per sostituire: rimuovi il `<div class="media-placeholder ...">` e il suo contenuto, e metti al suo posto un `<img>` con `loading="lazy"`, `alt` descrittivo e le stesse dimensioni del contenitore (`aspect-ratio` è già impostato sul genitore in `layout.css`, quindi un `img` con `width:100%; height:100%; object-fit:cover;` si adatta automaticamente).
+Per cambiare una di queste foto: salvala in WebP già ritagliata nelle proporzioni del riquadro (4:5 per "Il Brand", quadrata per le card "Da gustare anche", che ne mostrano solo una striscia centrale alta 88px) e non più grande del necessario (circa il doppio della misura a schermo). L'originale a piena risoluzione resta solo sul computer: va elencato in `.gitignore`.
 
 ---
 

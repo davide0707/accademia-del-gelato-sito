@@ -1,6 +1,6 @@
 /**
  * "Falsi miti del gelato" — il secondo blog di Roberto, stesso formato del
- * primo (titolo, foto, testo breve) ma contenuto diverso: sfata le idee
+ * primo (titolo, foto, testo) ma contenuto diverso: sfata le idee
  * sbagliate più comuni sul gelato artigianale. Stessa logica condivisa in
  * ./blog.js di "Ti racconto il mio gelato" (vedi ./spazioRoberto.js), solo
  * con un tipo di contenuto Sanity separato.
