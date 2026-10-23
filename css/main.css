@@ -482,6 +482,12 @@ section {
 
 /* --------------------------------- NAV ------------------------------------ */
 
+/* Il menu completo (voci + telefono + WhatsApp + lingua) compare da 1280px:
+   sotto non ci sta su una riga (misurato: a 1024-1180px le voci andavano a
+   capo su due o tre righe, il telefono su tre) e si usa il menu a tendina,
+   come su telefono e tablet. Le cinque regole con 1280px qui sotto vanno
+   cambiate insieme. */
+
 .nav {
   position: fixed;
   top: 0;
@@ -506,7 +512,7 @@ section {
   display: none;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
   .nav__links {
     display: flex;
     align-items: center;
@@ -525,12 +531,12 @@ section {
   display: none;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
   .nav .nav__cta { display: inline-flex; }
 }
 
 /* stesso motivo del commento sopra: il gruppo telefono+WhatsApp resta
-   nascosto sotto i 1024px, dove il contatto passa dal menu mobile a
+   nascosto sotto i 1280px, dove il contatto passa dal menu mobile a
    schermo intero (che ha già i propri pulsanti) invece che dalla nav */
 .nav__contatti {
   display: none;
@@ -538,7 +544,7 @@ section {
   gap: var(--space-3);
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
   .nav__contatti { display: flex; }
 }
 
@@ -592,7 +598,7 @@ section {
   align-items: center;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
   .nav__toggle { display: none; }
 }
 
@@ -616,7 +622,7 @@ section {
   padding-left: max(var(--container-pad), calc(var(--container-pad) + env(safe-area-inset-left)));
   visibility: hidden;
   /* senza overflow, su schermi bassi (telefoni piccoli, o dopo aver
-     aggiunto la voce "Da Roberto" + WhatsApp + selettore lingua) il
+     aggiunto la voce del blog + WhatsApp + selettore lingua) il
      contenuto in coda al menu finiva sotto al bordo dello schermo,
      irraggiungibile: niente scroll di pagina qui dentro (il menu è
      position:fixed a schermo intero), quindi serve il proprio */
@@ -637,7 +643,7 @@ section {
   align-items: flex-start;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
   .menu-mobile { display: none; }
 }
 
@@ -952,7 +958,8 @@ section {
 /* Al posto dei gusti in vetrina, sei porte d'ingresso al catalogo: ogni card
    apre il menu gusti già filtrato sulla sua categoria (menuGusti.js). Stessa
    materia delle card gusto — avorio, fascia colorata con micro-motivo — ma
-   il colore qui identifica la linea, non un ingrediente. */
+   il colore qui identifica la linea, non un ingrediente; sulla fascia, le
+   foto vere dei primi gusti della linea (.linea-card__palline). */
 .gusti-linee {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -971,6 +978,10 @@ section {
 .linea-card {
   --lc-fascia: clamp(84px, 56px + 7vw, 148px);
   position: relative;
+  /* sopra il motivo a maioliche (.sfondo-maiolica-decorativo), come
+     l'attestato VEGANOK e la foto di "Il Brand": senza, la trama passava
+     sopra il fondo avorio e le card sembravano trasparenti */
+  z-index: calc(var(--z-sfondo-decorativo) + 1);
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -998,6 +1009,48 @@ section {
   opacity: 0.55;
   background-image: var(--lc-motivo, none);
   background-size: var(--lc-motivo-size, 10px 10px);
+}
+
+/* Le "palline": le foto vere dei primi gusti della linea (le mette
+   gustiCatalogo.js), ritagliate a cerchio e sovrapposte come palline in
+   una coppetta. Le foto di Roberto sono un disco colorato su fondo nero:
+   lo scale dell'immagine toglie il filo nero attorno al disco. */
+.linea-card__palline {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  padding-inline: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .linea-card__palline { padding-inline: var(--space-6); }
+}
+
+.linea-card__pallina {
+  flex: none;
+  width: calc(var(--lc-fascia) * 0.66);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #000;
+  border: 3px solid var(--avorio);
+  box-shadow: var(--shadow-md);
+  transition: margin var(--dur-base) var(--ease-premium);
+}
+
+/* sovrapposte poco: i nomi stampati nelle foto restano leggibili */
+.linea-card__pallina + .linea-card__pallina {
+  margin-left: calc(var(--lc-fascia) * -0.1);
+}
+
+.linea-card__pallina img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.08);
 }
 
 .linea-card__freccia {
@@ -1087,6 +1140,11 @@ section {
   }
 
   .linea-card:hover .linea-card__freccia svg { transform: translateX(2px); }
+
+  /* le palline si allargano un poco, come a mostrarsi */
+  .linea-card:hover .linea-card__pallina + .linea-card__pallina {
+    margin-left: calc(var(--lc-fascia) * -0.02);
+  }
 }
 
 /* colore e motivo di ogni linea */
@@ -1127,9 +1185,19 @@ section {
   .linea-card { flex-direction: row; }
 
   .linea-card__visivo {
-    width: 64px;
+    width: 76px;
     height: auto;
   }
+
+  /* nella striscia stretta una sola pallina, al centro */
+  .linea-card__palline {
+    justify-content: center;
+    padding-inline: 0;
+  }
+
+  .linea-card__pallina { width: 54px; }
+
+  .linea-card__pallina + .linea-card__pallina { display: none; }
 
   .linea-card__testo {
     flex: 1;

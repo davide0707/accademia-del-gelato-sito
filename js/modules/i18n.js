@@ -9,7 +9,7 @@ const STORAGE_KEY = 'ag_lingua';
 // che misura la posizione del link e si aspetta un solo elemento per
 // sezione osservata.
 const I18N = {
-  'nav-roberto': { it: 'Da Roberto', en: 'From Roberto' },
+  'nav-roberto': { it: 'Il Blog del Gelato', en: 'The Gelato Blog' },
   'nav-brand': { it: 'Il Brand', en: 'Our Story' },
   'nav-filosofia': { it: 'Filosofia', en: 'Philosophy' },
   'nav-gusti': { it: 'I Gusti', en: 'Flavors' },

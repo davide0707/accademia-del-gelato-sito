@@ -206,6 +206,56 @@ function aggiornaConteggiLinee() {
   }
 }
 
+// Sulle card delle linee in home, tre "palline" con le foto vere dei primi
+// gusti di quella linea: seguono da sole il catalogo di Roberto, e una
+// linea senza foto resta con il solo colore. Sono foto piccole e caricate
+// solo quando la card si avvicina allo schermo: le foto grandi del catalogo
+// invece partono solo all'apertura del catalogo (vedi creaCard).
+const PALLINE_PER_LINEA = 3;
+
+// Prima i gusti disponibili, e tra questi quelli della linea stessa (un
+// sorbetto è anche nel filtro "Vegan", ma è della linea Frutta), poi quelli
+// non ancora mostrati sulle card precedenti: così "Gusti Vegan" non ripete
+// le stesse palline di "Gusti alla Frutta".
+function scegliPerPalline(ordinati, linea, giaMostrati) {
+  const conFoto = ordinati.filter((g) => g.fotoUrl && (g.categorie || []).includes(linea));
+  const punteggio = (g) => (g.esaurito ? 4 : 0) + (g.linea === linea ? 0 : 2) + (giaMostrati.has(g.fotoUrl) ? 1 : 0);
+  // sort stabile: a parità di punteggio resta l'ordine scelto da Roberto
+  return [...conFoto].sort((a, b) => punteggio(a) - punteggio(b)).slice(0, PALLINE_PER_LINEA);
+}
+
+function aggiornaPallineLinee(ordinati) {
+  const giaMostrati = new Set();
+  document.querySelectorAll('.linea-card[data-apri-linea]').forEach((card) => {
+    const visivo = card.querySelector('.linea-card__visivo');
+    if (!visivo) return;
+    const scelti = scegliPerPalline(ordinati, card.dataset.apriLinea, giaMostrati);
+    scelti.forEach((g) => giaMostrati.add(g.fotoUrl));
+    const chiave = scelti.map((g) => g.fotoUrl).join(' ');
+    // stessi gusti di prima (prima la cache, poi i dati in diretta): niente da rifare
+    if (visivo.dataset.palline === chiave) return;
+    visivo.dataset.palline = chiave;
+    visivo.querySelector('.linea-card__palline')?.remove();
+    if (scelti.length === 0) return;
+
+    const palline = document.createElement('span');
+    palline.className = 'linea-card__palline';
+    scelti.forEach((g) => {
+      const pallina = document.createElement('span');
+      pallina.className = 'linea-card__pallina';
+      const foto = document.createElement('img');
+      foto.alt = '';
+      foto.loading = 'lazy';
+      foto.decoding = 'async';
+      foto.src = `${g.fotoUrl}?w=200&h=200&fit=crop&auto=format&q=75`;
+      foto.addEventListener('error', () => pallina.remove());
+      pallina.appendChild(foto);
+      palline.appendChild(pallina);
+    });
+    visivo.appendChild(palline);
+  });
+}
+
 function renderizzaGusti(gusti) {
   const griglia = document.getElementById('gustiGriglia');
   if (!griglia) return;
@@ -217,6 +267,7 @@ function renderizzaGusti(gusti) {
   ordinati.forEach((g) => griglia.appendChild(creaCard(g)));
 
   aggiornaConteggiLinee();
+  aggiornaPallineLinee(ordinati);
   ribindaInterazioni();
 }
 
