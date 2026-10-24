@@ -1,7 +1,7 @@
-# Se in futuro si aggiunge un dominio personalizzato al posto di quello
-# pages.dev (Cloudflare), aggiornare l'indirizzo qui sotto e in sitemap.xml.
+# Il sito sta su www.accademiadelgelato.com: se l'indirizzo cambia,
+# aggiornarlo qui sotto e in sitemap.xml.
 User-agent: *
 Allow: /
 Disallow: /roberto-pubblica/
 
-Sitemap: https://accademia-del-gelato.pages.dev/sitemap.xml
+Sitemap: https://www.accademiadelgelato.com/sitemap.xml

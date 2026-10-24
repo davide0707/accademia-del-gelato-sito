@@ -135,7 +135,7 @@ In prima schermata, accanto alle pillole di Google e Gambero Rosso, c'è il **co
 
 ## 9. Deploy
 
-Il sito è ospitato su **Cloudflare Pages** (`https://accademia-del-gelato.pages.dev`), collegato al repository GitHub: ogni push su `main` viene pubblicato in automatico. Nessun passo di build (Framework preset: None, build command vuoto, output directory: la radice del progetto).
+Il sito è ospitato su **Cloudflare Pages** ed è online su **`https://www.accademiadelgelato.com`** (dominio proprio, aggiunto nella scheda Custom domains; l'indirizzo di Cloudflare `https://accademia-del-gelato.pages.dev` resta raggiungibile), collegato al repository GitHub: ogni push su `main` viene pubblicato in automatico. Nessun passo di build (Framework preset: None, build command vuoto, output directory: la radice del progetto).
 
 - **Pagine, CSS, JS, immagini**: file statici, serviti così come sono. Le pagine richiamano i propri CSS/JS con un numero di versione (`css/main.css?v=…`), così un browser con in memoria i file vecchi non li mischia con la pagina nuova (succedeva: pagina nuova + stile vecchio = immagini giganti e stirate). **Non si sceglie a mano**: dopo aver cambiato CSS o JS, `node tools/controlla.mjs --correggi` lo ricalcola dal contenuto dei file.
 - **Funzioni che salvano i contenuti di Roberto**: in `functions/api/` (Cloudflare Pages Functions — ogni file è un indirizzo, es. `functions/api/pubblica.js` → `/api/pubblica`). Il codice comune (accesso, scrittura su Sanity, caricamento foto, valori ammessi) sta in `server/`, fuori da `functions/` apposta. Parlano con Sanity via HTTP, senza dipendenze da installare.
@@ -147,7 +147,7 @@ Il sito è ospitato su **Cloudflare Pages** (`https://accademia-del-gelato.pages
 - **Pagine inesistenti**: `404.html`, che Cloudflare Pages mostra da sola con il codice 404.
 - **Pubblicazioni vecchie**: ogni pubblicazione resta raggiungibile anche al suo indirizzo con un codice davanti (`70dc7d24.accademia-del-gelato.pages.dev`). Da ora in poi su quegli indirizzi le pagine rimandano al sito vero (`js/avvio.js`) e le funzioni rispondono 404 (`functions/api/_middleware.js`). Quelle pubblicate prima di questa modifica non hanno queste protezioni: si eliminano dal pannello (Workers & Pages → progetto → Deployments → ⋯ → Delete deployment).
 
-**Con un dominio proprio**: aggiungerlo in Cloudflare (scheda Custom domains) e nei CORS di Sanity, poi aggiornare l'indirizzo in `index.html` (canonical, Open Graph, dati strutturati), `privacy.html`, `sitemap.xml` e `robots.txt`.
+**Se cambia il dominio**: aggiungerlo in Cloudflare (scheda Custom domains) e nei CORS di Sanity, poi aggiornare l'indirizzo in `index.html` (canonical, Open Graph, dati strutturati), `privacy.html`, `sitemap.xml` e `robots.txt`.
 
 ---
 
@@ -164,7 +164,7 @@ node tools/controlla.mjs --correggi # in più aggiorna il numero di versione ?v=
 #   cd tools && npm install && npx playwright install chromium
 python -m http.server 3333            # in un altro terminale, dalla cartella del progetto
 node tools/smoke.mjs                  # sul server locale
-node tools/smoke.mjs https://accademia-del-gelato.pages.dev   # sul sito pubblicato (controlla anche 404 e intestazioni)
+node tools/smoke.mjs https://www.accademiadelgelato.com   # sul sito pubblicato (controlla anche 404 e intestazioni)
 ```
 
 Gli stessi controlli partono da soli su GitHub a ogni push su `main` (`.github/workflows/controlli.yml`, scheda *Actions* del repository): non bloccano la pubblicazione su Cloudflare, ma segnalano subito se qualcosa si è rotto.
