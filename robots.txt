@@ -2,6 +2,8 @@
 # aggiornarlo qui sotto e in sitemap.xml.
 User-agent: *
 Allow: /
-Disallow: /roberto-pubblica/
+# roberto-pubblica/ NON va bloccata qui: ha già <meta name="robots" content="noindex">,
+# e Google lo legge solo se può scaricare la pagina. Bloccata qui, l'indirizzo
+# potrebbe comparire nei risultati (senza descrizione) se qualcuno lo linka.
 
 Sitemap: https://www.accademiadelgelato.com/sitemap.xml
