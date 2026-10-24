@@ -674,9 +674,11 @@ section {
   pointer-events: none;
 }
 
+/* niente z-index: resta comunque sopra canvas e vignetta (vengono prima nel
+   markup), e senza creare un proprio contesto lo spazio di Roberto può
+   salire sopra il motivo a maioliche — con z-index:2 restava chiuso sotto */
 .hero__content {
   position: relative;
-  z-index: 2;
   max-width: 780px;
 }
 
@@ -1959,6 +1961,12 @@ section {
 
 .prezzi-ticket {
   list-style: none;
+  /* sopra il motivo a maioliche (.sfondo-maiolica-decorativo), come lo
+     spazio di Roberto: senza, la trama passava sopra il fondo avorio dei
+     prezzi. Sulla lista e non sui <li>: il reveal (data-reveal) le dà un
+     transform, e uno z-index dei <li> resterebbe chiuso al suo interno */
+  position: relative;
+  z-index: calc(var(--z-sfondo-decorativo) + 1);
 }
 
 .prezzi-ticket li {
@@ -2358,6 +2366,11 @@ body.menu-aperto .nav__toggle-linea {
    presentabile anche se non viene mai cambiato. */
 
 .spazio-roberto {
+  /* sopra il motivo a maioliche (.sfondo-maiolica-decorativo), come le
+     card delle linee: senza, la trama passava sopra il fondo avorio, le
+     card dei due blog sembravano trasparenti e il testo si leggeva male */
+  position: relative;
+  z-index: calc(var(--z-sfondo-decorativo) + 1);
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
